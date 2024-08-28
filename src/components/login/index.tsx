@@ -1,6 +1,5 @@
 import React, { FC, useState } from "react";
 import "./index.css";
-
 const Login: FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");

@@ -1,0 +1,111 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to right, #003366, #666666);
+  }
+  
+  .login-box {
+    background-color: #ffffff;
+    padding: 30px 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+  }
+  
+  .titulo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  .vertical-line {
+    width: 6px;
+    height: 40px;
+    background-color: #666666;
+    margin-right: 10px;
+  }
+  
+  .titulo {
+    font-size: 32px;
+    font-weight: bold;
+    color: #000000;
+  }
+  
+  .subtitulo {
+    font-size: 14px;
+    color: #6C6C6C;
+    text-align: center;
+    margin-top: 5px;
+  }
+  
+  .bem-vindo {
+    font-size: 22px;
+    font-weight: 600; /* semibold */
+    color: #000000;
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .login-input-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #6C6C6C;
+    text-align: left;
+  }
+  
+  .login-input-group input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: #6C6C6C;
+  }
+  
+  .login-input-group input::placeholder {
+    color: #CDCDCD;
+  }
+  
+  .esqueceu-senha {
+    font-size: 14px;
+    color: #6C6C6C;
+    text-align: center;
+    margin-top: 5px;
+  }
+  
+  .redefinir-senha {
+    color: #6C6C6C;
+    cursor: pointer;
+  }
+  
+  .login-button {
+    background-color: #FF6600;
+    font-size: 14px;
+    font-weight: bold;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .login-button:hover {
+    background-color: #e65c00;
+  }
+  
