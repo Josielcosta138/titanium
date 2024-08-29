@@ -22,7 +22,7 @@ const OrderService: FC = () => {
   const [observacao, setObservacao] = useState<string>("");
 
   const handleSubmit = () => {
-    // Lógica para salvar os dados da ordem de serviço
+    // Lógica para salvar os dados da ordem de serviços
     console.log("Ordem de Serviço:", {
       cliente, referencia, modelo, tecidos, quantidadeRolo, grade, feitos, 
       dataChegada, dataEntrega, larguraMinima, notaFiscal, quantidadeSobras, 

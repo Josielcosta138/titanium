@@ -9,7 +9,7 @@ const Login: FC = () => {
     console.log("Login attempt with", { email, password });
   };
 
-  return (
+  return ( 
     <div className="login-container">
       <div className="login-box">
         <div className="titulo-container">

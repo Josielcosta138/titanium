@@ -4,10 +4,10 @@ import "./index.css";
 const RecoverPassword: FC = () => {
   const [email, setEmail] = useState<string>("");
 
-  const handleRecover = () => {
-    // Lógica para recuperar a senha
+  const handleRecover = () => { 
+    // Lógica para recuperar a senha teste 
     console.log("Password recovery attempt with", { email });
-  };
+  }; 
 
   return (
     <div className="login-container">

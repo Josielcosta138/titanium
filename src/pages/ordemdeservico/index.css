@@ -8,7 +8,7 @@ body, html {
   .order-service-container {
     display: flex;
     height: 100vh;
-  }
+  } 
   
   .sidebar {
     width: 20%;
