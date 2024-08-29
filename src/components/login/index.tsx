@@ -1,6 +1,5 @@
 import React, { FC, useState } from "react";
 import "./index.css";
-
 const Login: FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -10,7 +9,7 @@ const Login: FC = () => {
     console.log("Login attempt with", { email, password });
   };
 
-  return (
+  return ( 
     <div className="login-container">
       <div className="login-box">
         <div className="titulo-container">
