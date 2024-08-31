@@ -314,3 +314,44 @@ footer {
 .form-group.observacao {
     width: 100%; /* Preenche o campo de observação até o fim */
 }
+
+
+
+/* Josiel - Pesquisar por cnjp */
+.search-cnpj-container {
+    margin-bottom: 20px;
+  }
+  
+  .search-cnpj-group {
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-cnpj-input {
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-button {
+    margin-left: 8px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  
+  .search-button i {
+    font-size: 16px;
+  }
+
+  .search-cnpj-group label {
+    margin-right: 8px;
+  }
+  
+
+  .search-cnpj-group label {
+    margin-right: 8px; 
+  }
+  
+  

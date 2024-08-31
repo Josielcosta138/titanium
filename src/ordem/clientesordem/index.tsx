@@ -1,7 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './index.css';
+import { FaSearch } from "react-icons/fa";
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import { apiGet, STATUS_CODE } from '../../api/RestClient';
 
 const CadastroCliente: React.FC = () => {
+  const [nome, setNome] = useState<string>()
+  const [searchCnpj, setSearchCnpj] = useState<string>('')
+  const [razaoSocial, setRazaoSocial] = useState<string>('')
+  const [nomeFantasia, setnomeFantasia] = useState<string>()
+  const [email, setEmail] = useState<string>()
+  const [telefone, setTelefone] = useState<string>()
+  const [cnpj, setCnpj] = useState<string>()
+
+
+  const formatarCnpj = (searchCnpj: string) => {
+    return searchCnpj.replace(/\D/g, ''); 
+  };
+
+  const carregarClienteViaCnpj = async () => {
+    const cnpjFormatado = formatarCnpj(searchCnpj);
+    console.log(">>> Cnpj: ", cnpjFormatado);
+
+    const response = await apiGet(`cliente/carregarDadosApis/${cnpjFormatado}`);
+
+    if (response.status === STATUS_CODE.OK) {
+        console.log(response);
+        setnomeFantasia(response.data.nomeFantasia);
+    }
+};
+
+
   return (
     <div className="cadastro-cliente-container">
       <div className="sidebar">
@@ -59,6 +88,24 @@ const CadastroCliente: React.FC = () => {
         {/* Formulário de Cadastro */}
         <div className="form-container">
           <div className="cadastro-cliente-form">
+            {/* Campo de Pesquisa por CNPJ */}
+            <div className="search-cnpj-container">
+              <div className="form-group search-cnpj-group">
+                <label htmlFor="searchCnpj">Pesquisar cliente: </label>
+                <div className="search-cnpj-input">
+                <input
+                    type="text"
+                    id="searchCnpj"
+                    placeholder="00.000.000/0000-00"
+                    value={searchCnpj}
+                    onChange={(e) => setSearchCnpj(e.target.value)}
+                />
+                  <button type="button" onClick={carregarClienteViaCnpj} className="search-button">
+                  <PersonSearchIcon />
+                  </button>
+                </div>
+              </div>
+            </div>
             {/* Seção Clientes */}
             <div className="section">
               <h3>Clientes</h3>
@@ -88,20 +135,6 @@ const CadastroCliente: React.FC = () => {
                 <div className="form-group">
                   <label htmlFor="razaoSocial">Razão Social</label>
                   <input type="text" id="razaoSocial" placeholder="Razão Social" />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="pessoa1">Pessoa 1*</label>
-                  <input type="text" id="pessoa1" placeholder="Nome da Pessoa 1" required />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="pessoa2">Pessoa 2</label>
-                  <input type="text" id="pessoa2" placeholder="Nome da Pessoa 2" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="pessoa3">Pessoa 3</label>
-                  <input type="text" id="pessoa3" placeholder="Nome da Pessoa 3" />
                 </div>
               </div>
             </div>
