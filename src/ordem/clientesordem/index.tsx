@@ -2,16 +2,25 @@ import React, { useState } from 'react';
 import './index.css';
 import { FaSearch } from "react-icons/fa";
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
-import { apiGet, STATUS_CODE } from '../../api/RestClient';
+import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../api/RestClient';
+import { Alert, Box, Modal } from '@mui/material';
 
 const CadastroCliente: React.FC = () => {
-  const [nome, setNome] = useState<string>()
-  const [searchCnpj, setSearchCnpj] = useState<string>('')
-  const [razaoSocial, setRazaoSocial] = useState<string>('')
-  const [nomeFantasia, setnomeFantasia] = useState<string>()
-  const [email, setEmail] = useState<string>()
-  const [telefone, setTelefone] = useState<string>()
-  const [cnpj, setCnpj] = useState<string>()
+  const [nome, setNome] = useState<string>('');
+  const [searchCnpj, setSearchCnpj] = useState<string>('');
+  const [razaoSocial, setRazaoSocial] = useState<string>('');
+  const [nomeFantasia, setNomeFantasia] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [telefone, setTelefone] = useState<string>('');
+  const [cnpj, setCnpj] = useState<string>('');
+  const [bairro, setBairro] = useState<string>('');
+  const [municipio, setMunicipio] = useState<string>('');
+  const [uf, setUf] = useState<string>('');
+  const [logradouro, setLogradouro] = useState<string>('');
+  const [cep, setCep] = useState<string>('');
+  const [open, setOpen] = useState(false);
+  const [clienteId, setIdCliente] = useState<number>();
+  const [cidadeId, setIdCidade] = useState<number>();
 
 
   const formatarCnpj = (searchCnpj: string) => {
@@ -19,16 +28,109 @@ const CadastroCliente: React.FC = () => {
   };
 
   const carregarClienteViaCnpj = async () => {
-    const cnpjFormatado = formatarCnpj(searchCnpj);
-    console.log(">>> Cnpj: ", cnpjFormatado);
+    try {
+      const cnpjFormatado = formatarCnpj(searchCnpj);
+      console.log(">>> Cnpj: ", cnpjFormatado);
 
-    const response = await apiGet(`cliente/carregarDadosApis/${cnpjFormatado}`);
+      const response = await apiGet(`cliente/carregarDadosApis/${cnpjFormatado}`);
 
-    if (response.status === STATUS_CODE.OK) {
-        console.log(response);
-        setnomeFantasia(response.data.nomeFantasia);
+        if (response.status === STATUS_CODE.OK) {
+            console.log(response);
+
+            const dadosCliente = response.data;
+            setNome(dadosCliente.nome || "");
+            setNomeFantasia(dadosCliente.fantasia || "");
+            setEmail(dadosCliente.email || "");
+            setTelefone(dadosCliente.telefone || "");
+            setCnpj(dadosCliente.cnpj || "");
+            setRazaoSocial(dadosCliente.nome || "");
+            setBairro(dadosCliente.bairro || "");
+            setMunicipio(dadosCliente.municipio || "");
+            setUf(dadosCliente.uf || "");
+            setLogradouro(dadosCliente.logradouro || ""); 
+            setCep(dadosCliente.cep || ""); 
+            
+        }
+    } catch (error) {
+      console.error("Erro ao carregar dados do cliente e endereços:", error);
     }
 };
+
+
+
+const salvarCliente = async () => {
+  const data = {
+    fantasia: nomeFantasia,
+    telefone: telefone,
+    cnpj: cnpj,
+    nome: nome,
+    email: email,
+  };
+
+  try {
+    const response = await apiPost(`/cliente/criarClientes`, data);
+
+    if (response.status === STATUS_CODE.CREATED) {
+      const clienteId = response.data.id;
+      setIdCliente(clienteId);
+      localStorage.setItem("idCliente", clienteId);
+
+      await salvarCidade(clienteId); 
+    }
+  } catch (error) {
+    console.error("Erro ao salvar cliente:", error);
+  }
+};
+
+
+
+
+
+const salvarEndereco = async (clienteId: any, cidadeId: any) => {
+  const data = {
+    rua: logradouro,
+    bairro: bairro,
+    idCliente: clienteId,
+    idCidade: cidadeId,
+  };
+
+  try {
+    const response = await apiPost("/endereco/criar", data);
+    if (response.status === STATUS_CODE.CREATED) {
+      setOpen(true);
+      setTimeout(() => {
+        setOpen(false);
+      }, 5000);
+    }
+  } catch (error) {
+    console.error("Erro ao salvar endereço:", error);
+  }
+};
+
+
+
+
+
+const salvarCidade = async (clienteId: any) => {
+  const data = {
+    name: municipio,
+    uf: uf,
+  };
+
+  try {
+    const response = await apiPost("/cidade/criarCidade", data);
+
+    if (response.status === STATUS_CODE.CREATED) {
+      const cidadeId = response.data.id;
+      setIdCidade(cidadeId);
+      localStorage.setItem("idCidade", cidadeId);
+
+      await salvarEndereco(clienteId, cidadeId); 
+    }
+  } catch (error) {
+    console.error("Erro ao salvar cidade:", error);
+  }
+}
 
 
   return (
@@ -112,29 +214,59 @@ const CadastroCliente: React.FC = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="nome">Nome*</label>
-                  <input type="text" id="nome" placeholder="Nome do Cliente" required />
+                  <input 
+                      type="text" 
+                      id="nome"
+                      value={nomeFantasia} 
+                      onChange={(event) => setNomeFantasia(event.target.value)}
+                      placeholder="Nome do Cliente" required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="email">E-mail*</label>
-                  <input type="email" id="email" placeholder="exemplo@dominio.com" required />
+                  <input 
+                      type="email" 
+                      id="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)} 
+                      placeholder="exemplo@dominio.com" required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="telefone">Número/Telefone*</label>
-                  <input type="tel" id="telefone" placeholder="(00) 00000-0000" required />
+                  <input 
+                      type="tel" 
+                      id="telefone"
+                      value={telefone}
+                      onChange={(event) => setTelefone(event.target.value)} 
+                      placeholder="(00) 00000-0000" required />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="cnpj">CNPJ*</label>
-                  <input type="text" id="cnpj" placeholder="00.000.000/0000-00" required />
+                  <input 
+                      type="text" 
+                      id="cnpj"
+                      value={cnpj}
+                      onChange={(event) => setCnpj(event.target.value)}
+                      placeholder="00.000.000/0000-00" required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="nomeFantasia">Nome Fantasia</label>
-                  <input type="text" id="nomeFantasia" placeholder="Nome Fantasia" />
+                  <input 
+                      type="text" 
+                      id="nomeFantasia" 
+                      value={nomeFantasia}
+                      onChange={(event) => setNomeFantasia(event.target.value)}  
+                      placeholder="Nome Fantasia" />
                 </div>
                 <div className="form-group">
                   <label htmlFor="razaoSocial">Razão Social</label>
-                  <input type="text" id="razaoSocial" placeholder="Razão Social" />
+                  <input 
+                      type="text" 
+                      id="razaoSocial" 
+                      value={razaoSocial}
+                      onChange={(event) => setRazaoSocial(event.target.value)}
+                      placeholder="Razão Social" />
                 </div>
               </div>
             </div>
@@ -148,29 +280,50 @@ const CadastroCliente: React.FC = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="cep">CEP*</label>
-                  <input type="text" id="cep" placeholder="00000-000" required />
+                  <input 
+                        type="text" 
+                        id="cep"
+                        value={cep}
+                        onChange={(event) => setCep(event.target.value)}
+                        placeholder="00000-000" required />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="logradouro">Logradouro*</label>
-                  <input type="text" id="logradouro" placeholder="Logradouro" required />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="rua">Rua*</label>
-                  <input type="text" id="rua" placeholder="Rua" required />
+                  <label htmlFor="logradouro">Logradouro-rua*</label>
+                  <input 
+                        type="text" 
+                        id="logradouro" 
+                        value={logradouro}
+                        onChange={(event) => setLogradouro(event.target.value)}
+                        placeholder="Logradouro" required />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="bairro">Bairro*</label>
-                  <input type="text" id="bairro" placeholder="Bairro" required />
+                  <input 
+                        type="text" 
+                        id="bairro"
+                        value={bairro}
+                        onChange={(event) => setBairro(event.target.value)} 
+                        placeholder="Bairro" required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="cidade">Cidade*</label>
-                  <input type="text" id="cidade" placeholder="Cidade" required />
+                  <input 
+                        type="text" 
+                        id="cidade"
+                        value={municipio}
+                        onChange={(event) => setMunicipio(event.target.value)}
+                        placeholder="Cidade" required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="estado">Estado (UF)*</label>
-                  <input type="text" id="estado" placeholder="UF" required />
+                  <input 
+                        type="text" 
+                        id="estado" 
+                        value={uf}
+                        onChange={(event) => setUf(event.target.value)}  
+                        placeholder="UF" required />
                 </div>
               </div>
               <div className="form-row">
@@ -199,7 +352,20 @@ const CadastroCliente: React.FC = () => {
               </div>
             </div>
 
-            <button type="submit" className="submit-button">Cadastrar Cliente</button>
+            <button 
+                onClick={salvarCliente} 
+                type="submit" 
+                className="submit-button">Cadastrar Cliente</button>
+             
+             {/* Mensagem de sucesso */}
+              <Modal
+                open={open}
+                onClose={() => setOpen(false)}
+              >
+                <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
+                    <Alert variant="filled" sx={{ mb: 2 }}>Cliente e endereço cadastrados com sucesso!</Alert>
+                </Box>
+            </Modal>
           </div>
         </div>
       </div>
