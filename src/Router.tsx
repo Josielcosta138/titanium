@@ -4,6 +4,7 @@ import Login from "./components/login";
 import RecoverPassword from "./components/recuperarsenha";
 import OrderService from "./pages/ordemdeservico";
 import OrderCliente from "./ordem/clientesordem";
+import ListaCliente from "./pages/listaclientes";
 // import Home from "./pages/Home";
 
 const Router : FC = () => {
@@ -16,6 +17,7 @@ const Router : FC = () => {
                 <Route path="/recuperarSenha" element={<RecoverPassword />} />
                 <Route path="/ordemServico" element={<OrderService />} />
                 <Route path="/ordemCliente" element={<OrderCliente />} />
+                <Route path="/listaCliente" element={<ListaCliente />} />
 
                 
                 
