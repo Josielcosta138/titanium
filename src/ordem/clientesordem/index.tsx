@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './index.css';
 import { FaSearch } from "react-icons/fa";
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../api/RestClient';
 import { Alert, Box, Modal } from '@mui/material';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { IClientes } from '../../Interface/Cliente/type';
+
+
 
 const CadastroCliente: React.FC = () => {
+  const [clientes, setClientes] = useState<IClientes[]>([]);
+  const { id } = useParams<{ id: string }>();
   const [nome, setNome] = useState<string>('');
   const [searchCnpj, setSearchCnpj] = useState<string>('');
   const [razaoSocial, setRazaoSocial] = useState<string>('');
@@ -21,7 +27,141 @@ const CadastroCliente: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [clienteId, setIdCliente] = useState<number>();
   const [cidadeId, setIdCidade] = useState<number>();
+  const location = useLocation();
+  const navigate = useNavigate();
 
+
+
+ 
+  useEffect(() => {
+    if (id) {
+      carregarCliente(Number(id)); 
+    }
+  }, [id]);
+
+  const carregarCliente = async (id: number) => {
+    try {
+      const response = await apiGet(`endereco/carregar/${id}`);
+      if (response.status === STATUS_CODE.OK) {
+        const cliente = response.data;
+        
+        setNomeFantasia(cliente.client.nomeFantasia || "");
+        setEmail(cliente.client.email || "");
+        setTelefone(cliente.client.telefone || "");
+        setCnpj(cliente.client.cnpj || "");
+        setRazaoSocial(cliente.client.razaoSocial || "");
+        setBairro(cliente.bairro || "");
+        setMunicipio(cliente.cidades.name || "");
+        setUf(cliente.cidades.uf || "");
+        setLogradouro(cliente.rua || "");
+        // Definir o cep no back 
+        setCep(cliente.cep || "");
+        setIdCliente(cliente.client.id || "");
+        setIdCidade(cliente.cidades.id || "");
+
+      }
+    } catch (error) {
+      console.error("Erro ao carregar dados do cliente:", error);
+    }
+  };
+
+
+  const gerenciarSalvar = () => {
+      if (id) {
+        edidarCliente();
+      } else {
+        salvarCliente();
+      }
+  }
+
+
+
+
+ // ----------------------- PUT -------------------------------------//
+
+  const edidarCliente = async () => {
+    const data = { 
+      nome: razaoSocial,
+      fantasia: nomeFantasia,
+      email: email,
+      telefone: telefone,
+      cnpj: cnpj,
+      
+    }
+
+        try {
+          const response = await apiPut(`/cliente/atualizarCliente/${Number(clienteId)}`, data);
+          if (response.status === STATUS_CODE.OK) {
+            
+              const clienteId = response.data.id;
+                setIdCliente(clienteId);
+                localStorage.setItem("idCliente", clienteId.toString());
+      
+            await edidarCidade(clienteId); 
+          }
+        } catch (error) {
+          console.error("Erro ao atualizar cliente:", error);
+        }
+  };
+  
+
+  const edidarCidade = async (clienteId: any) => {
+
+    const data = { 
+      name: municipio,
+      uf: uf,
+    }
+  
+
+        try {
+          const response = await apiPut(`/cidade/atualizarCidade/${Number(cidadeId)}`, data);
+          if (response.status === STATUS_CODE.OK) {
+
+            const cidadeId = response.data.id;
+              setIdCidade(cidadeId);
+              localStorage.setItem("idCidade", cidadeId);
+      
+            await editarEndereco(clienteId, cidadeId); 
+      
+          }
+        } catch (error) {
+          console.error("Erro ao salvar cidade:", error);
+        }
+  };
+
+
+
+  
+  
+ 
+  
+  const editarEndereco = async (clienteId: any, cidadeId: any) => {
+    const data = {
+      rua: logradouro,
+      bairro: bairro,
+      idCliente: clienteId,
+      idCidade: cidadeId,
+    };
+  
+    try {
+      const response = await apiPut(`/endereco/atualizar/${id}`, data);
+      if (response.status === STATUS_CODE.OK) {
+        setOpen(true);
+        setTimeout(() => {
+          setOpen(false);
+        }, 5000);
+      }
+    } catch (error) {
+      console.error("Erro ao salvar endereço:", error);
+    }
+  };
+  
+  
+  
+
+
+
+// ------------------------------ POST ----------------------------------//
 
   const formatarCnpj = (searchCnpj: string) => {
     return searchCnpj.replace(/\D/g, ''); 
@@ -353,9 +493,9 @@ const salvarCidade = async (clienteId: any) => {
             </div>
 
             <button 
-                onClick={salvarCliente} 
+                onClick={gerenciarSalvar} 
                 type="submit" 
-                className="submit-button">Cadastrar Cliente</button>
+                className="submit-button">Salvar Cliente</button>
              
              {/* Mensagem de sucesso */}
               <Modal
