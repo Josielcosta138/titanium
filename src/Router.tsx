@@ -18,6 +18,7 @@ const Router : FC = () => {
                 <Route path="/ordemServico" element={<OrderService />} />
                 <Route path="/ordemCliente" element={<OrderCliente />} />
                 <Route path="/listaCliente" element={<ListaCliente />} />
+                <Route path="/ordemCliente/:id" element={<OrderCliente />} />
 
                 
                 

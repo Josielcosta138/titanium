@@ -1,28 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
 import { apiGet, STATUS_CODE } from '../../api/RestClient';
-import { Box, Button, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { 
+  Box, 
+  Button, 
+  Modal, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { IClientes } from '../../Interface/Cliente/type';
+import jsPDF from 'jspdf';
+
 
 const Clientes: React.FC = () => {
-  const [clientes, setClientes] = useState<any[]>([]);
+  const [clientes, setClientes] = useState<IClientes[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<any>(null);
   const [page, setPage] = useState(1); // Estado para controle da página
   const [totalPages, setTotalPages] = useState(1); // Estado para controle do total de páginas
+  const navigate = useNavigate(); 
 
   const carregarClientes = async () => {
     try {
-      const response = await apiGet(`/cliente/listarClientes?page=${page}`);
+      const response = await apiGet(`endereco/carregar`);
       if (response.status === STATUS_CODE.OK) {
-        setClientes(response.data.clientes);
+
+        setClientes(response.data);
         setTotalPages(response.data.totalPages);
       }
+
     } catch (error) {
       console.error("Erro ao carregar clientes:", error);
     }
   };
 
-  const handleVerMais = (cliente: any) => {
+  const handleVerMais = (cliente: IClientes) => {
     setSelectedCliente(cliente);
     setOpen(true);
   };
@@ -39,6 +56,40 @@ const Clientes: React.FC = () => {
   useEffect(() => {
     carregarClientes();
   }, [page]);
+
+  
+  const editarCliente = (id: number) => {
+    navigate(`/ordemCliente/${id}`);
+  }
+
+  
+
+  const imprimirDadosCliente = (cliente: IClientes) => {
+    if (!cliente) {
+      console.error('Nenhum cliente selecionado');
+      return;
+    }
+   
+
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Detalhes do Cliente", 10, 10);
+    doc.setFontSize(12);
+    doc.text(`Nome: ${cliente.client?.nomeFantasia || ''}`, 10, 20);
+    doc.text(`Email: ${cliente.client?.email || ''}`, 10, 30);
+    doc.text(`Telefone: ${cliente.client?.telefone || ''}`, 10, 40);
+    doc.text(`Cidade: ${cliente.cidades?.name || ''}`, 10, 50);
+    doc.text(`Endereço: ${cliente.rua || ''}, ${cliente.bairro || ''}`, 10, 60);
+
+    // const ordensServico = selectedCliente.client?.ordensServico.length > 0 
+    //   ? selectedCliente.client.ordensServico.join(', ') 
+    //   : 'Nenhuma ordem de serviço no momento.';
+    // doc.text(`Ordens de Serviço: ${ordensServico}`, 10, 70);
+
+    doc.save(`${cliente.client?.nomeFantasia}_dados_cliente.pdf`);
+
+  }
 
   return (
     <div className="clientes-container">
@@ -121,24 +172,26 @@ const Clientes: React.FC = () => {
                   <TableCell>Nome</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Telefone</TableCell>
-                  <TableCell>CEP</TableCell>
+                  <TableCell>Cidade</TableCell>
                   <TableCell>Ações</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {clientes.map(cliente => (
                   <TableRow key={cliente.id}>
-                    <TableCell>{cliente.codigo}</TableCell>
-                    <TableCell>{cliente.nomeFantasia}</TableCell>
-                    <TableCell>{cliente.email}</TableCell>
-                    <TableCell>{cliente.telefone}</TableCell>
-                    <TableCell>{cliente.cep}</TableCell>
+                    <TableCell>{cliente.id}</TableCell>
+                    <TableCell>{cliente.client.nomeFantasia}</TableCell>
+                    <TableCell>{cliente.client.email}</TableCell>
+                    <TableCell>{cliente.client.telefone}</TableCell>
+                    <TableCell>{cliente.cidades.name}</TableCell>
                     <TableCell>
                       <Box className="action-buttons">
-                        <Button variant="contained" color="info" onClick={() => handleVerMais(cliente)}>Visualizar</Button>
-                        <Button variant="contained" color="success">Imprimir</Button>
-                        <Button variant="contained" color="warning">Editar</Button>
-                        <Button variant="contained" color="error">Excluir</Button>
+                        <Button variant="contained" color="info" 
+                          onClick={() => handleVerMais(cliente)}>Visualizar</Button>
+                        <Button variant="contained" color="success"
+                          onClick={() => imprimirDadosCliente(cliente)}>Imprimir</Button>
+                        <Button variant="contained" color="warning"
+                          onClick={() => editarCliente(cliente.id)}>Editar</Button>
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -175,28 +228,28 @@ const Clientes: React.FC = () => {
         </div>
 
         {/* Modal de Detalhes do Cliente */}
-        <Modal
-          open={open}
-          onClose={handleClose}
-        >
-          <Box className="modal-box">
-            {selectedCliente && (
-              <div>
-                <Typography variant="h6">Detalhes do Cliente</Typography>
-                <Typography><strong>Nome:</strong> {selectedCliente.nomeFantasia}</Typography>
-                <Typography><strong>Email:</strong> {selectedCliente.email}</Typography>
-                <Typography><strong>Telefone:</strong> {selectedCliente.telefone}</Typography>
-                <Typography><strong>CEP:</strong> {selectedCliente.cep}</Typography>
-                <Typography><strong>Endereço:</strong> {selectedCliente.endereco}</Typography>
-                {/* Adicione outros detalhes conforme necessário */}
-                <Button onClick={handleClose}>Fechar</Button>
-              </div>
-            )}
-          </Box>
-        </Modal>
+        <Modal open={open} onClose={handleClose}>
+  <Box className="modal-box">
+    {selectedCliente && (
+      <div>
+        <Typography variant="h6">Detalhes do Cliente</Typography>
+        <Typography><strong>Nome:</strong> {selectedCliente.client?.nomeFantasia}</Typography>
+        <Typography><strong>Email:</strong> {selectedCliente.client?.email}</Typography>
+        <Typography><strong>Telefone:</strong> {selectedCliente.client?.telefone}</Typography>
+        <Typography><strong>Cidade:</strong> {selectedCliente.cidades?.name}</Typography>
+        <Typography><strong>Endereço:</strong> {selectedCliente.rua}, {selectedCliente.bairro}</Typography>
+        <Typography><strong>Ordens de serviço:</strong> {selectedCliente.client?.ordensServico.length > 0 
+          ? selectedCliente.client.ordensServico.join(', ') 
+          : 'Nenhuma ordem de serviço no momento.'}</Typography>
+        <Button onClick={handleClose}>Fechar</Button>
+      </div>
+    )}
+  </Box>
+</Modal>
       </div>
     </div>
   );
 }
 
 export default Clientes;
+
