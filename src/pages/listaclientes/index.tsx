@@ -238,9 +238,9 @@ const Clientes: React.FC = () => {
         <Typography><strong>Telefone:</strong> {selectedCliente.client?.telefone}</Typography>
         <Typography><strong>Cidade:</strong> {selectedCliente.cidades?.name}</Typography>
         <Typography><strong>Endereço:</strong> {selectedCliente.rua}, {selectedCliente.bairro}</Typography>
-        <Typography><strong>Ordens de serviço:</strong> {selectedCliente.client?.ordensServico.length > 0 
+        {/* <Typography><strong>Ordens de serviço:</strong> {selectedCliente.client?.ordensServico.length > 0 
           ? selectedCliente.client.ordensServico.join(', ') 
-          : 'Nenhuma ordem de serviço no momento.'}</Typography>
+          : 'Nenhuma ordem de serviço no momento.'}</Typography> */}
         <Button onClick={handleClose}>Fechar</Button>
       </div>
     )}
