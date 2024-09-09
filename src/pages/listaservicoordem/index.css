@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap');
+
+.ordem-servico-container {
+    display: flex;
+    height: 100vh;
+    background-color: #f4f6f9;
+}
+
+.sidebar {
+    width: 240px;
+    background-color: #2c3e50;
+    color: #fff;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.titulo-container {
+    display: flex;
+    align-items: center;
+}
+
+.vertical-line {
+    height: 40px;
+    width: 2px;
+    background-color: #fff;
+    margin-right: 10px;
+}
+
+.titulo {
+    font-size: 24px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
+}
+
+.profile-pic img {
+    border-radius: 50%;
+    margin-top: 16px;
+}
+
+.sidebar-nav {
+    margin-top: 24px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-nav ul li {
+    padding: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar-nav ul li.active,
+.sidebar-nav ul li:hover {
+    background-color: #34495e;
+}
+
+.content-container {
+    flex-grow: 1;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.back-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.top-left h2 {
+    margin: 0;
+}
+
+.top-right .add-ordem-button {
+    background-color: #2ecc71;
+}
+
+.full-line {
+    margin-top: 16px;
+    border: 0;
+    border-top: 1px solid #ddd;
+}
+
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.search-filter-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-bar {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+
+.filter-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+}
+
+.pagination button {
+    margin: 0 4px;
+}
+
+.active-page {
+    background-color: #3498db;
+    color: white;
+}
+
+.table-container {
+    margin-top: 16px;
+}
+
+.results-info {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: white;
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-box button {
+    margin-top: 16px;
+}
