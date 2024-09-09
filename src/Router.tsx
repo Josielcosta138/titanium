@@ -21,12 +21,7 @@ const Router : FC = () => {
                 <Route path="/listaCliente" element={<ListaCliente />} />
                 <Route path="/ordemServico" element={<CadastroOrdemServico />} />
                 <Route path="/listaServico" element={<ListaOrdemServico />} />
-
-                
-
-                
-                
-
+                <Route path="/ordemCliente/:id" element={<OrderCliente />} />
                 {/* <Route path="*" element={<Home />} /> */ }
             </Routes>
         </BrowserRouter>
