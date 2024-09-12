@@ -7,6 +7,7 @@ import OrderCliente from "./ordem/clientesordem";
 import ListaCliente from "./pages/listaclientes";
 import CadastroOrdemServico from "./ordem/ordemdeservico";
 import ListaOrdemServico from "./pages/listaservicoordem";
+import MateriaPrima from "./pages/materia";
 // import Home from "./pages/Home";
 
 const Router : FC = () => {
@@ -22,6 +23,9 @@ const Router : FC = () => {
                 <Route path="/ordemServico" element={<CadastroOrdemServico />} />
                 <Route path="/listaServico" element={<ListaOrdemServico />} />
                 <Route path="/ordemCliente/:id" element={<OrderCliente />} />
+                <Route path="/materiaPrima" element={<MateriaPrima />} />
+
+
                 {/* <Route path="*" element={<Home />} /> */ }
             </Routes>
         </BrowserRouter>
