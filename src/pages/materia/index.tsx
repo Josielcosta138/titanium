@@ -1,14 +1,14 @@
-import { FC, useState } from "react"
+import { FC, useState } from "react";
 import "./index.css";
 import { apiPost, STATUS_CODE } from "../../api/RestClient";
 
 const MateriaPrima: FC = () => {
-
     const [materia, setMateria] = useState<string>("");
     const [comprimento, setComprimento] = useState<number | undefined>();
     const [qtde, setQtde] = useState<number | undefined>();
     const [largura, setLargura] = useState<number | undefined>();
     const [codReferencia, setCodReferencia] = useState<string>("");
+    const [cores, setCores] = useState<string>("");
     const [materiaId, setIdMateria] = useState<number | undefined>();
 
     const salvarMateria = async () => {
@@ -17,7 +17,8 @@ const MateriaPrima: FC = () => {
             comprimento: comprimento,
             qtde: qtde,
             largura: largura,
-            codReferencia: codReferencia
+            codReferencia: codReferencia,
+            cores: cores
         };
 
         try {
@@ -29,14 +30,12 @@ const MateriaPrima: FC = () => {
                 localStorage.setItem("idMateria", materiaId);
             }
         } catch (error) {
-            console.error("erro ao salvar materia: ");
+            console.error("erro ao salvar materia: ", error);
         }
     };
 
     return (
-
         <div className="materia-container">
-
             <div className="sidebar">
                 <div className="titulo-container">
                     <div className="vertical-line"></div>
@@ -80,69 +79,82 @@ const MateriaPrima: FC = () => {
 
                 <div className="form-container">
                     <div className="materia-form">
-                        <div className="form-group">
-                            <label htmlFor="nome-materia">Nome do tecido</label>
-                            <input
-                                type="text"
-                                id="nome"
-                                value={materia}
-                                onChange={(e) => setMateria(e.target.value)}
-                                required
-                            />
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label htmlFor="nome">Nome do tecido</label>
+                                <input
+                                    type="text"
+                                    id="nome"
+                                    value={materia}
+                                    onChange={(e) => setMateria(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="comprimento">Comprimento</label>
+                                <input
+                                    type="number"
+                                    id="comprimento"
+                                    value={comprimento}
+                                    onChange={(e) => setComprimento(Number(e.target.value))}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="qtde">Quantidade em rolos</label>
+                                <input
+                                    type="number"
+                                    id="qtde"
+                                    value={qtde}
+                                    onChange={(e) => setQtde(Number(e.target.value))}
+                                />
+                            </div>
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="comprimento">Comprimento</label>
-                            <input
-                                type="number"
-                                id="nome"
-                                value={comprimento}
-                                onChange={(e) => setComprimento(Number(e.target.value))}
-                            />
-                        </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label htmlFor="largura">Largura</label>
+                                <input
+                                    type="text"
+                                    id="largura"
+                                    value={largura}
+                                    onChange={(e) => setLargura(Number(e.target.value))}
+                                />
+                            </div>
 
-                        <div className="form-group">
-                            <label htmlFor="qtde">Quantidade em rolos</label>
-                            <input
-                                type="number"
-                                id="qtde"
-                                value={qtde}
-                                onChange={(e) => setQtde(Number(e.target.value))}
-                            />
-                        </div>
+                            <div className="form-group">
+                                <label htmlFor="codReferencia">Código da Referência</label>
+                                <input
+                                    type="text"
+                                    id="codReferencia"
+                                    value={codReferencia}
+                                    onChange={(e) => setCodReferencia(e.target.value)}
+                                />
+                            </div>
 
-                        <div className="form-group">
-                            <label htmlFor="largura">Largura</label>
-                            <input
-                                type="text"
-                                id="largura"
-                                value={largura}
-                                onChange={(e) => setLargura(Number(e.target.value))}
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="codReferencia">Código da Referência</label>
-                            <input
-                                type="text"
-                                id="codReferencia"
-                                value={codReferencia}
-                                onChange={(e) => setCodReferencia(e.target.value)}
-                            />
+                            <div className="form-group">
+                                <label htmlFor="cores">Cores</label>
+                                <input
+                                    type="text"
+                                    id="cores"
+                                    value={cores}
+                                    onChange={(e) => setCores(e.target.value)}
+                                />
+                            </div>
                         </div>
 
                         <button
                             onClick={salvarMateria}
                             type="submit"
-                            className="submit-button" >
-                            Cadastrar Materia Prima </button>
-
+                            className="submit-button"
+                        >
+                            Cadastrar Materia Prima
+                        </button>
                     </div>
                 </div>
             </div>
-
         </div>
-
     );
 };
 
