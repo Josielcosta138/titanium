@@ -163,3 +163,24 @@
 .modal-box button {
     margin-top: 16px;
 }
+
+
+
+.status-iniciada {
+    background-color: #fae848; 
+}
+  
+.status-pendente {
+    background-color: #b3d9ff; 
+}
+  
+.status-finalizada {
+    background-color: #b3ffb3; 
+}
+  
+
+.status-cell {
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+  }

@@ -15,9 +15,13 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
+import { imprimirDadosOrdem } from '../../utils/generatePDF';
+import { IOrdemServico } from '../../Interface/OS/type';
+import { IOrdemCorte } from '../../Interface/OrdemCorte/type';
+import { IEnderecos } from '../../Interface/EnderecoCliente/type';
 
 const ListaOrdemServico: React.FC = () => {
-  const [ordens, setOrdens] = useState<any[]>([]);
+  const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedOrdem, setSelectedOrdem] = useState<any>(null);
   const [page, setPage] = useState(1);
@@ -26,7 +30,7 @@ const ListaOrdemServico: React.FC = () => {
 
   const carregarOrdens = async () => {
     try {
-      const response = await apiGet('/ordensServico/carregar');
+      const response = await apiGet('/ordemServico/carregar');
       if (response.status === STATUS_CODE.OK) {
         setOrdens(response.data);
         setTotalPages(response.data.totalPages);
@@ -36,7 +40,7 @@ const ListaOrdemServico: React.FC = () => {
     }
   };
 
-  const handleVerMais = (ordem: any) => {
+  const handleVerMais = (ordem: IOrdemServico) => {
     setSelectedOrdem(ordem);
     setOpen(true);
   };
@@ -58,27 +62,6 @@ const ListaOrdemServico: React.FC = () => {
     navigate(`/ordemServico/${id}`);
   };
 
-  const imprimirDadosOrdem = (ordem: any) => {
-    if (!ordem) {
-      console.error('Nenhuma ordem de serviço selecionada');
-      return;
-    }
-
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("Detalhes da Ordem de Serviço", 10, 10);
-    doc.setFontSize(12);
-    doc.text(`Código: ${ordem.id}`, 10, 20);
-    doc.text(`Descrição: ${ordem.descricao}`, 10, 30);
-    doc.text(`Data: ${ordem.data}`, 10, 40);
-    doc.text(`Status: ${ordem.status}`, 10, 50);
-    doc.save(`ordem_servico_${ordem.id}_dados.pdf`);
-  };
-
-  const excluirOrdem = (id: number) => {
-    // Implementar a lógica para excluir a ordem de serviço
-    console.log(`Excluir ordem de serviço com ID: ${id}`);
-  };
 
   return (
     <div className="ordem-servico-container">
@@ -153,10 +136,12 @@ const ListaOrdemServico: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Código</TableCell>
-                  <TableCell>Descrição</TableCell>
-                  <TableCell>Data</TableCell>
+                  <TableCell>Código OS</TableCell>
+                  <TableCell>Cod-Referência</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell>Cliente</TableCell>
+                  <TableCell>Data-entrada</TableCell>
+                  <TableCell>Data-entrega</TableCell>
                   <TableCell>Ações</TableCell>
                 </TableRow>
               </TableHead>
@@ -164,9 +149,25 @@ const ListaOrdemServico: React.FC = () => {
                 {ordens.map(ordem => (
                   <TableRow key={ordem.id}>
                     <TableCell>{ordem.id}</TableCell>
-                    <TableCell>{ordem.descricao}</TableCell>
-                    <TableCell>{ordem.data}</TableCell>
-                    <TableCell>{ordem.status}</TableCell>
+                    <TableCell>{ordem.codReferenciaOs}</TableCell>
+                    <TableCell>
+                          <span
+                            className={`status-cell ${
+                              ordem.status === 'INICIADA'
+                                ? 'status-iniciada'
+                                : ordem.status === 'PENDENTE'
+                                ? 'status-pendente'
+                                : ordem.status === 'FINALIZADA'
+                                ? 'status-finalizada'
+                                : ''
+                            }`}
+                          >
+                            {ordem.status}
+                          </span>
+                    </TableCell>
+                    <TableCell>{ordem.cliente.razaoSocial}</TableCell>
+                    <TableCell>{ordem.dataEntrada}</TableCell>
+                    <TableCell>{ordem.dataEntrega}</TableCell>
                     <TableCell>
                       <Box className="action-buttons">
                         <Button variant="contained" color="info"
@@ -175,8 +176,6 @@ const ListaOrdemServico: React.FC = () => {
                           onClick={() => imprimirDadosOrdem(ordem)}>Imprimir</Button>
                         <Button variant="contained" color="warning"
                           onClick={() => editarOrdem(ordem.id)}>Editar</Button>
-                        <Button variant="contained" color="error"
-                          onClick={() => excluirOrdem(ordem.id)}>Excluir</Button>
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -215,14 +214,77 @@ const ListaOrdemServico: React.FC = () => {
         <Modal open={open} onClose={handleClose}>
           <Box className="modal-box">
             {selectedOrdem && (
-              <div>
-                <Typography variant="h6">Detalhes da Ordem de Serviço</Typography>
-                <Typography><strong>Código:</strong> {selectedOrdem.id}</Typography>
-                <Typography><strong>Descrição:</strong> {selectedOrdem.descricao}</Typography>
-                <Typography><strong>Data:</strong> {selectedOrdem.data}</Typography>
-                <Typography><strong>Status:</strong> {selectedOrdem.status}</Typography>
-                <Button onClick={handleClose}>Fechar</Button>
-              </div>
+             <div>
+             <Typography variant="h5">Detalhes da Ordem de Serviço</Typography>
+             <Typography><strong>*</strong> </Typography>
+             <Typography><strong>Código OS:</strong> {selectedOrdem.id}</Typography>
+             <Typography><strong>Quantidade de Rolos:</strong> {selectedOrdem.qtdeRolos}</Typography>
+             <Typography><strong>Data de Entrada:</strong> {selectedOrdem.dataEntrada}</Typography>
+             <Typography><strong>Data de Entrega:</strong> {selectedOrdem.dataEntrega}</Typography>
+             <Typography><strong>Quantidade de Peças:</strong> {selectedOrdem.qtdePecas}</Typography>
+             <Typography><strong>Quantidade de Material com Falhas:</strong> {selectedOrdem.qtdeMaterialFalhas}</Typography>
+             <Typography><strong>Quantidade de Material Restante:</strong> {selectedOrdem.qtdeMaterialRestante}</Typography>
+             <Typography><strong>Valor por Peça:</strong> {selectedOrdem.valorPorPeca}</Typography>
+             <Typography><strong>Valor Total:</strong> {selectedOrdem.valorTotal}</Typography>
+             <Typography><strong>Código de Referência:</strong> {selectedOrdem.codReferenciaOs}</Typography>
+             <Typography><strong>Modelo:</strong> {selectedOrdem.modelo}</Typography>
+             <Typography><strong>Número da Nota Fiscal:</strong> {selectedOrdem.numeorNotaFiscal}</Typography>
+             <Typography><strong>Observações:</strong> {selectedOrdem.campoObservacao}</Typography>
+             <Typography><strong>Status:</strong> {selectedOrdem.status}</Typography>
+             <Typography variant="h6">----------------------------------------------------------------</Typography>
+             <Typography variant="h6">Dados do Cliente</Typography>
+             <Typography><strong>Código do Cliente:</strong> {selectedOrdem.cliente.id}</Typography>
+             <Typography><strong>Razão Social:</strong> {selectedOrdem.cliente.razaoSocial}</Typography>
+             <Typography><strong>Nome Fantasia:</strong> {selectedOrdem.cliente.nomeFantasia}</Typography>
+             <Typography><strong>Email:</strong> {selectedOrdem.cliente.email}</Typography>
+             <Typography><strong>Telefone:</strong> {selectedOrdem.cliente.telefone}</Typography>
+             <Typography><strong>CNPJ:</strong> {selectedOrdem.cliente.cnpj}</Typography>
+             <Typography variant="h6">----------------------------------------------------------------</Typography>
+
+
+
+             {selectedOrdem.enderecosCliemte && selectedOrdem.enderecosCliemte.length > 0 && (
+            <div>
+              <Typography variant="h6">Endereços do Cliente</Typography>
+              {selectedOrdem.enderecosCliemte.map((endereco: IEnderecos, index: number) => (
+                <div key={index}>
+                  <Typography><strong>Código do endereço:</strong> {endereco.id}</Typography>
+                  <Typography><strong>Rua:</strong> {endereco.rua}</Typography>
+                  <Typography><strong>Bairro:</strong> {endereco.bairro}</Typography>
+                  {endereco.cidadeResponseDomList.map((cidadeInfo, cidadeIndex) => (
+                    <div key={cidadeIndex}>
+                      <Typography><strong>Cidade:</strong> {cidadeInfo.cidade.name}</Typography>
+                      <Typography><strong>Estado:</strong> {cidadeInfo.cidade.uf}</Typography>
+                    </div>
+                  ))}
+                  <Typography variant="h6">----------------------------------------------------------------</Typography>
+                </div>
+              ))}
+            </div>
+            )}
+
+             {selectedOrdem.ordensDeCorte && selectedOrdem.ordensDeCorte.length > 0 && (
+               <div>
+                 <Typography variant="h6">Materiais Usados na Ordem de Corte</Typography>
+                 {selectedOrdem.ordensDeCorte.map((ordemCorte: IOrdemCorte, index: number) => (
+                    <div key={index}>
+            <Typography><strong>Código Ordem de corte:</strong> {ordemCorte.id}</Typography>
+            <Typography><strong>Nome da Matéria-Prima:</strong> {ordemCorte.materiaPrima.nome}</Typography>
+            <Typography><strong>Comprimento:</strong> {ordemCorte.materiaPrima.comprimento}</Typography>
+            <Typography><strong>Quantidade:</strong> {ordemCorte.materiaPrima.qtde}</Typography>
+            <Typography><strong>Largura:</strong> {ordemCorte.materiaPrima.largura}</Typography>
+            <Typography><strong>Código de Referência:</strong> {ordemCorte.materiaPrima.codReferencia}</Typography>
+            <Typography variant="h6">----------------------------------------------------------------</Typography>
+            </div>
+            ))}
+
+               </div>
+             )}
+           
+             <Button onClick={handleClose}>Fechar</Button>
+           </div>
+           
+            
             )}
           </Box>
         </Modal>

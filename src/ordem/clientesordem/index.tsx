@@ -495,7 +495,8 @@ const salvarCidade = async (clienteId: any) => {
             <button 
                 onClick={gerenciarSalvar} 
                 type="submit" 
-                className="submit-button">Salvar Cliente</button>
+                className="submit-button">Salvar Cliente
+              </button>
              
              {/* Mensagem de sucesso */}
               <Modal
