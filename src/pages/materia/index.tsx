@@ -1,28 +1,31 @@
 import { FC, useState } from "react";
 import "./index.css";
 import { apiPost, STATUS_CODE } from "../../api/RestClient";
+import { IMateriaPrima } from "../../Interface/MateriaPrima/type";
+import { Alert, Box, Modal } from "@mui/material";
 
 const MateriaPrima: FC = () => {
-    const [materia, setMateria] = useState<string>("");
-    const [comprimento, setComprimento] = useState<number | undefined>();
-    const [qtde, setQtde] = useState<number | undefined>();
-    const [largura, setLargura] = useState<number | undefined>();
-    const [codReferencia, setCodReferencia] = useState<string>("");
-    const [cores, setCores] = useState<string>("");
-    const [materiaId, setIdMateria] = useState<number | undefined>();
+    const [nome, setNome] = useState<string>('');
+    const [comprimento, setComprimento] = useState<number>();
+    const [qtde, setQtde] = useState<number>();
+    const [largura, setLargura] = useState<number>();
+    const [codReferencia, setCodReferencia] = useState<string>('');
+    const [cores, setCores] = useState<string>('');
+    const [materiaId, setIdMateria] = useState<number>();
+    const [open, setOpen] = useState(false);
 
     const salvarMateria = async () => {
         const data = {
-            materia: materia,
+            nome: nome,
             comprimento: comprimento,
             qtde: qtde,
             largura: largura,
             codReferencia: codReferencia,
-            cores: cores
+            // cores: 'azul'
         };
 
         try {
-            const response = await apiPost(`materiaPrima/criarMateriaPrima`, data);
+            const response = await apiPost(`/materiaprima/criarMateriaPrima`, data);
 
             if (response.status === STATUS_CODE.CREATED) {
                 const materiaId = response.data.id;
@@ -85,8 +88,8 @@ const MateriaPrima: FC = () => {
                                 <input
                                     type="text"
                                     id="nome"
-                                    value={materia}
-                                    onChange={(e) => setMateria(e.target.value)}
+                                    value={nome}
+                                    onChange={(event) => setNome(event.target.value)}
                                     required
                                 />
                             </div>
@@ -151,6 +154,14 @@ const MateriaPrima: FC = () => {
                         >
                             Cadastrar Materia Prima
                         </button>
+                        <Modal
+                            open={open}
+                            onClose={() => setOpen(false)}
+                        >
+                        <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
+                            <Alert variant="filled" sx={{ mb: 2 }}>Matéria prima salvo com sucesso!</Alert>
+                        </Box>
+                    </Modal>
                     </div>
                 </div>
             </div>
