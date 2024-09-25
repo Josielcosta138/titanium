@@ -11,7 +11,7 @@ import MateriaPrima from "./pages/materia";
 import TelaInicial from "./pages/telaInicial";
 // import Home from "./pages/Home";
 
-const Router : FC = () => {
+const Router : FC = () => { 
     return(
         <BrowserRouter>
             <Routes>

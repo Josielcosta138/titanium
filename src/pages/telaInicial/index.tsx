@@ -220,4 +220,4 @@ const TelaInicial: React.FC = () => {
   );
 };
 
-export default TelaInicial;
+export default TelaInicial; 
