@@ -9,6 +9,7 @@ import CadastroOrdemServico from "./ordem/ordemdeservico";
 import ListaOrdemServico from "./pages/listaservicoordem";
 import MateriaPrima from "./pages/materia";
 import TelaInicial from "./pages/telaInicial";
+import Relatorios from "./pages/telaRelatorio";
 import OrdemCorte from "./pages/ordemCorte";
 // import Home from "./pages/Home";
 
@@ -27,6 +28,7 @@ const Router : FC = () => {
                 <Route path="/ordemCliente/:id" element={<OrderCliente />} />
                 <Route path="/materiaPrima" element={<MateriaPrima />} />
                 <Route path="/telaInicial" element={<TelaInicial />} />
+                <Route path="/relatorios" element={<Relatorios />} />
                 <Route path="/ordemCorte" element={<OrdemCorte />} />
 
 
