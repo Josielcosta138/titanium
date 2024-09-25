@@ -1,42 +1,54 @@
 import { FC, useState } from "react";
 import "./index.css";
 import { apiPost, STATUS_CODE } from "../../api/RestClient";
+import { IMateriaPrima } from "../../Interface/MateriaPrima/type";
+import { Alert, Box, Modal } from "@mui/material";
+
+
 
 const MateriaPrima: FC = () => {
-    const [materia, setMateria] = useState<string>("");
-    const [comprimento, setComprimento] = useState<number | undefined>();
-    const [qtde, setQtde] = useState<number | undefined>();
-    const [largura, setLargura] = useState<number | undefined>();
-    const [codReferencia, setCodReferencia] = useState<string>("");
-    const [cores, setCores] = useState<string>("");
-    const [materiaId, setIdMateria] = useState<number | undefined>();
+    const [nome, setNome] = useState<string>('');
+    const [comprimento, setComprimento] = useState<number>();
+    const [qtde, setQtde] = useState<number>();
+    const [largura, setLargura] = useState<number>();
+    const [codReferencia, setCodReferencia] = useState<string>('');
+    const [cores, setCores] = useState<string>('');
+    const [materiaId, setIdMateria] = useState<number>();
+    const [open, setOpen] = useState(false);
 
     const salvarMateria = async () => {
         const data = {
-            materia: materia,
+            nome: nome,
             comprimento: comprimento,
             qtde: qtde,
             largura: largura,
             codReferencia: codReferencia,
-            cores: cores
+            // cores: 'azul'
         };
 
         try {
-            const response = await apiPost(`materiaPrima/criarMateriaPrima`, data);
+            const response = await apiPost(`/materiaprima/criarMateriaPrima`, data);
 
             if (response.status === STATUS_CODE.CREATED) {
                 const materiaId = response.data.id;
                 setIdMateria(materiaId);
-                localStorage.setItem("idMateria", materiaId);
+                localStorage.setItem("idMateria-materiaPrima", materiaId);
+                atualizarPagina()
+
             }
         } catch (error) {
             console.error("erro ao salvar materia: ", error);
         }
     };
 
+    const atualizarPagina = async () => {
+        window.location.reload();
+    }
+
+
     return (
         <div className="materia-container">
-            <div className="sidebar">
+            {/* <div className="sidebar">
                 <div className="titulo-container">
                     <div className="vertical-line"></div>
                     <div className="titulo">Titanium</div>
@@ -55,24 +67,24 @@ const MateriaPrima: FC = () => {
                         <li>Configurações</li>
                     </ul>
                 </nav>
-            </div>
+            </div> */}
 
             <div className="content-container">
                 <div className="top-bar">
                     <div className="top-left">
-                        <button className="back-button">
+                        {/* <button className="back-button">
                             <i className="fa fa-arrow-left"></i> Voltar
-                        </button>
+                        </button> */}
                         <h2>Cadastro de Materia Prima</h2>
                     </div>
-                    <div className="top-right">
+                    {/* <div className="top-right">
                         <button className="icon-button">
                             <i className="fa fa-cog"></i>
                         </button>
                         <button className="icon-button">
                             <i className="fa fa-bell"></i>
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
                 <hr className="full-line" />
@@ -85,8 +97,8 @@ const MateriaPrima: FC = () => {
                                 <input
                                     type="text"
                                     id="nome"
-                                    value={materia}
-                                    onChange={(e) => setMateria(e.target.value)}
+                                    value={nome}
+                                    onChange={(event) => setNome(event.target.value)}
                                     required
                                 />
                             </div>
@@ -149,8 +161,16 @@ const MateriaPrima: FC = () => {
                             type="submit"
                             className="submit-button"
                         >
-                            Cadastrar Materia Prima
+                            Salvar
                         </button>
+                        <Modal
+                            open={open}
+                            onClose={() => setOpen(false)}
+                        >
+                        <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
+                            <Alert variant="filled" sx={{ mb: 2 }}>Matéria prima salvo com sucesso!</Alert>
+                        </Box>
+                    </Modal>
                     </div>
                 </div>
             </div>
@@ -159,3 +179,7 @@ const MateriaPrima: FC = () => {
 };
 
 export default MateriaPrima;
+
+function onSave(idMateria: string) {
+    throw new Error("Function not implemented.");
+}
