@@ -1,0 +1,176 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f0f2f5;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #333;
+  padding: 20px;
+  color: #fff;
+}
+
+.titulo-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.vertical-line {
+  width: 5px;
+  height: 30px;
+  background-color: #fff;
+  margin-right: 10px;
+}
+
+.titulo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.profile-pic img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 20px;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-nav ul li {
+  padding: 10px;
+  border-bottom: 1px solid #444;
+}
+
+.sidebar-nav ul li:hover {
+  background-color: #444;
+  color: #fff;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+.dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.card {
+  width: 23%;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.card span {
+  font-size: 14px;
+  color: #666;
+}
+
+.card h1 {
+  font-size: 24px;
+  margin-top: 10px;
+}
+
+.blue {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.gray {
+  background-color: #ccc;
+  color: #333;
+}
+
+.orange {
+  background-color: #f39c12;
+  color: #fff;
+}
+
+.orange-light {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.button-container button {
+  width: 23%;
+  padding: 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #3498db;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.table-container {
+  margin-top: 20px;
+}
+
+.table-container h2 {
+  margin-bottom: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #f0f0f0;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+ 
+.pagination button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background-color: #333;
+  color: #fff;
+}
