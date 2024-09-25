@@ -160,6 +160,41 @@ body, html {
   color: #333;
 }
 
+
+.form-group-grade input {
+  width: 60%; 
+  max-width: 100px; 
+  padding: 5px; 
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+
+.form-group-grade label {
+  margin-bottom: 8px; 
+  display: block;
+  font-weight: bold;
+  color: #333;
+}
+
+
+.tamanho-container {
+  display: flex;
+  flex-wrap: wrap; 
+  justify-content: space-between; 
+}
+
+.form-group-grade {
+  flex: 0 0 23%; 
+  box-sizing: border-box; 
+  margin-bottom: 10px; 
+}
+
+
+
+
 .submit-button {
   padding: 10px 20px;
   background-color: #ff6600; /* Altere para laranja */

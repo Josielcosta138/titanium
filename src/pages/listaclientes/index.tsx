@@ -22,7 +22,7 @@ const Clientes: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<any>(null);
   const [page, setPage] = useState(1); // Estado para controle da página
-  const [totalPages, setTotalPages] = useState(1); // Estado para controle do total de páginas
+const [totalPages, setTotalPages] = useState(1);   // Estado para controle do total de páginas
   const navigate = useNavigate(); 
 
   const carregarClientes = async () => {
