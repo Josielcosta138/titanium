@@ -4,6 +4,8 @@ import { apiPost, STATUS_CODE } from "../../api/RestClient";
 import { IMateriaPrima } from "../../Interface/MateriaPrima/type";
 import { Alert, Box, Modal } from "@mui/material";
 
+
+
 const MateriaPrima: FC = () => {
     const [nome, setNome] = useState<string>('');
     const [comprimento, setComprimento] = useState<number>();
@@ -30,16 +32,23 @@ const MateriaPrima: FC = () => {
             if (response.status === STATUS_CODE.CREATED) {
                 const materiaId = response.data.id;
                 setIdMateria(materiaId);
-                localStorage.setItem("idMateria", materiaId);
+                localStorage.setItem("idMateria-materiaPrima", materiaId);
+                atualizarPagina()
+
             }
         } catch (error) {
             console.error("erro ao salvar materia: ", error);
         }
     };
 
+    const atualizarPagina = async () => {
+        window.location.reload();
+    }
+
+
     return (
         <div className="materia-container">
-            <div className="sidebar">
+            {/* <div className="sidebar">
                 <div className="titulo-container">
                     <div className="vertical-line"></div>
                     <div className="titulo">Titanium</div>
@@ -58,24 +67,24 @@ const MateriaPrima: FC = () => {
                         <li>Configurações</li>
                     </ul>
                 </nav>
-            </div>
+            </div> */}
 
             <div className="content-container">
                 <div className="top-bar">
                     <div className="top-left">
-                        <button className="back-button">
+                        {/* <button className="back-button">
                             <i className="fa fa-arrow-left"></i> Voltar
-                        </button>
+                        </button> */}
                         <h2>Cadastro de Materia Prima</h2>
                     </div>
-                    <div className="top-right">
+                    {/* <div className="top-right">
                         <button className="icon-button">
                             <i className="fa fa-cog"></i>
                         </button>
                         <button className="icon-button">
                             <i className="fa fa-bell"></i>
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
                 <hr className="full-line" />
@@ -152,7 +161,7 @@ const MateriaPrima: FC = () => {
                             type="submit"
                             className="submit-button"
                         >
-                            Cadastrar Materia Prima
+                            Salvar
                         </button>
                         <Modal
                             open={open}
@@ -170,3 +179,7 @@ const MateriaPrima: FC = () => {
 };
 
 export default MateriaPrima;
+
+function onSave(idMateria: string) {
+    throw new Error("Function not implemented.");
+}
