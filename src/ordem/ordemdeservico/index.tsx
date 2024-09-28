@@ -7,6 +7,7 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { Navigate, useNavigate } from 'react-router-dom';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import InfoIcon from '@mui/icons-material/Info';
+import ConfirmarOC from '../../components/ModelConfirmacaoOC';
 
 
 
@@ -31,6 +32,7 @@ const modalStyle = {
   boxShadow: 24,
   p: 4,
 };
+
 
 
 const CadastroOrdemServico: React.FC = () => {
@@ -59,7 +61,29 @@ const CadastroOrdemServico: React.FC = () => {
     }
   };
 
-  const salvarOrdemServico = async () => {
+
+
+  const [openConfirmarOC, setOpenConfirmarOC] = useState(false);
+
+  const validarChamadaDeOrdemCorte = () => {
+    setOpenConfirmarOC(true);
+  };
+
+  const handleCloseConfirmarOC = (confirmed: boolean) => {
+    setOpenConfirmarOC(false)
+  
+    if(confirmed) {
+      salvarOrdemServico(true);
+    } 
+    else { 
+      salvarOrdemServico(false);
+    }
+
+  };
+
+
+
+  const salvarOrdemServico = async (comOC : any) => {
     const data = {
       qtdeRolos: quantidadeRolo,
       dataEntrada: dataEntrada,
@@ -89,7 +113,11 @@ const CadastroOrdemServico: React.FC = () => {
         setOpen(true);
         setTimeout(() => {
           setOpen(false);
-          // atualizarPagina(); DESCOMENTAR APÓS FINALIZAR A ORDEM CORTE
+          if(comOC === true) {
+            rederionarCadastroOrdemCorte();
+          }else{
+            rederionarCadastroListagemDeOS();
+          }
 
         }, 5000);
       }
@@ -123,6 +151,10 @@ const CadastroOrdemServico: React.FC = () => {
 
   const rederionarCadastroOrdemCorte = async () => {
     navigate('/ordemCorte')
+  }
+
+  const rederionarCadastroListagemDeOS = async () => {
+    navigate('/listaServico')
   }
 
 
@@ -253,52 +285,6 @@ const CadastroOrdemServico: React.FC = () => {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="tecidos">Ordem de corte*</label>
-                  <TextField
-                    id="tecidos"
-                    // value={}
-                    // onChange={(event) => setTecidos(event.target.value)}
-                    fullWidth
-                    required
-                    sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
-                  />
-
-
-                  <Tooltip title="Cadastrar Ordem de corte" arrow>
-                      <AssignmentIcon 
-                        onClick={(rederionarCadastroOrdemCorte)} 
-                        sx={{ color: 'blue', 
-                              fontSize: '2.22rem', 
-                              marginLeft: '8px',
-                              cursor: 'pointer',
-                                '&:hover': {
-                                  opacity: 0.7, 
-                              }
-                            }} 
-                      />
-                  </Tooltip>
-
-                  <Tooltip 
-                    title={
-                      <span style={{ color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '1.2rem' }}>
-                          É obrigatório o cadastro da Ordem de corte para seguir o cadastro
-                      </span>
-                  }
-                    >
-                      <InfoIcon 
-                        sx={{ color: 'grey', 
-                              fontSize: '2.22rem', 
-                              marginLeft: '8px',
-                              cursor: 'pointer',
-                                '&:hover': {
-                                  opacity: 0.7, 
-                              }
-                            }} 
-                      />
-                  </Tooltip>
-         
-
-
                 </div>
                 <div className="form-group">
                   <label htmlFor="quantidadeRolo">Quantidade de Rolo*</label>
@@ -311,15 +297,6 @@ const CadastroOrdemServico: React.FC = () => {
                     required
                     sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
                   />
-                </div>
-                <div className="form-group">
-                  <Button
-                    variant="outlined"
-                    // onClick={() => setOpenGrade(true)}
-                    sx={{ marginTop: 1 }}
-                  >
-                    Selecionar Grade
-                  </Button>
                 </div>
               </div>
               <div className="form-row">
@@ -488,11 +465,12 @@ const CadastroOrdemServico: React.FC = () => {
               <div className="form-footer">
                 <Button
                   variant="contained"
-                  onClick={salvarOrdemServico}
+                  onClick={validarChamadaDeOrdemCorte}
                   sx={{ backgroundColor: '#1976d2', color: 'white', marginTop: 2 }}
                 >
                   Salvar Ordem de Serviço
                 </Button>
+                <ConfirmarOC open={openConfirmarOC} onClose={handleCloseConfirmarOC} />
               </div>
             </div>
           </div>

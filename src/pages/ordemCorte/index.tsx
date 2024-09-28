@@ -89,8 +89,12 @@ const OrdemCorte: FC = () => {
 
 
 
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    const handleNext = async () => {
+        if (activeStep === steps.length - 1) {
+            await salvarOrdemCorte();
+        } else {
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
     };
 
     const handleBack = () => {
@@ -98,7 +102,7 @@ const OrdemCorte: FC = () => {
     };
 
     const handleReset = () => {
-        setActiveStep(0);
+        listaOrdemServico();
     };
 
     const handleNavigateToMateriaPrima = () => {
@@ -115,8 +119,9 @@ const OrdemCorte: FC = () => {
     };
 
 
-    const atualizarPagina = async () => {
-        window.location.reload();
+    const listaOrdemServico = async () => {
+        navigate(`/listaServico`)
+
     }
 
     const YourComponent = () => {
@@ -160,20 +165,8 @@ const OrdemCorte: FC = () => {
         };
 
         localStorage.setItem('idGrade', JSON.stringify(updatedGrades));
-        // Atualiza o estado de tamanho selecionado e seu ID
-        // setSelectedGrade([tamanhoId]);
-        // setTamanhoGradeId(tamanhoId);
     };
     
-
-    const GerenciadorDeProcessos = async () => {
-        // Salvar OS -> 
-        // Salvar OC (ID OS) -> 
-        // Salvar OC-TAM (ID OC)
-
-
-
-    }
 
 
     // -------------- MÉTODOS CARREGAR - SALVAR ------------------- 
@@ -207,7 +200,7 @@ const OrdemCorte: FC = () => {
                 setOpen(true);
                 setTimeout(() => {
                     setOpen(false);
-                    atualizarPagina()
+                    localStorage.clear();
                 }, 5000);
             }
         } catch (error) {
@@ -230,10 +223,8 @@ const OrdemCorte: FC = () => {
             if (response.status === STATUS_CODE.CREATED) {
                 const idOrdemCorte = response.data.id;
                 setOpen(true);
-                setTimeout(() => {
-                    setOpen(false);
-                    salvarOrdemCorteTamanhos(idOrdemCorte);
-                }, 5000);
+                await salvarOrdemCorteTamanhos(idOrdemCorte);
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
             }
         } catch (error) {
             console.error("Erro ao salvar ordem de corte:", error);
@@ -265,7 +256,7 @@ const OrdemCorte: FC = () => {
                                         <StepLabel>
                                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                 {index === 0 && (
-                                                    <Button onClick={handleNavigateToMateriaPrima} sx={{ mr: 1 }}>
+                                                    <Button onClick={handleNext} sx={{ mr: 1 }}>
                                                         <AddIcon />
                                                     </Button>
                                                 )}
@@ -278,9 +269,15 @@ const OrdemCorte: FC = () => {
 
                             {activeStep === steps.length ? (
                                 <React.Fragment>
-                                    <Typography sx={{ mt: 2, mb: 1, display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
-                                        Todas as etapas concluídas foram concluídas!
-                                        <CheckIcon sx={{ color: 'green', fontSize: 30, ml: 1 }} />
+                                    <Typography sx={{ 
+                                            mt: 2, 
+                                            mb: 1, 
+                                            display: 'flex', 
+                                            fontSize: '15px', 
+                                            alignItems: 'center', 
+                                            fontWeight: 'bold' }}
+                                        >Todas as etapas foram concluídas com sucesso!
+                                        <CheckIcon sx={{ color: 'green', fontSize: 40, ml: 1 }} />
                                     </Typography>
                                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                                         <Box sx={{ flex: '1 1 auto' }} />
@@ -296,7 +293,7 @@ const OrdemCorte: FC = () => {
                                         </Button>
                                         <Box sx={{ flex: '1 1 auto' }} />
                                         <Button onClick={handleNext}>
-                                            {activeStep === steps.length - 1 ? 'Finalizar' : 'Próximo'}
+                                            {activeStep === steps.length - 1 ? 'Salvar corte' : 'Próximo'}
                                         </Button>
                                     </Box>
                                 </React.Fragment>
@@ -396,22 +393,6 @@ const OrdemCorte: FC = () => {
                                 </div>
                             )}
 
-
-                            {activeStep === steps.length - 1 && (
-                                <button
-                                    type="submit"
-                                    className="submit-button"
-                                    onClick={salvarOrdemCorte}
-                                >
-                                    Salvar ordem de corte
-                                </button>
-                            )}
-
-                            <Modal open={open} onClose={() => setOpen(false)}>
-                                <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
-                                    <Alert variant="filled" sx={{ mb: 2 }}>Matéria prima salva com sucesso!</Alert>
-                                </Box>
-                            </Modal>
                         </Box>
                     </div>
                 </div>
