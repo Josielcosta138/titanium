@@ -30,7 +30,7 @@ const Router : FC = () => {
                 <Route path="/telaInicial" element={<TelaInicial />} />
                 <Route path="/relatorios" element={<Relatorios />} />
                 <Route path="/ordemCorte" element={<OrdemCorte />} />
-
+                <Route path="/ordemServico/:id" element={<CadastroOrdemServico />} />
 
               
             </Routes>

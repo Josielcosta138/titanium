@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
-import { apiGet, STATUS_CODE } from '../../api/RestClient';
+import { apiGet, apiPut, STATUS_CODE } from '../../api/RestClient';
 import {
   Box,
   Button,
@@ -29,6 +29,8 @@ const ListaOrdemServico: React.FC = () => {
   const [page, setPage] = useState(1);
   const [ordenTeste, setOrdemTeste] = useState<any>(null);
   const [totalPages, setTotalPages] = useState(1);
+  const [status, setStatus] = useState<string>(''); 
+  const [botoesDesabilitados, setBotoesDesabilitados] = useState(false);
   const navigate = useNavigate();
 
   const carregarOrdens = async () => {
@@ -59,6 +61,7 @@ const ListaOrdemServico: React.FC = () => {
 
 
   const rederionarCadastroOrdemCorte = async (idOc : number) => {
+    localStorage.setItem("statusOC", 'PENDENTE');
     localStorage.setItem("ordemServicoId", idOc.toString());
     navigate('/ordemCorte')
   };
@@ -68,9 +71,37 @@ const ListaOrdemServico: React.FC = () => {
     carregarOrdens();
   }, [page]);
 
+
+
   const editarOrdem = (id: number) => {
+    localStorage.setItem('idOS', id.toString());
+
+    const ordemAtual = ordens.find(ordem => ordem.id === id);
+    if (ordemAtual) {
+        localStorage.setItem('statusAtual', ordemAtual.status);
+    }    
     navigate(`/ordemServico/${id}`);
   };
+
+
+
+  
+  const atualizarStatusDaOs = async (id: number) => {
+    const data = {
+        status: "FINALIZADA",
+    };
+
+    try {
+        const response = await apiPut(`ordemServico/atualizarStatusOs/${id}`, data);
+  
+        if (response.status === STATUS_CODE.OK) {
+          carregarOrdens();
+        }
+      } catch (error) {
+        console.error("Erro ao salvar ordem de serviço:", error);
+      }
+  }
+
 
 
   return (
@@ -105,7 +136,7 @@ const ListaOrdemServico: React.FC = () => {
             <h2>Ordens de Serviço</h2>
           </div>
           <div className="top-right">
-            <Button variant="contained" color="warning" className="add-ordem-button">Cadastrar OS</Button>
+            <Button variant="contained" color="warning" className="add-ordem-button-os">Cadastrar OS</Button>
           </div>
         </div>
 
@@ -174,21 +205,38 @@ const ListaOrdemServico: React.FC = () => {
                           >
                             {ordem.status}
                           </span>
+                          
                     </TableCell>
                     <TableCell>{ordem.cliente.razaoSocial}</TableCell>
                     <TableCell>{ordem.dataEntrada}</TableCell>
                     <TableCell>{ordem.dataEntrega}</TableCell>
                     <TableCell>
                       <Box className="action-buttons">
-                        <Button variant="contained" color="info"
-                          onClick={() => handleVerMais(ordem)}>Visualizar</Button>
-
-                        <Button variant="contained" color="success"
-                          onClick={() => rederionarCadastroOrdemCorte(ordem.id)} >Cadastrar OC</Button>
-
-                        <Button variant="contained" color="warning"
-                          onClick={() => editarOrdem(ordem.id)}>Editar</Button>
+                        <Button 
+                          variant="contained" color="info"
+                          onClick={() => handleVerMais(ordem)}
+                          >Visualizar
+                        </Button>
+                        <Button 
+                          variant="contained" color='secondary'
+                          onClick={() => rederionarCadastroOrdemCorte(ordem.id)} 
+                          disabled={ordem.status === 'FINALIZADA'} 
+                          >Cadastrar OC
+                        </Button>
+                        <Button 
+                          variant="contained" color="warning"
+                          onClick={() => editarOrdem(ordem.id)} 
+                          disabled={ordem.status === 'FINALIZADA'} 
+                          >Editar
+                        </Button>
+                        <Button 
+                          variant="contained" color="success"
+                          onClick={() => atualizarStatusDaOs(ordem.id)} 
+                          disabled={ordem.status === 'FINALIZADA'} 
+                          >Finalizar
+                        </Button>
                       </Box>
+                      
                     </TableCell>
                   </TableRow>
                 ))}

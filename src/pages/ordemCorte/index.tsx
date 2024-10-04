@@ -16,7 +16,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import MateriaPrima from "../materia";
-import { apiGet, apiPost, STATUS_CODE } from "../../api/RestClient";
+import { apiGet, apiPost, apiPut, STATUS_CODE } from "../../api/RestClient";
 import { IMateriaPrima } from "../../Interface/MateriaPrima/type";
 import {
     Table,
@@ -27,22 +27,17 @@ import {
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import Stack from '@mui/material/Stack';
-
+import { stat } from "fs";
 
 
 
 const OrdemCorte: FC = () => {
     const [open, setOpen] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
-    const [servicoId, setServicoId] = useState<number>();
     const [materiaPrimaId, setMateriaPrimaId] = useState<number>();
-    const [tamanhoGradeId, setTamanhoGradeId] = useState<number>();
-    const [ordemDeCorteId, setOrdemDeCorteId] = useState<number>();
     const [materiasPrimas, setMateriasPrimas] = useState<IMateriaPrima[]>([]);
     const [totalPages, setTotalPages] = useState(1);
-    const [selectedMateriaPrima, setSelectedMateriaPrima] = useState<any>(null);
     const [selectedMaterias, setSelectedMaterias] = useState<number[]>([]);
-    const [selectedGrade, setSelectedGrade] = useState<number[]>([]);
     const [page, setPage] = useState(1);
     const [tamanhos, setTamanhos] = useState([
         { id: 1, nome: 'PP' },
@@ -78,13 +73,10 @@ const OrdemCorte: FC = () => {
         { id: 31, nome: '60' },
         { id: 32, nome: '62' },
     ]);
-    
     const [quantidade, setQuantidades] = useState<{ [key: number]: number }>({});
-
     const navigate = useNavigate();
     const steps = ['Cadastrar Matéria prima', 'Cadastrar Grade', 'Finalizar ordem de corte'];
-
-
+    const [status, setStatus] = useState<string>(''); 
 
 
 
@@ -105,12 +97,10 @@ const OrdemCorte: FC = () => {
         listaOrdemServico();
     };
 
-    const handleNavigateToMateriaPrima = () => {
-        navigate('/materiaPrima');
-    };
 
-    const editarMateriaPrima = (id: number) => {
-        // navigate(`/ordemCliente/${id}`);
+    const editarMateriaPrima = async (id: number) => {
+        localStorage.setItem('idMateriaPrima', id.toString());
+        window.location.reload();
     };
 
 
@@ -211,6 +201,7 @@ const OrdemCorte: FC = () => {
 
 
     const salvarOrdemCorte = async () => {
+        localStorage.setItem("statusGeradaOC", 'INICIADA');
 
         const ordemServicoId = localStorage.getItem('ordemServicoId');
         const data = {
@@ -224,12 +215,35 @@ const OrdemCorte: FC = () => {
                 const idOrdemCorte = response.data.id;
                 setOpen(true);
                 await salvarOrdemCorteTamanhos(idOrdemCorte);
+                atualizarStatusDaOs();
                 setActiveStep((prevActiveStep) => prevActiveStep + 1);
             }
         } catch (error) {
             console.error("Erro ao salvar ordem de corte:", error);
         }
     };
+
+
+    const atualizarStatusDaOs = async () => {
+
+        const idOs = localStorage.getItem('ordemServicoId');
+        const statusOC = localStorage.getItem('statusOC');
+        const data = {
+            status: statusOC,
+        };
+
+        try {
+            const response = await apiPut(`ordemServico/atualizarStatusOs/${idOs}`, data);
+      
+            if (response.status === STATUS_CODE.OK) {
+                console.log(`Status atualizado:`);
+            }
+          } catch (error) {
+            console.error("Erro ao salvar ordem de serviço:", error);
+          }
+    }
+
+
 
     return (
         <div className="materia-container">
