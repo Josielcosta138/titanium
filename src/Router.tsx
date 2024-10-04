@@ -11,6 +11,7 @@ import MateriaPrima from "./pages/materia";
 import TelaInicial from "./pages/telaInicial";
 import Relatorios from "./pages/telaRelatorio";
 import OrdemCorte from "./pages/ordemCorte";
+import PerfilConfig from "./pages/telaconfigperfil";
 // import Home from "./pages/Home";
 
 const Router : FC = () => { 
@@ -30,9 +31,8 @@ const Router : FC = () => {
                 <Route path="/telaInicial" element={<TelaInicial />} />
                 <Route path="/relatorios" element={<Relatorios />} />
                 <Route path="/ordemCorte" element={<OrdemCorte />} />
+                <Route path="/perfil" element={<PerfilConfig />} />
                 <Route path="/ordemServico/:id" element={<CadastroOrdemServico />} />
-
-              
             </Routes>
         </BrowserRouter>
     );
