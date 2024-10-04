@@ -16,7 +16,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import MateriaPrima from "../materia";
-import { apiGet, apiPost, STATUS_CODE } from "../../api/RestClient";
+import { apiGet, apiPost, apiPut, STATUS_CODE } from "../../api/RestClient";
 import { IMateriaPrima } from "../../Interface/MateriaPrima/type";
 import {
     Table,
@@ -27,22 +27,17 @@ import {
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import Stack from '@mui/material/Stack';
-
+import { stat } from "fs";
 
 
 
 const OrdemCorte: FC = () => {
     const [open, setOpen] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
-    const [servicoId, setServicoId] = useState<number>();
     const [materiaPrimaId, setMateriaPrimaId] = useState<number>();
-    const [tamanhoGradeId, setTamanhoGradeId] = useState<number>();
-    const [ordemDeCorteId, setOrdemDeCorteId] = useState<number>();
     const [materiasPrimas, setMateriasPrimas] = useState<IMateriaPrima[]>([]);
     const [totalPages, setTotalPages] = useState(1);
-    const [selectedMateriaPrima, setSelectedMateriaPrima] = useState<any>(null);
     const [selectedMaterias, setSelectedMaterias] = useState<number[]>([]);
-    const [selectedGrade, setSelectedGrade] = useState<number[]>([]);
     const [page, setPage] = useState(1);
     const [tamanhos, setTamanhos] = useState([
         { id: 1, nome: 'PP' },
@@ -78,19 +73,20 @@ const OrdemCorte: FC = () => {
         { id: 31, nome: '60' },
         { id: 32, nome: '62' },
     ]);
-    
     const [quantidade, setQuantidades] = useState<{ [key: number]: number }>({});
-
     const navigate = useNavigate();
     const steps = ['Cadastrar Matéria prima', 'Cadastrar Grade', 'Finalizar ordem de corte'];
+    const [status, setStatus] = useState<string>(''); 
 
 
 
 
-
-
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    const handleNext = async () => {
+        if (activeStep === steps.length - 1) {
+            await salvarOrdemCorte();
+        } else {
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
     };
 
     const handleBack = () => {
@@ -98,15 +94,13 @@ const OrdemCorte: FC = () => {
     };
 
     const handleReset = () => {
-        setActiveStep(0);
+        listaOrdemServico();
     };
 
-    const handleNavigateToMateriaPrima = () => {
-        navigate('/materiaPrima');
-    };
 
-    const editarMateriaPrima = (id: number) => {
-        // navigate(`/ordemCliente/${id}`);
+    const editarMateriaPrima = async (id: number) => {
+        localStorage.setItem('idMateriaPrima', id.toString());
+        window.location.reload();
     };
 
 
@@ -115,8 +109,9 @@ const OrdemCorte: FC = () => {
     };
 
 
-    const atualizarPagina = async () => {
-        window.location.reload();
+    const listaOrdemServico = async () => {
+        navigate(`/listaServico`)
+
     }
 
     const YourComponent = () => {
@@ -160,20 +155,8 @@ const OrdemCorte: FC = () => {
         };
 
         localStorage.setItem('idGrade', JSON.stringify(updatedGrades));
-        // Atualiza o estado de tamanho selecionado e seu ID
-        // setSelectedGrade([tamanhoId]);
-        // setTamanhoGradeId(tamanhoId);
     };
     
-
-    const GerenciadorDeProcessos = async () => {
-        // Salvar OS -> 
-        // Salvar OC (ID OS) -> 
-        // Salvar OC-TAM (ID OC)
-
-
-
-    }
 
 
     // -------------- MÉTODOS CARREGAR - SALVAR ------------------- 
@@ -207,7 +190,7 @@ const OrdemCorte: FC = () => {
                 setOpen(true);
                 setTimeout(() => {
                     setOpen(false);
-                    atualizarPagina()
+                    localStorage.clear();
                 }, 5000);
             }
         } catch (error) {
@@ -218,6 +201,7 @@ const OrdemCorte: FC = () => {
 
 
     const salvarOrdemCorte = async () => {
+        localStorage.setItem("statusGeradaOC", 'INICIADA');
 
         const ordemServicoId = localStorage.getItem('ordemServicoId');
         const data = {
@@ -230,15 +214,36 @@ const OrdemCorte: FC = () => {
             if (response.status === STATUS_CODE.CREATED) {
                 const idOrdemCorte = response.data.id;
                 setOpen(true);
-                setTimeout(() => {
-                    setOpen(false);
-                    salvarOrdemCorteTamanhos(idOrdemCorte);
-                }, 5000);
+                await salvarOrdemCorteTamanhos(idOrdemCorte);
+                atualizarStatusDaOs();
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
             }
         } catch (error) {
             console.error("Erro ao salvar ordem de corte:", error);
         }
     };
+
+
+    const atualizarStatusDaOs = async () => {
+
+        const idOs = localStorage.getItem('ordemServicoId');
+        const statusOC = localStorage.getItem('statusOC');
+        const data = {
+            status: statusOC,
+        };
+
+        try {
+            const response = await apiPut(`ordemServico/atualizarStatusOs/${idOs}`, data);
+      
+            if (response.status === STATUS_CODE.OK) {
+                console.log(`Status atualizado:`);
+            }
+          } catch (error) {
+            console.error("Erro ao salvar ordem de serviço:", error);
+          }
+    }
+
+
 
     return (
         <div className="materia-container">
@@ -265,7 +270,7 @@ const OrdemCorte: FC = () => {
                                         <StepLabel>
                                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                 {index === 0 && (
-                                                    <Button onClick={handleNavigateToMateriaPrima} sx={{ mr: 1 }}>
+                                                    <Button onClick={handleNext} sx={{ mr: 1 }}>
                                                         <AddIcon />
                                                     </Button>
                                                 )}
@@ -278,9 +283,15 @@ const OrdemCorte: FC = () => {
 
                             {activeStep === steps.length ? (
                                 <React.Fragment>
-                                    <Typography sx={{ mt: 2, mb: 1, display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
-                                        Todas as etapas concluídas foram concluídas!
-                                        <CheckIcon sx={{ color: 'green', fontSize: 30, ml: 1 }} />
+                                    <Typography sx={{ 
+                                            mt: 2, 
+                                            mb: 1, 
+                                            display: 'flex', 
+                                            fontSize: '15px', 
+                                            alignItems: 'center', 
+                                            fontWeight: 'bold' }}
+                                        >Todas as etapas foram concluídas com sucesso!
+                                        <CheckIcon sx={{ color: 'green', fontSize: 40, ml: 1 }} />
                                     </Typography>
                                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                                         <Box sx={{ flex: '1 1 auto' }} />
@@ -296,7 +307,7 @@ const OrdemCorte: FC = () => {
                                         </Button>
                                         <Box sx={{ flex: '1 1 auto' }} />
                                         <Button onClick={handleNext}>
-                                            {activeStep === steps.length - 1 ? 'Finalizar' : 'Próximo'}
+                                            {activeStep === steps.length - 1 ? 'Salvar corte' : 'Próximo'}
                                         </Button>
                                     </Box>
                                 </React.Fragment>
@@ -396,22 +407,6 @@ const OrdemCorte: FC = () => {
                                 </div>
                             )}
 
-
-                            {activeStep === steps.length - 1 && (
-                                <button
-                                    type="submit"
-                                    className="submit-button"
-                                    onClick={salvarOrdemCorte}
-                                >
-                                    Salvar ordem de corte
-                                </button>
-                            )}
-
-                            <Modal open={open} onClose={() => setOpen(false)}>
-                                <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
-                                    <Alert variant="filled" sx={{ mb: 2 }}>Matéria prima salva com sucesso!</Alert>
-                                </Box>
-                            </Modal>
                         </Box>
                     </div>
                 </div>

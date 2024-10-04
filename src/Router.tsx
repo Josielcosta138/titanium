@@ -32,9 +32,7 @@ const Router : FC = () => {
                 <Route path="/relatorios" element={<Relatorios />} />
                 <Route path="/ordemCorte" element={<OrdemCorte />} />
                 <Route path="/perfil" element={<PerfilConfig />} />
-
-
-              
+                <Route path="/ordemServico/:id" element={<CadastroOrdemServico />} />
             </Routes>
         </BrowserRouter>
     );

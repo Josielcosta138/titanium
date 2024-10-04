@@ -1,36 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
-import { apiGet, apiPost, STATUS_CODE } from '../../api/RestClient';
-import { Alert, Box, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Button, Select, MenuItem, InputLabel, FormControl, Checkbox, FormControlLabel, InputAdornment, Tooltip } from '@mui/material';
+import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../api/RestClient';
+import { Alert, Box, Modal,  TextField, Button, Select, MenuItem, FormControl, Checkbox, FormControlLabel, Tooltip } from '@mui/material';
 import { IClientes } from '../../Interface/Cliente/type';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { Navigate, useNavigate } from 'react-router-dom';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import InfoIcon from '@mui/icons-material/Info';
+import ConfirmarOC from '../../components/ModelConfirmacaoOC';
+import { format, formatDate, parse, parseISO  } from "date-fns";
 
 
-
-const handleGradeChange = (size: any, quantity: number) => {
-  setGrade((prevGrade: any[]) => {
-    const updatedGrade = prevGrade.filter(g => g.size !== size);
-    if (quantity > 0) {
-      updatedGrade.push({ size, quantity });
-    }
-    return updatedGrade;
-  });
-};
-
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
 
 
 const CadastroOrdemServico: React.FC = () => {
@@ -48,18 +26,89 @@ const CadastroOrdemServico: React.FC = () => {
   const [dataEntrega, setdataEntrega] = useState<string>(''); 
   const [observacao, setObservacao] = useState<string>('');
   const [status, setStatus] = useState<string>(''); 
+  const [statusAtt, setStatusAtt] = useState<string>('');
   const [open, setOpen] = useState(false);
   const [clientes, setClientes] = useState<IClientes[]>([]);
   const [ordemServicoId, setordemServicoId] = useState<number>();
+  const [openConfirmarOC, setOpenConfirmarOC] = useState(false);
   const navigate = useNavigate();
 
-  const calcularValorTotal = () => {
-    if (quantidadePecas && valorPecas) {
-      setValorTotal(quantidadePecas * valorPecas);
+  
+
+  useEffect(() => {
+    const idOS = localStorage.getItem('idOS');
+    if (idOS) {
+      carregarDadosOrdemServico(Number(idOS));
+    }
+  }, []);
+
+
+  const carregarDadosOrdemServico = async (id: number) => {
+
+    try {
+      const respondeOS = await apiGet(`ordemServico/carregar/${id}`);
+      const dadosDaOs = respondeOS.data;
+
+      const formatData = (inputDate: string) => {
+        const date = parseISO(inputDate);
+        return format(date, 'dd/MM/yyyy');
+      };
+    
+        setQuantidadeRolo(dadosDaOs.qtdeRolos || 0);
+        setdataEntrada(dadosDaOs.dataEntrada ? formatData(dadosDaOs.dataEntrada) : "");
+        setdataEntrega(dadosDaOs.dataEntrega ? formatData(dadosDaOs.dataEntrega) : "");
+        setQuantidadePecas(dadosDaOs.qtdePecas || 0);
+        setQuantidadeFalhas(dadosDaOs.qtdeMaterialFalhas || 0.0);
+        setQuantidadeSobras(dadosDaOs.qtdeMaterialRestante || 0.0);
+        setValorPecas(dadosDaOs.valorPorPeca || 0.0);
+        setValorTotal(dadosDaOs.valorTotal || 0.0);
+        setCodReferenciaOs(dadosDaOs.codReferenciaOs || "");
+        setModelo(dadosDaOs.modelo || "");
+        setNotaFiscal(dadosDaOs.numeorNotaFiscal || 0);
+        setObservacao(dadosDaOs.campoObservacao || "");
+        setStatus(dadosDaOs.status || "");
+        setClienteId(dadosDaOs.cliente.id || 0);
+
+    } catch (error) {
+      console.error("Erro ao carregar dados do cliente e endereços:", error);
+    }
+
+
+  }
+
+
+  const validarChamadaDeOrdemCorte = () => {
+    const idOS = localStorage.getItem('idOS');
+      if(!idOS){
+        setOpenConfirmarOC(true);    
+      }else{
+        atualizarOrdemServico();
+      }
+  };
+
+
+  const handleCloseConfirmarOC = (confirmed: boolean) => {
+    setOpenConfirmarOC(false)
+  
+    if(confirmed) {
+      salvarOrdemServico(true);
+    } 
+    else { 
+      salvarOrdemServico(false);
     }
   };
 
-  const salvarOrdemServico = async () => {
+
+  const salvarOrdemServico = async (comOC : any) => {
+
+
+    let statusAtualizado = "INICIADA";
+    
+    if(comOC === true) {
+      statusAtualizado = "PENDENTE";
+    }
+    setStatusAtt(statusAtualizado);
+
     const data = {
       qtdeRolos: quantidadeRolo,
       dataEntrada: dataEntrada,
@@ -73,7 +122,7 @@ const CadastroOrdemServico: React.FC = () => {
       modelo: modelo,
       numeorNotaFiscal: notaFiscal,
       campoObservacao: observacao,
-      status: "PENDENTE",
+      status: statusAtualizado,
       clienteId: clienteId, 
     };
 
@@ -89,7 +138,11 @@ const CadastroOrdemServico: React.FC = () => {
         setOpen(true);
         setTimeout(() => {
           setOpen(false);
-          // atualizarPagina(); DESCOMENTAR APÓS FINALIZAR A ORDEM CORTE
+          if(comOC === true) {
+            rederionarCadastroOrdemCorte();
+          }else{
+            rederionarCadastroListagemDeOS();
+          }
 
         }, 5000);
       }
@@ -99,23 +152,63 @@ const CadastroOrdemServico: React.FC = () => {
   };
 
 
+  const atualizarOrdemServico = async () => {
+
+    const idOS = localStorage.getItem('idOS');
+    const statusOsAtual = localStorage.getItem('statusAtual');
+
+    const data = {
+      qtdeRolos: quantidadeRolo,
+      dataEntrada: dataEntrada,
+      dataEntrega: dataEntrega,
+      qtdePecas: quantidadePecas,
+      qtdeMaterialFalhas: quantidadeFalhas,
+      qtdeMaterialRestante: quantidadeSobras,
+      valorPorPeca: valorPecas,
+      valorTotal: valorTotal,
+      codReferenciaOs: codReferenciaOs ,
+      modelo: modelo,
+      numeorNotaFiscal: notaFiscal,
+      campoObservacao: observacao,
+      status: statusOsAtual,
+      clienteId: clienteId, 
+    };
+
+    try {
+      const response = await apiPut(`ordemServico/atualizarOS/${idOS}`, data);
+
+      if (response.status === STATUS_CODE.OK) {
+        localStorage.clear();
+        setOpen(true);
+        setTimeout(() => {
+          setOpen(false);
+           rederionarCadastroListagemDeOS();
+        }, 5000);
+      }
+    } catch (error) {
+      console.error("Erro ao salvar ordem de serviço:", error);
+    }
+  };
+
+
+  const calcularValorTotal = () => {
+    if (quantidadePecas && valorPecas) {
+      setValorTotal(quantidadePecas * valorPecas);
+    }
+  };
+
+
   const carregarClientes = async () => {
     try {
       const response = await apiGet(`endereco/carregar`);
       if (response.status === STATUS_CODE.OK) {
-
         setClientes(response.data);
       }
-
     } catch (error) {
       console.error("Erro ao carregar clientes:", error);
     }
   };
 
-
-  const atualizarPagina = async () => {
-    window.location.reload();
-  }
 
   const rederionarCadastroCliente = async () => {
     navigate('/ordemCliente')
@@ -123,6 +216,10 @@ const CadastroOrdemServico: React.FC = () => {
 
   const rederionarCadastroOrdemCorte = async () => {
     navigate('/ordemCorte')
+  }
+
+  const rederionarCadastroListagemDeOS = async () => {
+    navigate('/listaServico')
   }
 
 
@@ -135,8 +232,6 @@ const CadastroOrdemServico: React.FC = () => {
   useEffect(() => {
     carregarClientes();
   }, []);
-
-
 
 
   return (
@@ -253,52 +348,6 @@ const CadastroOrdemServico: React.FC = () => {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="tecidos">Ordem de corte*</label>
-                  <TextField
-                    id="tecidos"
-                    // value={}
-                    // onChange={(event) => setTecidos(event.target.value)}
-                    fullWidth
-                    required
-                    sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
-                  />
-
-
-                  <Tooltip title="Cadastrar Ordem de corte" arrow>
-                      <AssignmentIcon 
-                        onClick={(rederionarCadastroOrdemCorte)} 
-                        sx={{ color: 'blue', 
-                              fontSize: '2.22rem', 
-                              marginLeft: '8px',
-                              cursor: 'pointer',
-                                '&:hover': {
-                                  opacity: 0.7, 
-                              }
-                            }} 
-                      />
-                  </Tooltip>
-
-                  <Tooltip 
-                    title={
-                      <span style={{ color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '1.2rem' }}>
-                          É obrigatório o cadastro da Ordem de corte para seguir o cadastro
-                      </span>
-                  }
-                    >
-                      <InfoIcon 
-                        sx={{ color: 'grey', 
-                              fontSize: '2.22rem', 
-                              marginLeft: '8px',
-                              cursor: 'pointer',
-                                '&:hover': {
-                                  opacity: 0.7, 
-                              }
-                            }} 
-                      />
-                  </Tooltip>
-         
-
-
                 </div>
                 <div className="form-group">
                   <label htmlFor="quantidadeRolo">Quantidade de Rolo*</label>
@@ -311,15 +360,6 @@ const CadastroOrdemServico: React.FC = () => {
                     required
                     sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
                   />
-                </div>
-                <div className="form-group">
-                  <Button
-                    variant="outlined"
-                    // onClick={() => setOpenGrade(true)}
-                    sx={{ marginTop: 1 }}
-                  >
-                    Selecionar Grade
-                  </Button>
                 </div>
               </div>
               <div className="form-row">
@@ -361,19 +401,8 @@ const CadastroOrdemServico: React.FC = () => {
              <div className="form-section">
               <h3>Corte</h3>
                
-
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="larguraMinima">Largura Mínima*</label>
-                    <TextField
-                      id="larguraMinima"
-                      type="number"
-                      // value={larguraMinima}
-                      // onChange={(event) => setLarguraMinima(Number(event.target.value))}
-                      fullWidth
-                      required
-                      sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
-                    />
                   </div>
                   <div className="form-group">
                     <label htmlFor="notaFiscal">Nota Fiscal*</label>
@@ -488,11 +517,12 @@ const CadastroOrdemServico: React.FC = () => {
               <div className="form-footer">
                 <Button
                   variant="contained"
-                  onClick={salvarOrdemServico}
+                  onClick={validarChamadaDeOrdemCorte}
                   sx={{ backgroundColor: '#1976d2', color: 'white', marginTop: 2 }}
                 >
                   Salvar Ordem de Serviço
                 </Button>
+                <ConfirmarOC open={openConfirmarOC} onClose={handleCloseConfirmarOC} />
               </div>
             </div>
           </div>

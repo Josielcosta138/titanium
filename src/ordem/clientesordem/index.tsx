@@ -240,6 +240,7 @@ const salvarEndereco = async (clienteId: any, cidadeId: any) => {
       setOpen(true);
       setTimeout(() => {
         setOpen(false);
+        window.location.reload();
       }, 5000);
     }
   } catch (error) {
