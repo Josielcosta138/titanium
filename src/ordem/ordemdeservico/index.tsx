@@ -17,8 +17,8 @@ const CadastroOrdemServico: React.FC = () => {
   const [modelo, setModelo] = useState<string>('');
   const [quantidadeRolo, setQuantidadeRolo] = useState<number | ''>(''); 
   const [quantidadePecas, setQuantidadePecas] = useState<number | ''>('');
-  const [quantidadeFalhas, setQuantidadeFalhas] = useState<number | ''>('');
-  const [quantidadeSobras, setQuantidadeSobras] = useState<number | ''>(''); 
+  const [quantidadeFalhas, setQuantidadeFalhas] = useState<number | ''>(0);
+  const [quantidadeSobras, setQuantidadeSobras] = useState<number | ''>(0); 
   const [valorPecas, setValorPecas] = useState<number | ''>('');
   const [valorTotal, setValorTotal] = useState<number | ''>('');
   const [notaFiscal, setNotaFiscal] = useState<number | ''>(''); 
@@ -139,7 +139,8 @@ const CadastroOrdemServico: React.FC = () => {
         setTimeout(() => {
           setOpen(false);
           if(comOC === true) {
-            rederionarCadastroOrdemCorte();
+            localStorage.setItem("statusOCiniciada", 'PENDENTE');
+            rederionarCadastroOrdemCorte();            
           }else{
             rederionarCadastroListagemDeOS();
           }
@@ -223,12 +224,6 @@ const CadastroOrdemServico: React.FC = () => {
   }
 
 
-  const iniciaOrdemServico = async () => {
-    window.alert('Inicia ordem')
-  }
-
-
-
   useEffect(() => {
     carregarClientes();
   }, []);
@@ -273,8 +268,8 @@ const CadastroOrdemServico: React.FC = () => {
         <div className="action-bar">
           <button 
               className="service-list-button"
-              onClick={iniciaOrdemServico}
-              >Iniciar Serviços
+              onClick={rederionarCadastroListagemDeOS}
+              >Lista de OS's
           </button>
           <div className="filter-container">
             <input type="text" placeholder="Pesquisar..." className="search-bar" />

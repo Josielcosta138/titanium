@@ -82,25 +82,7 @@ const TelaInicial: React.FC = () => {
     navigate(`/ordemCliente/${id}`);
   }
 
-  const imprimirDadosCliente = (cliente: IClientes) => {
-    if (!cliente) {
-      console.error('Nenhum cliente selecionado');
-      return;
-    }
-
-    const doc = new jsPDF();
-
-    doc.setFontSize(16);
-    doc.text("Detalhes do Cliente", 10, 10);
-    doc.setFontSize(12);
-    doc.text(`Nome: ${cliente.client?.nomeFantasia || ''}`, 10, 20);
-    doc.text(`Email: ${cliente.client?.email || ''}`, 10, 30);
-    doc.text(`Telefone: ${cliente.client?.telefone || ''}`, 10, 40);
-    doc.text(`Cidade: ${cliente.cidades?.name || ''}`, 10, 50);
-    doc.text(`Endereço: ${cliente.rua || ''}, ${cliente.bairro || ''}`, 10, 60);
-
-    doc.save(`${cliente.client?.nomeFantasia}_dados_cliente.pdf`);
-  }
+  
 
   return (
     <div className="container">
@@ -145,19 +127,19 @@ const TelaInicial: React.FC = () => {
         </div>
         <div className="button-container">
           <button onClick={() => {
-            // Lógica para redirecionar para a página de Ordem de Serviço
+           
             console.log('Botão Ordem de Serviço clicado!');
           }}>Ordem de Serviço</button>
           <button onClick={() => {
-            // Lógica para redirecionar para a página de Lista de Serviço
+           
             console.log('Botão Lista de Serviço clicado!');
           }}>Lista de Serviço</button>
           <button onClick={() => {
-            // Lógica para redirecionar para a página de Clientes
+           
             console.log('Botão Clientes clicado!');
           }}>Clientes</button>
           <button onClick={() => {
-            // Lógica para redirecionar para a página de Relatórios
+          
             console.log('Botão Relatórios clicado!');
           }}>Relatórios</button>
         </div>
@@ -182,7 +164,6 @@ const TelaInicial: React.FC = () => {
                     <TableCell>{cliente.client?.telefone}</TableCell>
                     <TableCell>{cliente.cidades?.name}</TableCell>
                     <TableCell>
-                      <Button onClick={() => editarCliente(cliente.client?.id)}>Editar</Button>
                       <Button onClick={() => handleVerMais(cliente)}>Ver Mais</Button>
                     </TableCell>
                   </TableRow>
@@ -210,7 +191,6 @@ const TelaInicial: React.FC = () => {
                 <Typography variant="body1"><strong>Telefone:</strong> {selectedCliente.client?.telefone}</Typography>
                 <Typography variant="body1"><strong>Cidade:</strong> {selectedCliente.cidades?.name}</Typography>
                 <Typography variant="body1"><strong>Endereço:</strong> {selectedCliente.rua}, {selectedCliente.bairro}</Typography>
-                <Button onClick={() => imprimirDadosCliente(selectedCliente)}>Imprimir</Button>
               </>
             )}
           </Box>
