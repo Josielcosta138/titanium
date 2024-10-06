@@ -10,7 +10,8 @@ import {
     StepLabel,
     Button,
     Typography,
-    TableContainer
+    TableContainer,
+    TextField
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -77,6 +78,10 @@ const OrdemCorte: FC = () => {
     const navigate = useNavigate();
     const steps = ['Cadastrar Matéria prima', 'Cadastrar Grade', 'Finalizar ordem de corte'];
     const [status, setStatus] = useState<string>(''); 
+    // No estado de OrdemCorte
+    const [quantidadeFalhas, setQuantidadeFalhas] = useState<number | ''>(''); 
+    const [quantidadeSobras, setQuantidadeSobras] = useState<number | ''>(''); 
+    const [qtde, setQtde] = useState<number>(); 
 
 
 
@@ -84,6 +89,7 @@ const OrdemCorte: FC = () => {
     const handleNext = async () => {
         if (activeStep === steps.length - 1) {
             await salvarOrdemCorte();
+            
         } else {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
         }
@@ -190,7 +196,7 @@ const OrdemCorte: FC = () => {
                 setOpen(true);
                 setTimeout(() => {
                     setOpen(false);
-                    localStorage.clear();
+                    // localStorage.clear();
                 }, 5000);
             }
         } catch (error) {
@@ -201,7 +207,7 @@ const OrdemCorte: FC = () => {
 
 
     const salvarOrdemCorte = async () => {
-        localStorage.setItem("statusGeradaOC", 'INICIADA');
+        localStorage.setItem("statusGeradaOC", 'PENDENTE');
 
         const ordemServicoId = localStorage.getItem('ordemServicoId');
         const data = {
@@ -227,21 +233,68 @@ const OrdemCorte: FC = () => {
     const atualizarStatusDaOs = async () => {
 
         const idOs = localStorage.getItem('ordemServicoId');
+
+        const statusInciada = localStorage.getItem('statusOCiniciada');
         const statusOC = localStorage.getItem('statusOC');
+        const statusGeradaOC = localStorage.getItem('statusGeradaOC');
+
+        let statusAtt;
+        if (statusInciada){
+            statusAtt = statusInciada
+        }else if (statusOC){
+            statusAtt = statusOC
+        }
+        else if (statusGeradaOC){
+            statusAtt = statusGeradaOC
+        }
+        
+
         const data = {
-            status: statusOC,
+            status: statusAtt
         };
 
         try {
             const response = await apiPut(`ordemServico/atualizarStatusOs/${idOs}`, data);
       
             if (response.status === STATUS_CODE.OK) {
-                console.log(`Status atualizado:`);
+                atualizarQtdesOrdemServico(Number(idOs));
             }
           } catch (error) {
             console.error("Erro ao salvar ordem de serviço:", error);
           }
     }
+
+
+    const atualizarQtdesOrdemServico = async (idOs : Number) => {
+        const idOS = idOs;
+        const data = {
+            qtdeMaterialFalhas: quantidadeFalhas,
+            qtdeMaterialRestante: quantidadeSobras,
+        };
+
+        try {
+            const response = await apiPut(`ordemServico/atualizarQtdesFalhasSobras/${idOS}`, data);
+
+            if (response.status === STATUS_CODE.OK) {
+             
+                
+                localStorage.clear();
+                setOpen(true);
+                setTimeout(() => {
+                    setOpen(false);
+                }, 5000);
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar ordem de serviço:", error);
+        }
+    };
+
+
+
+  
+    const redirecionarCadastroListagemDeOS = () => {
+        navigate('/listaServico');
+    };
 
 
 
@@ -255,7 +308,7 @@ const OrdemCorte: FC = () => {
                         <h2>Cadastro de Ordem de corte</h2>
                     </div>
                     <div className="top-right">
-                        <Alert severity="info">Atenção. Selecione apenas um Material por OC!</Alert>
+                        <Alert severity="warning">Atualmente, o sistema registra 'Sobras' e 'Falhas' para todos os materiais. Por favor, verifique os detalhes e tome as ações necessárias!</Alert>
                     </div>
                 </div>
 
@@ -384,7 +437,6 @@ const OrdemCorte: FC = () => {
                                 <MateriaPrima />
                             )}
 
-
                             {activeStep === 1 && ( 
                                 <div className="form-container">
                                     <div className="materia-form">
@@ -407,12 +459,64 @@ const OrdemCorte: FC = () => {
                                 </div>
                             )}
 
-                        </Box>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+                                {activeStep === 2 && (
+                                                            <div className="cadastro-ordem-container">
+                                                                <div className="content-container">
+                                                                    <div className="form-container">
+                                                                        <div className="cadastro-ordem-form">
+                                                                            <div className="form-section">
+                                                                                <h3>Registro de Quantidades Restantes de Materiais</h3>
+                                                                                <div className="form-row">
+                                                                                    <div className="form-group">
+                                                                                        <label htmlFor="quantidadeSobras">Quantidade de Sobras*</label>
+                                                                                        <TextField
+                                                                                            id="quantidadeSobras"
+                                                                                            type="number"
+                                                                                            value={quantidadeSobras}
+                                                                                            onChange={(event) => setQuantidadeSobras(event.target.value === '' ? '' : Number(event.target.value))}
+                                                                                            fullWidth
+                                                                                            required
+                                                                                            sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className="form-group">
+                                                                                        <label htmlFor="quantidadeFalhas">Quantidade de Falhas*</label>
+                                                                                        <TextField
+                                                                                            id="quantidadeFalhas"
+                                                                                            type="number"
+                                                                                            value={quantidadeFalhas}
+                                                                                            onChange={(event) => setQuantidadeFalhas(event.target.value === '' ? '' : Number(event.target.value))}
+                                                                                            fullWidth
+                                                                                            required
+                                                                                            sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className="form-group">
+                                                                                        <label htmlFor="quantidadeRolos">Quantidade de Rolos*</label>
+                                                                                        <TextField
+                                                                                            id="quantidadeRolos"
+                                                                                            type="number"
+                                                                                            value={qtde}
+                                                                                            onChange={(event) => setQtde(event.target.value === '' ? undefined : Number(event.target.value))}
+                                                                                            fullWidth
+                                                                                            required
+                                                                                            sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        </Box>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
 };
 
 export default OrdemCorte;

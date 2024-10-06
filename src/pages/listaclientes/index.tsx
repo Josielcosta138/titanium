@@ -61,7 +61,6 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
   const editarCliente = (id: number) => {
     navigate(`/ordemCliente/${id}`);
   }
-
   
 
   const imprimirDadosCliente = (cliente: IClientes) => {
@@ -82,14 +81,15 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
     doc.text(`Cidade: ${cliente.cidades?.name || ''}`, 10, 50);
     doc.text(`Endereço: ${cliente.rua || ''}, ${cliente.bairro || ''}`, 10, 60);
 
-    // const ordensServico = selectedCliente.client?.ordensServico.length > 0 
-    //   ? selectedCliente.client.ordensServico.join(', ') 
-    //   : 'Nenhuma ordem de serviço no momento.';
-    // doc.text(`Ordens de Serviço: ${ordensServico}`, 10, 70);
-
     doc.save(`${cliente.client?.nomeFantasia}_dados_cliente.pdf`);
 
   }
+
+
+  const redirecionarCadastroClientes = () => {
+    navigate('/ordemCliente')
+  }
+
 
   return (
     <div className="clientes-container">
@@ -124,7 +124,7 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
             <h2>Clientes</h2>
           </div>
           <div className="top-right">
-            <Button variant="contained" color="warning" className="add-client-button">Cadastrar Cliente</Button>
+            <Button onClick={redirecionarCadastroClientes} variant="contained" color="warning" className="add-client-button">Cadastrar Cliente</Button>
           </div>
         </div>
 

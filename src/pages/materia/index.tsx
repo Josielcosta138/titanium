@@ -117,17 +117,14 @@ const MateriaPrima: FC = () => {
 
     return (
         <div className="materia-container">
-
-            <div className="content-container">
+            <div className="content-container">                
+                <hr className="full-line" />
+                <div className="form-container">
                 <div className="top-bar">
                     <div className="top-left">
-                        <h2>Cadastro de Materia Prima</h2>
+                        <h2>Cadastrar Materia Prima</h2>
                     </div>
                 </div>
-
-                <hr className="full-line" />
-
-                <div className="form-container">
                     <div className="materia-form">
                         <div className="form-row">
                             <div className="form-group">

@@ -102,6 +102,10 @@ const ListaOrdemServico: React.FC = () => {
       }
   }
 
+  
+  const redirecionarCadastroOS = () => {
+    navigate('/ordemServico')
+  }
 
 
   return (
@@ -136,7 +140,7 @@ const ListaOrdemServico: React.FC = () => {
             <h2>Ordens de Serviço</h2>
           </div>
           <div className="top-right">
-            <Button variant="contained" color="warning" className="add-ordem-button-os">Cadastrar OS</Button>
+            <Button onClick={redirecionarCadastroOS} variant="contained" color="warning" className="add-ordem-button-os">Cadastrar OS</Button>
           </div>
         </div>
 

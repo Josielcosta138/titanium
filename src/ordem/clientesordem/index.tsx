@@ -76,7 +76,6 @@ const CadastroCliente: React.FC = () => {
 
 
 
-
  // ----------------------- PUT -------------------------------------//
 
   const edidarCliente = async () => {
@@ -131,10 +130,7 @@ const CadastroCliente: React.FC = () => {
 
 
 
-  
-  
- 
-  
+
   const editarEndereco = async (clienteId: any, cidadeId: any) => {
     const data = {
       rua: logradouro,
@@ -155,9 +151,6 @@ const CadastroCliente: React.FC = () => {
       console.error("Erro ao salvar endereço:", error);
     }
   };
-  
-  
-  
 
 
 
@@ -224,8 +217,6 @@ const salvarCliente = async () => {
 
 
 
-
-
 const salvarEndereco = async (clienteId: any, cidadeId: any) => {
   const data = {
     rua: logradouro,
@@ -250,8 +241,6 @@ const salvarEndereco = async (clienteId: any, cidadeId: any) => {
 
 
 
-
-
 const salvarCidade = async (clienteId: any) => {
   const data = {
     name: municipio,
@@ -271,6 +260,11 @@ const salvarCidade = async (clienteId: any) => {
   } catch (error) {
     console.error("Erro ao salvar cidade:", error);
   }
+}
+
+
+const redirecionarListaDeClientes = () => {
+  navigate('/listaCliente')
 }
 
 
@@ -321,7 +315,7 @@ const salvarCidade = async (clienteId: any) => {
 
         {/* Botão e Filtros */}
         <div className="action-bar">
-          <button className="service-list-button">Lista de Serviço</button>
+          <button onClick={redirecionarListaDeClientes} className="service-list-button">Lista de Clientes</button>
           <div className="filter-container">
             <input type="text" placeholder="Pesquisar..." className="search-bar" />
             <button className="filter-button">Filtrar <i className="fa fa-caret-down"></i></button>
