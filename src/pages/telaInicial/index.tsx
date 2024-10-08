@@ -1,64 +1,90 @@
-// Código 1 atualizado com a lista de clientes do Código 2
-
 import React, { useState, useEffect } from 'react';
 import './index.css';
 import { apiGet, STATUS_CODE } from '../../api/RestClient';
-import { Box, Button, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Alert, Box, Button, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { IClientes } from '../../Interface/Cliente/type';
 import jsPDF from 'jspdf';
+import { IOrdemServico } from '../../Interface/OS/type';
 
-interface Corte {
-  ordemId: number;
-  cliente: string;
-  referencia: string;
-  tipoDeTecido: string;
-  quantidadeDeRolo: number;
-  grade: string;
-  dataDeChegada: string;
-}
+
 
 const TelaInicial: React.FC = () => {
-  const [cortes] = useState<Corte[]>([
-    {
-      ordemId: 59217,
-      cliente: 'La Moda',
-      referencia: 'DB05475',
-      tipoDeTecido: 'Malha',
-      quantidadeDeRolo: 32,
-      grade: '1M - 2G - 2GG',
-      dataDeChegada: '25/12/2024',
-    },
-    {
-      ordemId: 59217,
-      cliente: 'La Moda',
-      referencia: 'DB05475',
-      tipoDeTecido: 'Poliester',
-      quantidadeDeRolo: 12,
-      grade: '1M - 2G - 2GG',
-      dataDeChegada: '25/12/2024',
-    },
-    // ... outros cortes
-  ]);
-
-  const [clientes, setClientes] = useState<IClientes[]>([]);
+ 
+  const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
   const [open, setOpen] = useState(false);
+  const [selectedOrdem, setSelectedOrdem] = useState<any>(null);
+  const [page, setPage] = useState(1);
+  const [ordenTeste, setOrdemTeste] = useState<any>(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [status, setStatus] = useState<string>(''); 
+  const [botoesDesabilitados, setBotoesDesabilitados] = useState(false);
+  const [clientes, setClientes] = useState<IClientes[]>([]);
   const [selectedCliente, setSelectedCliente] = useState<any>(null);
-  const [page, setPage] = useState(1); // Estado para controle da página
-  const [totalPages, setTotalPages] = useState(1); // Estado para controle do total de páginas
+  const [valorTotalCortesGerados, setValorTotalCortesGerados] = useState<any>(null);
+  const [totalClientes, setTotalClientes] = useState<any>(null);
+  const [faturamentoTotal, setFaturamentoTotal] = useState<any>(null);
   const navigate = useNavigate(); 
 
-  const carregarClientes = async () => {
+  const carregarOrdensDeServico = async () => {
     try {
-      const response = await apiGet(`endereco/carregar`);
+      carregarToolTips();
+
+      const response = await apiGet('/ordemServico/carregar');
       if (response.status === STATUS_CODE.OK) {
-        setClientes(response.data);
-        setTotalPages(response.data.totalPages);
+
+        const ordensCarregadas = response.data;
+
+        const ordensOrdenadas = ordensCarregadas.sort((a: IOrdemServico, b: IOrdemServico) => {
+        const dataEntregaA = new Date(a.dataEntrega).getTime();
+        const dataEntregaB = new Date(b.dataEntrega).getTime();
+        return dataEntregaA - dataEntregaB;
+        });
+
+        setOrdens(ordensOrdenadas);
+        setTotalPages(response.data.totalPages);        
       }
     } catch (error) {
-      console.error("Erro ao carregar clientes:", error);
+      console.error("Erro ao carregar ordens de serviço:", error);
     }
   };
+
+
+  const carregarToolTips = async () => {
+    try {
+      const [ordensResponse, clientesResponse, faturamentoResponse] = await Promise.all([
+        apiGet('/ordemCorte/carregarTotalDeOrdemCorte'),
+        apiGet('/cliente/carregarTotalDeClientes'),
+        apiGet('/ordemServico/carregarFaturamentoTotal'),
+      ]);
+            if (ordensResponse.status === STATUS_CODE.OK) {
+
+              const ordensCorte = ordensResponse.data;
+              setValorTotalCortesGerados(ordensCorte);        
+            }
+          
+            if (clientesResponse.status === STATUS_CODE.OK) {
+              const clientesTotais = clientesResponse.data;
+              setTotalClientes(clientesTotais);        
+            }
+
+            if (faturamentoResponse.status === STATUS_CODE.OK) {
+              const faturamentoTotal = faturamentoResponse.data;
+              setFaturamentoTotal(faturamentoTotal);        
+            }
+
+
+
+    } catch (error) {
+      console.error("Erro ao carregar ordens de serviço:", error);
+    }
+
+
+  }
+
+
+
+
 
   const handleVerMais = (cliente: IClientes) => {
     setSelectedCliente(cliente);
@@ -75,14 +101,49 @@ const TelaInicial: React.FC = () => {
   };
 
   useEffect(() => {
-    carregarClientes();
+    carregarOrdensDeServico();
   }, [page]);
 
-  const editarCliente = (id: number) => {
-    navigate(`/ordemCliente/${id}`);
+  
+
+  const formatarDataCorreta = (data: string): string => {
+    const dataSemFuso = new Date(data + 'T00:00:00'); 
+    return dataSemFuso.toLocaleDateString('pt-BR', { timeZone: 'UTC' }); 
+  };
+  
+
+  const corDeUrgenciaDeEntrega = (index: number, total: number) => {
+    const startColor = [255, 81, 29]; 
+    const endColor = [173, 216, 230]; 
+  
+    const ratio = index / total;
+  
+    const r = Math.round(startColor[0] + ratio * (endColor[0] - startColor[0]));
+    const g = Math.round(startColor[1] + ratio * (endColor[1] - startColor[1]));
+    const b = Math.round(startColor[2] + ratio * (endColor[2] - startColor[2]));
+  
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+  
+  const redirecionarCadastroOs = () => {
+    navigate('/ordemCliente');
   }
 
-  
+  const redirecionarParaListaDeOs = () => {
+    navigate('/listaServico');
+  }
+
+  const redirecionarListaDeClientes = () => {
+    navigate('/listaCliente');
+  }
+
+  const redirecionarRelatorios = () => {
+    navigate('/relatorios');
+  }
+
+  const redirecionarCadastroDeClientes = () => {
+    navigate('/ordemCliente/');
+  }
 
   return (
     <div className="container">
@@ -97,11 +158,11 @@ const TelaInicial: React.FC = () => {
         <nav className="sidebar-nav">
           <ul>
             <li>Início</li>
-            <li>Cadastro de Cliente</li>
-            <li>Ordem de Serviço</li>
-            <li>Listagem de Serviços</li>
-            <li>Clientes</li>
-            <li>Relatórios</li>
+            <li onClick={redirecionarCadastroDeClientes}>Cadastro de Cliente</li>
+            <li onClick={redirecionarCadastroOs}>Ordem de Serviço</li>
+            <li onClick={redirecionarParaListaDeOs}>Listagem de Serviços</li>
+            <li onClick={redirecionarListaDeClientes}>Clientes</li>
+            <li onClick={redirecionarRelatorios}>Relatórios</li>
             <li>Configurações</li>
           </ul>
         </nav>
@@ -109,16 +170,18 @@ const TelaInicial: React.FC = () => {
       <main className="content">
         <div className="dashboard">
           <div className="card blue">
-            <span>CORTES GERADOS</span>
-            <h1>243</h1>
+          <span><strong>CORTES GERADOS</strong></span>
+            <h1>{valorTotalCortesGerados != null ? valorTotalCortesGerados : 'Carregando...'}</h1>
           </div>
           <div className="card gray">
-            <span>CLIENTES CADASTRADOS</span>
-            <h1>13</h1>
+            <span><strong>CLIENTES CADASTRADOS</strong></span>
+            <h1>{totalClientes != null ? totalClientes : 'Carregando...' }</h1>
           </div>
           <div className="card orange">
-            <span>FATURAMENTO TOTAL</span>
-            <h1>R$ 15.556,00</h1>
+            <span><strong>FATURAMENTO TOTAL</strong></span>
+            <h1>{faturamentoTotal != null 
+              ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(faturamentoTotal)
+              : 'Carregando...'}</h1>
           </div>
           <div className="card orange-light">
             <span>USUÁRIOS CADASTRADOS</span>
@@ -126,51 +189,87 @@ const TelaInicial: React.FC = () => {
           </div>
         </div>
         <div className="button-container">
-          <button onClick={() => {
-           
-            console.log('Botão Ordem de Serviço clicado!');
-          }}>Ordem de Serviço</button>
-          <button onClick={() => {
-           
-            console.log('Botão Lista de Serviço clicado!');
-          }}>Lista de Serviço</button>
-          <button onClick={() => {
-           
-            console.log('Botão Clientes clicado!');
-          }}>Clientes</button>
-          <button onClick={() => {
-          
-            console.log('Botão Relatórios clicado!');
-          }}>Relatórios</button>
+          <button onClick={() => {redirecionarCadastroOs()}}>Ordem de Serviço</button>
+          <button 
+            style={{ backgroundColor: '#388b54', color: '#fff' }}  
+            onClick={() => {redirecionarParaListaDeOs()}}>
+              Lista de Serviço
+          </button>
+          <button 
+            style={{ backgroundColor: '#ea6a00', color: '#fff' }}
+            onClick={() => {redirecionarListaDeClientes()}}>
+              Clientes
+          </button>
+          <button 
+            style={{ backgroundColor: '#ffc107', color: '#fff' }}
+            onClick={() => {redirecionarRelatorios()}}>
+              Relatórios
+          </button>
         </div>
+        <hr className="full-line" />
         <div className="table-container">
-          <h2>Clientes</h2>
+        <div className="header">
+        <h3>Ordens de Serviço - Prioridade por Data de Entrega</h3> 
+        <div className="top-right">
+          <Alert severity="warning">Atenção! Fique atento a Data de entrega da ordem de serviço.</Alert>
+        </div>
+        </div>
+
           <TableContainer>
-            <Table>
+            <Table className='header-table'>
               <TableHead>
                 <TableRow>
-                  <TableCell>Nome</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Telefone</TableCell>
-                  <TableCell>Cidade</TableCell>
+                  <TableCell>Código OS</TableCell>
+                  <TableCell>Cod-Referência</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Cliente</TableCell>
+                  <TableCell>Data-entrada</TableCell>
+                  <TableCell><strong>Data-entrega</strong></TableCell>
                   <TableCell>Ações</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {clientes.map((cliente) => (
-                  <TableRow key={cliente.client?.id}>
-                    <TableCell>{cliente.client?.nomeFantasia}</TableCell>
-                    <TableCell>{cliente.client?.email}</TableCell>
-                    <TableCell>{cliente.client?.telefone}</TableCell>
-                    <TableCell>{cliente.cidades?.name}</TableCell>
-                    <TableCell>
-                      <Button onClick={() => handleVerMais(cliente)}>Ver Mais</Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+          {ordens.map((ordem, index) => (
+            <TableRow key={ordem.id}>
+              <TableCell>{ordem.id}</TableCell>
+              <TableCell>{ordem.codReferenciaOs}</TableCell>
+              <TableCell>
+                <span
+                  className={`status-cell ${
+                    ordem.status === 'INICIADA'
+                      ? 'status-iniciada'
+                      : ordem.status === 'PENDENTE'
+                      ? 'status-pendente'
+                      : ordem.status === 'FINALIZADA'
+                      ? 'status-finalizada'
+                      : ''
+                  }`}
+                >
+                  {ordem.status}
+                </span>
+              </TableCell>
+              <TableCell>{ordem.cliente.razaoSocial}</TableCell>
+              <TableCell>{formatarDataCorreta(ordem.dataEntrada)}</TableCell>
+              <TableCell style={{ backgroundColor: corDeUrgenciaDeEntrega(index, ordens.length), fontWeight:'bold' }}>
+                {formatarDataCorreta(ordem.dataEntrega)}
+              </TableCell>
+              <TableCell>
+                <Box className="action-buttons">
+                  <Button onClick={redirecionarParaListaDeOs} variant="contained" color="info">
+                    Visualizar
+                  </Button>
+                  
+                </Box>
+              </TableCell>
+            </TableRow>
+            ))}
+        </TableBody>
+
             </Table>
           </TableContainer>
+
+
+
           <div className="pagination">
             <Button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>&lt;</Button>
             {[...Array(totalPages)].map((_, index) => (
@@ -180,21 +279,7 @@ const TelaInicial: React.FC = () => {
             ))}
             <Button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages}>&gt;</Button>
           </div>
-        </div>
-        <Modal open={open} onClose={handleClose}>
-          <Box className="modal-box">
-            <Typography variant="h6" component="h2">Detalhes do Cliente</Typography>
-            {selectedCliente && (
-              <>
-                <Typography variant="body1"><strong>Nome:</strong> {selectedCliente.client?.nomeFantasia}</Typography>
-                <Typography variant="body1"><strong>Email:</strong> {selectedCliente.client?.email}</Typography>
-                <Typography variant="body1"><strong>Telefone:</strong> {selectedCliente.client?.telefone}</Typography>
-                <Typography variant="body1"><strong>Cidade:</strong> {selectedCliente.cidades?.name}</Typography>
-                <Typography variant="body1"><strong>Endereço:</strong> {selectedCliente.rua}, {selectedCliente.bairro}</Typography>
-              </>
-            )}
-          </Box>
-        </Modal>
+        </div>      
       </main>
     </div>
   );
