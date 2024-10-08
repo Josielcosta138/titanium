@@ -6,7 +6,7 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #f0f2f5;
+  background-color: #000000;
 }
 
 .container {
@@ -14,11 +14,15 @@ body {
   height: 100vh;
 }
 
+.header-table {
+  padding-bottom: 40px;
+}
+
 .sidebar {
   width: 250px;
   background-color: #333;
   padding: 20px;
-  color: #fff;
+  color: #030101;
 }
 
 .titulo-container {
@@ -55,11 +59,14 @@ body {
 .sidebar-nav ul li {
   padding: 10px;
   border-bottom: 1px solid #444;
+  color: #000; /* Cor do texto preto */
+  cursor: pointer; /* Mostrar que é um item clicável */
 }
 
 .sidebar-nav ul li:hover {
-  background-color: #444;
-  color: #fff;
+  background-color: #f36412; /* Cor de fundo laranja */
+  color:#000; /* Texto branco ao passar o mouse */
+  
 }
 
 .content {
@@ -75,7 +82,7 @@ body {
 
 .card {
   width: 23%;
-  background-color: #fff;
+  background-color: #050000;
   padding: 20px;
   border-radius: 10px;
   margin: 10px;
@@ -84,12 +91,13 @@ body {
 
 .card span {
   font-size: 14px;
-  color: #666;
+  color: #ffffff;
 }
 
 .card h1 {
   font-size: 24px;
   margin-top: 10px;
+  color: black;
 }
 
 .blue {
@@ -98,13 +106,13 @@ body {
 }
 
 .gray {
-  background-color: #ccc;
+  background-color: #388b54;
   color: #333;
 }
 
 .orange {
-  background-color: #f39c12;
-  color: #fff;
+  background-color: #ea6a00;
+  color: #030101;
 }
 
 .orange-light {
@@ -130,7 +138,7 @@ body {
 }
 
 .table-container {
-  margin-top: 20px;
+  margin-top: 47px;
 }
 
 .table-container h2 {
@@ -173,4 +181,11 @@ tr:nth-child(even) {
 .pagination button.active {
   background-color: #333;
   color: #fff;
+}
+
+
+
+/* Alternativa para aumentar a margem do alerta diretamente */
+.top-right .MuiAlert-root {
+  margin-left: 650px; /* Adiciona uma margem à esquerda do alerta */
 }
