@@ -29,10 +29,6 @@ export const imprimirDadosOrdem = (ordem: IOrdemServico) => {
     yPosition += 10;
     doc.text(`Quantidade de Peças: ${ordem.qtdePecas}`, 10, yPosition);
     yPosition += 10;
-    doc.text(`Quantidade de Material com Falhas: ${ordem.qtdeMaterialFalhas}`, 10, yPosition);
-    yPosition += 10;
-    doc.text(`Quantidade de Material Restante: ${ordem.qtdeMaterialRestante}`, 10, yPosition);
-    yPosition += 10;
     doc.text(`Valor por Peça: ${ordem.valorPorPeca}`, 10, yPosition);
     yPosition += 10;
     doc.text(`Valor Total: ${ordem.valorTotal}`, 10, yPosition);
@@ -99,10 +95,12 @@ export const imprimirDadosOrdem = (ordem: IOrdemServico) => {
               doc.setFontSize(12);
               const yPosition = 260 + index * 15;
               doc.text(`Material: ${corte.materiaPrima.nome}`, 10, yPosition);
-              doc.text(`Comprimento: ${corte.materiaPrima.comprimento}`, 55, yPosition);
-              doc.text(`Largura: ${corte.materiaPrima.largura}`,105, yPosition);
-              doc.text(`Quantidade: ${corte.materiaPrima.qtde}`, 130, yPosition);
-              doc.text(`Cód-Referência: ${corte.materiaPrima.codReferencia}`, 165, yPosition);
+        doc.text(`Comprimento: ${corte.materiaPrima.comprimento}`, 55, yPosition);
+        doc.text(`Largura: ${corte.materiaPrima.largura}`, 105, yPosition);
+        doc.text(`Quantidade: ${corte.materiaPrima.qtde}`, 130, yPosition);
+        doc.text(`Cód-Referência: ${corte.materiaPrima.codReferencia}`, 165, yPosition);
+        doc.text(`Qtde Restante: ${corte.materiaPrima.qtdeMaterialRestante}`, 10, yPosition + 10);
+        doc.text(`Qtde de Falhas: ${corte.materiaPrima.qtdeMaterialFalhas}`, 55, yPosition + 10);
             });
           }
 

@@ -12,6 +12,8 @@ const MateriaPrima: FC = () => {
     const [comprimento, setComprimento] = useState<number>();
     const [qtde, setQtde] = useState<number>();
     const [largura, setLargura] = useState<number>();
+    const [qtdeMaterialFalhas, setQtdeMaterialFalhas] = useState<number>();
+    const [qtdeMaterialRestante, setQtdeMaterialRestante] = useState<number>();
     const [codReferencia, setCodReferencia] = useState<string>('');
     const [cores, setCores] = useState<string>('');
     const [materiaId, setIdMateria] = useState<number>();
@@ -35,9 +37,8 @@ const MateriaPrima: FC = () => {
             setQtde(dadosMp.qtde);
             setLargura(dadosMp.largura);
             setCodReferencia(dadosMp.codReferencia);
-            
-           
-            
+            setQtdeMaterialFalhas(dadosMp.qtdeMaterialFalhas);
+            setQtdeMaterialRestante(dadosMp.qtdeMaterialRestante);
         } catch (error) {
             console.error("Erro ao carregar dados da matéria prima:", error);
         }
@@ -64,7 +65,8 @@ const MateriaPrima: FC = () => {
             qtde: qtde,
             largura: largura,
             codReferencia: codReferencia,
-            // cores: 'azul'
+            qtdeMaterialRestante: qtdeMaterialRestante,
+            qtdeMaterialFalhas: qtdeMaterialFalhas
         };
         try {
 
@@ -88,7 +90,8 @@ const MateriaPrima: FC = () => {
             qtde: qtde,
             largura: largura,
             codReferencia: codReferencia,
-            // cores: 'azul'
+            qtdeMaterialRestante: qtdeMaterialRestante,
+            qtdeMaterialFalhas: qtdeMaterialFalhas
         };
 
         try {
@@ -181,12 +184,22 @@ const MateriaPrima: FC = () => {
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="cores">Cores</label>
+                                <label htmlFor="qtdeRestante">Quantidade restante</label>
                                 <input
-                                    type="text"
-                                    id="cores"
-                                    value={cores}
-                                    onChange={(e) => setCores(e.target.value)}
+                                    type="number"
+                                    id="qtdeRestante"
+                                    value={qtdeMaterialRestante}
+                                    onChange={(e) => setQtdeMaterialRestante(Number(e.target.value))}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="qtdeFalhas">Quantidade falhas</label>
+                                <input
+                                    type="number"
+                                    id="qtdeFalhas"
+                                    value={qtdeMaterialFalhas}
+                                    onChange={(e) => setQtdeMaterialFalhas(Number(e.target.value))}
                                 />
                             </div>
                         </div>
