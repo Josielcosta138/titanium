@@ -286,8 +286,6 @@ const ListaOrdemServico: React.FC = () => {
              <Typography><strong>Data de Entrada:</strong> {selectedOrdem.dataEntrada}</Typography>
              <Typography><strong>Data de Entrega:</strong> {selectedOrdem.dataEntrega}</Typography>
              <Typography><strong>Quantidade de Peças:</strong> {selectedOrdem.qtdePecas}</Typography>
-             <Typography><strong>Quantidade de Material com Falhas:</strong> {selectedOrdem.qtdeMaterialFalhas}</Typography>
-             <Typography><strong>Quantidade de Material Restante:</strong> {selectedOrdem.qtdeMaterialRestante}</Typography>
              <Typography><strong>Valor por Peça:</strong> {selectedOrdem.valorPorPeca}</Typography>
              <Typography><strong>Valor Total:</strong> {selectedOrdem.valorTotal}</Typography>
              <Typography><strong>Código de Referência:</strong> {selectedOrdem.codReferenciaOs}</Typography>
@@ -335,10 +333,12 @@ const ListaOrdemServico: React.FC = () => {
             <Typography><strong>Código Ordem de corte:</strong> {ordemCorte.id}</Typography>
             <Typography><strong>Nome da Matéria-Prima:</strong> {ordemCorte.materiaPrima.nome}</Typography>
             <Typography><strong>Comprimento:</strong> {ordemCorte.materiaPrima.comprimento}</Typography>
-            <Typography><strong>Quantidade:</strong> {ordemCorte.materiaPrima.qtde}</Typography>
+            <Typography><strong>Quantidade de rolos:</strong> {ordemCorte.materiaPrima.qtde}</Typography>
             <Typography><strong>Largura:</strong> {ordemCorte.materiaPrima.largura}</Typography>
             <Typography><strong>Código de Referência:</strong> {ordemCorte.materiaPrima.codReferencia}</Typography>
-            <Typography variant="h6">----------------------------------------------------------------</Typography>
+            <Typography><strong>Sobras:</strong> {ordemCorte.materiaPrima.qtdeMaterialRestante}</Typography>
+            <Typography><strong>Falhas:</strong> {ordemCorte.materiaPrima.qtdeMaterialFalhas}</Typography>
+            <Typography variant="h6">----------------------------------------------------------------</Typography>            
             </div>
             ))}
 

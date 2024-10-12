@@ -4,5 +4,7 @@ export interface IMateriaPrima {
     comprimento: number,
     qtde: number,
     largura: number,
-    codReferencia: string,   
+    codReferencia: string,
+    qtdeMaterialRestante: number,
+    qtdeMaterialFalhas: number
 }

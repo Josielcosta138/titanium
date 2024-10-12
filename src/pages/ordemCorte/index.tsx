@@ -27,8 +27,6 @@ import {
     TableRow
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import Stack from '@mui/material/Stack';
-import { stat } from "fs";
 
 
 
@@ -257,7 +255,7 @@ const OrdemCorte: FC = () => {
             const response = await apiPut(`ordemServico/atualizarStatusOs/${idOs}`, data);
       
             if (response.status === STATUS_CODE.OK) {
-                atualizarQtdesOrdemServico(Number(idOs));
+                attQtdeFalhasSobraMaterial();
             }
           } catch (error) {
             console.error("Erro ao salvar ordem de serviço:", error);
@@ -265,19 +263,20 @@ const OrdemCorte: FC = () => {
     }
 
 
-    const atualizarQtdesOrdemServico = async (idOs : Number) => {
-        const idOS = idOs;
+    // ---------- ESSA PARTE SERA ALTERADA PARA SALVAR AS SOBRAS NO ( materiaprima/atualizarMateriaPrima/ID )
+    const attQtdeFalhasSobraMaterial = async () => {
         const data = {
             qtdeMaterialFalhas: quantidadeFalhas,
             qtdeMaterialRestante: quantidadeSobras,
         };
 
+        window.console.log('DATA >>> '+data);
+
         try {
-            const response = await apiPut(`ordemServico/atualizarQtdesFalhasSobras/${idOS}`, data);
+            const response = await apiPut(`materiaprima/atualizarFalhasRestantes/${materiaPrimaId}`, data);
 
             if (response.status === STATUS_CODE.OK) {
-             
-                
+                             
                 localStorage.clear();
                 setOpen(true);
                 setTimeout(() => {
@@ -285,7 +284,7 @@ const OrdemCorte: FC = () => {
                 }, 5000);
             }
         } catch (error) {
-            console.error("Erro ao atualizar ordem de serviço:", error);
+            console.error("Erro ao atualizar quantidades da materia prima:", error);
         }
     };
 
@@ -378,6 +377,8 @@ const OrdemCorte: FC = () => {
                                                     <TableCell>Quantidade</TableCell>
                                                     <TableCell>Largura</TableCell>
                                                     <TableCell>Código de Referência</TableCell>
+                                                    <TableCell>Sobras</TableCell>
+                                                    <TableCell>Falhas</TableCell>
                                                     <TableCell>Selecionar</TableCell>
                                                     <TableCell>Editar</TableCell>
                                                 </TableRow>
@@ -391,6 +392,8 @@ const OrdemCorte: FC = () => {
                                                     <TableCell>{materiaPrima.qtde}</TableCell>
                                                     <TableCell>{materiaPrima.largura}</TableCell>
                                                     <TableCell>{materiaPrima.codReferencia}</TableCell>
+                                                    <TableCell>{materiaPrima.qtdeMaterialRestante}</TableCell>
+                                                    <TableCell>{materiaPrima.qtdeMaterialFalhas}</TableCell>
                                                     <TableCell>
                                                         <Checkbox
                                                             checked={selectedMaterias.includes(materiaPrima.id)}
@@ -486,18 +489,6 @@ const OrdemCorte: FC = () => {
                                                                                             type="number"
                                                                                             value={quantidadeFalhas}
                                                                                             onChange={(event) => setQuantidadeFalhas(event.target.value === '' ? '' : Number(event.target.value))}
-                                                                                            fullWidth
-                                                                                            required
-                                                                                            sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
-                                                                                        />
-                                                                                    </div>
-                                                                                    <div className="form-group">
-                                                                                        <label htmlFor="quantidadeRolos">Quantidade de Rolos*</label>
-                                                                                        <TextField
-                                                                                            id="quantidadeRolos"
-                                                                                            type="number"
-                                                                                            value={qtde}
-                                                                                            onChange={(event) => setQtde(event.target.value === '' ? undefined : Number(event.target.value))}
                                                                                             fullWidth
                                                                                             required
                                                                                             sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}

@@ -126,7 +126,7 @@ const TelaInicial: React.FC = () => {
   };
   
   const redirecionarCadastroOs = () => {
-    navigate('/ordemCliente');
+    navigate('/ordemServico');
   }
 
   const redirecionarParaListaDeOs = () => {

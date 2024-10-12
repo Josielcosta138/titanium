@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
 import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../api/RestClient';
-import { Alert, Box, Modal,  TextField, Button, Select, MenuItem, FormControl, Checkbox, FormControlLabel, Tooltip } from '@mui/material';
+import { Alert, Box, Modal,  TextField, Button, Select, MenuItem, FormControl, Checkbox, FormControlLabel, Tooltip, AlertTitle } from '@mui/material';
 import { IClientes } from '../../Interface/Cliente/type';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { Navigate, useNavigate } from 'react-router-dom';
 import ConfirmarOC from '../../components/ModelConfirmacaoOC';
 import { format, formatDate, parse, parseISO  } from "date-fns";
+import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 
 
@@ -15,15 +18,16 @@ const CadastroOrdemServico: React.FC = () => {
   const [clienteId, setClienteId] = useState<number | ''>(''); 
   const [codReferenciaOs, setCodReferenciaOs] = useState<string>(''); 
   const [modelo, setModelo] = useState<string>('');
-  const [quantidadeRolo, setQuantidadeRolo] = useState<number | ''>(''); 
-  const [quantidadePecas, setQuantidadePecas] = useState<number | ''>('');
+  const [quantidadeRolo, setQuantidadeRolo] = useState<number | ''>(0); 
+  const [quantidadePecas, setQuantidadePecas] = useState<number | ''>(0);
   const [quantidadeFalhas, setQuantidadeFalhas] = useState<number | ''>(0);
   const [quantidadeSobras, setQuantidadeSobras] = useState<number | ''>(0); 
-  const [valorPecas, setValorPecas] = useState<number | ''>('');
+  const [valorPecas, setValorPecas] = useState<number | ''>();
   const [valorTotal, setValorTotal] = useState<number | ''>('');
-  const [notaFiscal, setNotaFiscal] = useState<number | ''>(''); 
-  const [dataEntrada, setdataEntrada] = useState<string>(''); 
-  const [dataEntrega, setdataEntrega] = useState<string>(''); 
+  const [notaFiscal, setNotaFiscal] = useState<number | ''>(0); 
+  const dataAtual = new Date().toISOString().split('T')[0];
+  const [dataEntrada, setdataEntrada] = useState<string>(dataAtual); 
+  const [dataEntrega, setdataEntrega] = useState<string>(dataAtual); 
   const [observacao, setObservacao] = useState<string>('');
   const [status, setStatus] = useState<string>(''); 
   const [statusAtt, setStatusAtt] = useState<string>('');
@@ -32,6 +36,7 @@ const CadastroOrdemServico: React.FC = () => {
   const [ordemServicoId, setordemServicoId] = useState<number>();
   const [openConfirmarOC, setOpenConfirmarOC] = useState(false);
   const navigate = useNavigate();
+  const [alertaErro, setAlertaErro] = useState(false);
 
   
 
@@ -41,6 +46,12 @@ const CadastroOrdemServico: React.FC = () => {
       carregarDadosOrdemServico(Number(idOS));
     }
   }, []);
+
+
+  const handleValorPecasChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value.replace(',', '.'); 
+    setValorPecas(value === '' ? '' : Number(value)); 
+  };
 
 
   const carregarDadosOrdemServico = async (id: number) => {
@@ -74,6 +85,33 @@ const CadastroOrdemServico: React.FC = () => {
     }
 
 
+  }
+
+  const validarCamposObrigatorios = async () => {
+    
+    if (
+      !clienteId ||
+      !codReferenciaOs ||
+      !modelo ||
+      !quantidadeRolo ||
+      !dataEntrada ||
+      !dataEntrega ||
+      !notaFiscal ||
+      !quantidadePecas ||
+      !valorPecas ||
+      !valorTotal ||
+      !observacao
+    ) { 
+      setAlertaErro(true);  
+      setTimeout(() => {
+        setAlertaErro(false);
+      }, 8000);   
+
+      return false;
+    }
+    setAlertaErro(false);
+    validarChamadaDeOrdemCorte()
+    return true;
   }
 
 
@@ -225,8 +263,9 @@ const CadastroOrdemServico: React.FC = () => {
 
 
   useEffect(() => {
-    carregarClientes();
+    carregarClientes();    
   }, []);
+
 
 
   return (
@@ -251,7 +290,6 @@ const CadastroOrdemServico: React.FC = () => {
           </ul>
         </nav>
       </div>
-
       <div className="content-container">
         <div className="top-bar">
           <div className="top-left">
@@ -260,27 +298,26 @@ const CadastroOrdemServico: React.FC = () => {
             </button>
 
           </div></div>
-
-        <h2 className="page-title">Cadastro de Ordem de Serviço</h2>
-
+        <h2 className="page-title">Cadastro de Ordem de Serviço - Pré corte</h2>
         <hr className="full-line" />
-
         <div className="action-bar">
           <button 
               className="service-list-button"
               onClick={rederionarCadastroListagemDeOS}
               >Lista de OS's
-          </button>
-          <div className="filter-container">
-            <input type="text" placeholder="Pesquisar..." className="search-bar" />
-            <button className="filter-button">Filtrar <i className="fa fa-caret-down"></i></button>
-          </div>
+          </button>          
         </div>
 
+        {/*  FORMULARIO */}
         <div className="form-container">
           <div className="cadastro-ordem-form">
             <div className="form-section">
-              <h3>Pré-Corte</h3>
+            <div className="section-title">
+                <h3 style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }}>
+                  Informações da Ordem de Serviço
+                </h3>
+                <ContactEmergencyIcon sx={{ verticalAlign: 'middle' }} />
+            </div>
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="cliente">Cliente*</label>
@@ -345,16 +382,6 @@ const CadastroOrdemServico: React.FC = () => {
                 <div className="form-group">
                 </div>
                 <div className="form-group">
-                  <label htmlFor="quantidadeRolo">Quantidade de Rolo*</label>
-                  <TextField
-                    id="quantidadeRolo"
-                    type="number"
-                    value={quantidadeRolo}
-                    onChange={(event) => setQuantidadeRolo(Number(event.target.value))}
-                    fullWidth
-                    required
-                    sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
-                  />
                 </div>
               </div>
               <div className="form-row">
@@ -381,82 +408,123 @@ const CadastroOrdemServico: React.FC = () => {
                     required
                     sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
                   />
-
-
                 </div>
-
                 <div className="form-group">
-                  
-                  {/* </Modal> */}
+                <label htmlFor="quantidadeRolo">Quantidade de Rolo*</label>
+                  <TextField
+                    id="quantidadeRolo"
+                    type="number"
+                    value={quantidadeRolo}
+                    onChange={(event) => {
+                      const valor = (Number(event.target.value));
+                      if (valor >= 0){
+                        setQuantidadeRolo(valor);
+                      }
+                      }
+                    }                    
+                    fullWidth
+                    required
+                    sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                  />
                 </div>
+                
               </div>
-
+              
               <hr className="full-line" />
-
-             <div className="form-section">
-              <h3>Corte</h3>
-               
+             <div className="form-section"> 
+             <div className="section-title">
+                <h3 style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle', paddingTop: '5px' }}>
+                Detalhes do Corte
+                </h3>
+                <DisplaySettingsIcon sx={{ verticalAlign: 'middle' }} />
+            </div>
                 <div className="form-row">
-                  <div className="form-group">
-                  </div>
-                  <div className="form-group">
+                <div className="form-group">
                     <label htmlFor="notaFiscal">Nota Fiscal*</label>
                     <TextField
                       id="notaFiscal"
                       value={notaFiscal}
-                      onChange={(event) => setNotaFiscal(Number(event.target.value))}
-                      fullWidth
-                      required
-                      sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
-                    />
-
-                    <label htmlFor="quantidadeSobras">Quantidade de Sobras*</label>
-                    <TextField
-                      id="quantidadeSobras"
-                      type="number"
-                      value={quantidadeSobras}
-                      onChange={(event) => setQuantidadeSobras(Number(event.target.value))}
+                      onChange={(event) => {
+                        const valor = (Number(event.target.value));
+                        if (valor >= 0) {
+                          setNotaFiscal(valor)  
+                        }
+                      }}
                       fullWidth
                       required
                       sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
                     />
                   </div>
+                  <div className="form-group">
+                  <label htmlFor="quantidadeSobras">Quantidade de Sobras*</label>
+                    <TextField
+                      id="quantidadeSobras"
+                      type="number"
+                      value={quantidadeSobras}
+                      onChange={(event) => {
+                        const valor = (Number(event.target.value));
+                        if(valor >= 0){
+                          setQuantidadeSobras(valor);
+                        }
+                      }}
+                      fullWidth
+                      required
+                      sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                    />
+                  </div>
+                  
                   <div className="form-group">
                     <label htmlFor="quantidadeFalhas">Quantidade de Falhas*</label>
                     <TextField
                       id="quantidadeFalhas"
                       type="number"
                       value={quantidadeFalhas}
-                      onChange={(event) => setQuantidadeFalhas(Number(event.target.value))}
+                      onChange={(event) => {
+                        const valor = (Number(event.target.value));
+                        if (valor >= 0){
+                          setQuantidadeFalhas(valor);
+                        }
+                      }}
                       fullWidth
                       required
                       sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
                     />
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="quantidadePecas">Quantidade de Peças*</label>
-                    <TextField
-                      id="quantidadePecas"
-                      type="number"
-                      value={quantidadePecas}
-                      onChange={(event) => setQuantidadePecas(Number(event.target.value))}
-                      fullWidth
-                      required
-                      onBlur={calcularValorTotal}
-                      sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
-                    />
-                  </div>
-                </div>
-                <div className="form-row">
+
                   <div className="form-group">
                     <label htmlFor="valorPecas">Valor das Peças*</label>
                     <TextField
                       id="valorPecas"
                       type="number"
                       value={valorPecas}
-                      onChange={(event) => setValorPecas(Number(event.target.value))}
+                      onChange={(event) => {
+                        const valor = Number(event.target.value);
+                        if (valor >= 0) {
+                          setValorPecas(valor)  
+                        }
+                      }} 
                       fullWidth
                       required
+                      sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                    />
+                  </div>
+                </div>
+                <div className="form-row">
+                <div className="form-group">
+                    <label htmlFor="quantidadePecas">Quantidade de Peças*</label>
+                    <TextField
+                      id="quantidadePecas"
+                      type="number"
+                      value={quantidadePecas}
+                      onChange={(event) => {
+                        const valor = (Number(event.target.value));
+                        if (valor >= 0){
+                          setQuantidadePecas(valor)
+                        }
+                      }}
+                      fullWidth
+                      required
+                      onBlur={calcularValorTotal}
                       sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
                     />
                   </div>
@@ -475,24 +543,19 @@ const CadastroOrdemServico: React.FC = () => {
               </div>
               <hr className="full-line" />
               <div className="form-section">
-                <h3>Pós-Corte</h3>
+              <div className="section-title">
+                <h3 style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle', paddingTop: '5px' }}>
+                Observações e Notas
+                </h3>
+                <DescriptionIcon sx={{ verticalAlign: 'middle' }} />
+              </div>
+
                 <div className="form-row">
                   <div className="form-group">
                   </div>
                 </div>
 
                 <div className="form-row">
-                  <div className="form-group">
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          // checked={realizadoCorte}
-                          // onChange={(event) => setRealizadoCorte(event.target.checked)}
-                        />
-                      }
-                      label="Corte Realizado"
-                    />
-                  </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
@@ -510,22 +573,39 @@ const CadastroOrdemServico: React.FC = () => {
                 </div>
               </div>
               <div className="form-footer">
+              {alertaErro && (
+                <Alert 
+                   variant="filled" 
+                   severity="error"
+                  sx={{
+                    position: 'fixed',
+                    top: '20px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 9999,
+                    width: '33%',
+                    borderRadius: 2,
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '1.0rem'
+                  }}
+                >
+                  Todos os campos são obrigatórios! Certifique-se de que nenhum está vazio.
+                </Alert>
+              )}
+
                 <Button
                   variant="contained"
-                  onClick={validarChamadaDeOrdemCorte}
+                  onClick={validarCamposObrigatorios}
                   sx={{ backgroundColor: '#1976d2', color: 'white', marginTop: 2 }}
                 >
                   Salvar Ordem de Serviço
                 </Button>
                 <ConfirmarOC open={openConfirmarOC} onClose={handleCloseConfirmarOC} />
               </div>
+              
             </div>
           </div>
-
-
-          {/* Modal Modelagem */}
-
-
           <Modal
                 open={open}
                 onClose={() => setOpen(false)}
@@ -535,7 +615,9 @@ const CadastroOrdemServico: React.FC = () => {
                 </Box>
             </Modal>
         </div>
-      </div></div>
+      {/* FIMMM */}
+      </div>
+    </div>
   );
 };
 
