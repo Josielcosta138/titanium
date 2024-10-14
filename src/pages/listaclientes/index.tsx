@@ -15,6 +15,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { IClientes } from '../../Interface/Cliente/type';
 import jsPDF from 'jspdf';
+import { FaArrowLeft } from 'react-icons/fa';
+import { faCaretDown, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const Clientes: React.FC = () => {
@@ -119,9 +122,9 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
         <div className="top-bar">
           <div className="top-left">
             <button className="back-button">
-              <i className="fa fa-arrow-left"></i> Voltar
+            <FaArrowLeft />Voltar
             </button>
-            <h2>Clientes</h2>
+            <h2>Lista de Clientes</h2>
           </div>
           <div className="top-right">
             <Button onClick={redirecionarCadastroClientes} variant="contained" color="warning" className="add-client-button">Cadastrar Cliente</Button>
@@ -131,7 +134,7 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
         {/* Linha Divisória */}
         <hr className="full-line" />
 
-        {/* Filtros e Navegação */}
+        {/* Filtros e Navegação
         <div className="action-bar">
           <div className="search-filter-container">
             <input type="text" placeholder="Pesquisar..." className="search-bar" />
@@ -160,7 +163,24 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
               Próximo
             </Button>
           </div>
+        </div> */}
+
+
+{/* Filtros e Navegação */}
+<div className="action-bar">
+      <div className="search-filter-container">
+        <div className="search-input-wrapper">
+          <input type="text" placeholder="Pesquisar..." className="search-bar" />
+          <FontAwesomeIcon icon={faSearch} className="search-icon" />
         </div>
+        <button className="filter-button">
+          Filtrar <FontAwesomeIcon icon={faCaretDown} />
+        </button>
+      </div>
+    </div>
+  
+
+
 
         {/* Tabela de Clientes */}
         <div className="table-container">

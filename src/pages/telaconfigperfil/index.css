@@ -17,15 +17,15 @@
   }
   
   .back-button {
-    background: none;
+    background: rgb(255, 255, 255);
     border: none;
     cursor: pointer;
-    font-size: 24px;
-    margin-left: 20px;
+    font-size: 16px;
+    /* margin-left: 22px; */
   }
   
   .search-bar {
-    margin-left: auto;
+    margin-left: 775px;
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
