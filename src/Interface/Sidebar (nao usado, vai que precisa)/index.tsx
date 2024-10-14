@@ -16,8 +16,8 @@ const Sidebar: React.FC = () => {
           <li>Início</li>
           <li>Cadastro de Cliente</li>
           <li>Ordem de Serviço</li>
-          <li>Listagem de Serviços</li>
-          <li>Clientes</li>
+          <li>Lista de Serviços</li>
+          <li>Lista de Clientes</li>
           <li>Relatórios</li>
           <li>Configurações</li>
         </ul>

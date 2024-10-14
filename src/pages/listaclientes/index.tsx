@@ -170,11 +170,12 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
 <div className="action-bar">
       <div className="search-filter-container">
         <div className="search-input-wrapper">
-          <input type="text" placeholder="Pesquisar..." className="search-bar" />
+          <input type="text" placeholder="Digite seu Cliente" className="search-bar-listacliente" />
           <FontAwesomeIcon icon={faSearch} className="search-icon" />
         </div>
         <button className="filter-button">
-          Filtrar <FontAwesomeIcon icon={faCaretDown} />
+          Pesquisar 
+          {/* <FontAwesomeIcon icon={faCaretDown} /> */}
         </button>
       </div>
     </div>

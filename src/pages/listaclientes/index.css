@@ -103,8 +103,9 @@
 }
 
 .top-right .add-client-button {
-    background-color: #ff6600;
+    background-color: #2e7d32;
     color: #ffffff;
+    
 }
 
 .full-line {
@@ -146,6 +147,14 @@
   position: relative;
   display: flex;
   align-items: center;
+}
+
+.search-bar-listacliente{
+    margin-left: 1286px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    
 }
 
 .search-bar {
