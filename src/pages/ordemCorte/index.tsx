@@ -10,13 +10,14 @@ import {
     StepLabel,
     Button,
     Typography,
-    TableContainer
+    TableContainer,
+    TextField
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import MateriaPrima from "../materia";
-import { apiGet, apiPost, STATUS_CODE } from "../../api/RestClient";
+import { apiGet, apiPost, apiPut, STATUS_CODE } from "../../api/RestClient";
 import { IMateriaPrima } from "../../Interface/MateriaPrima/type";
 import {
     Table,
@@ -26,23 +27,16 @@ import {
     TableRow
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import Stack from '@mui/material/Stack';
-
 
 
 
 const OrdemCorte: FC = () => {
     const [open, setOpen] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
-    const [servicoId, setServicoId] = useState<number>();
     const [materiaPrimaId, setMateriaPrimaId] = useState<number>();
-    const [tamanhoGradeId, setTamanhoGradeId] = useState<number>();
-    const [ordemDeCorteId, setOrdemDeCorteId] = useState<number>();
     const [materiasPrimas, setMateriasPrimas] = useState<IMateriaPrima[]>([]);
     const [totalPages, setTotalPages] = useState(1);
-    const [selectedMateriaPrima, setSelectedMateriaPrima] = useState<any>(null);
     const [selectedMaterias, setSelectedMaterias] = useState<number[]>([]);
-    const [selectedGrade, setSelectedGrade] = useState<number[]>([]);
     const [page, setPage] = useState(1);
     const [tamanhos, setTamanhos] = useState([
         { id: 1, nome: 'PP' },
@@ -78,19 +72,25 @@ const OrdemCorte: FC = () => {
         { id: 31, nome: '60' },
         { id: 32, nome: '62' },
     ]);
-    
     const [quantidade, setQuantidades] = useState<{ [key: number]: number }>({});
-
     const navigate = useNavigate();
     const steps = ['Cadastrar Matéria prima', 'Cadastrar Grade', 'Finalizar ordem de corte'];
+    const [status, setStatus] = useState<string>(''); 
+    // No estado de OrdemCorte
+    const [quantidadeFalhas, setQuantidadeFalhas] = useState<number | ''>(''); 
+    const [quantidadeSobras, setQuantidadeSobras] = useState<number | ''>(''); 
+    const [qtde, setQtde] = useState<number>(); 
 
 
 
 
-
-
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    const handleNext = async () => {
+        if (activeStep === steps.length - 1) {
+            await salvarOrdemCorte();
+            
+        } else {
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
     };
 
     const handleBack = () => {
@@ -98,15 +98,13 @@ const OrdemCorte: FC = () => {
     };
 
     const handleReset = () => {
-        setActiveStep(0);
+        listaOrdemServico();
     };
 
-    const handleNavigateToMateriaPrima = () => {
-        navigate('/materiaPrima');
-    };
 
-    const editarMateriaPrima = (id: number) => {
-        // navigate(`/ordemCliente/${id}`);
+    const editarMateriaPrima = async (id: number) => {
+        localStorage.setItem('idMateriaPrima', id.toString());
+        window.location.reload();
     };
 
 
@@ -115,8 +113,9 @@ const OrdemCorte: FC = () => {
     };
 
 
-    const atualizarPagina = async () => {
-        window.location.reload();
+    const listaOrdemServico = async () => {
+        navigate(`/listaServico`)
+
     }
 
     const YourComponent = () => {
@@ -160,20 +159,8 @@ const OrdemCorte: FC = () => {
         };
 
         localStorage.setItem('idGrade', JSON.stringify(updatedGrades));
-        // Atualiza o estado de tamanho selecionado e seu ID
-        // setSelectedGrade([tamanhoId]);
-        // setTamanhoGradeId(tamanhoId);
     };
     
-
-    const GerenciadorDeProcessos = async () => {
-        // Salvar OS -> 
-        // Salvar OC (ID OS) -> 
-        // Salvar OC-TAM (ID OC)
-
-
-
-    }
 
 
     // -------------- MÉTODOS CARREGAR - SALVAR ------------------- 
@@ -207,7 +194,7 @@ const OrdemCorte: FC = () => {
                 setOpen(true);
                 setTimeout(() => {
                     setOpen(false);
-                    atualizarPagina()
+                    // localStorage.clear();
                 }, 5000);
             }
         } catch (error) {
@@ -218,6 +205,7 @@ const OrdemCorte: FC = () => {
 
 
     const salvarOrdemCorte = async () => {
+        localStorage.setItem("statusGeradaOC", 'PENDENTE');
 
         const ordemServicoId = localStorage.getItem('ordemServicoId');
         const data = {
@@ -230,15 +218,84 @@ const OrdemCorte: FC = () => {
             if (response.status === STATUS_CODE.CREATED) {
                 const idOrdemCorte = response.data.id;
                 setOpen(true);
-                setTimeout(() => {
-                    setOpen(false);
-                    salvarOrdemCorteTamanhos(idOrdemCorte);
-                }, 5000);
+                await salvarOrdemCorteTamanhos(idOrdemCorte);
+                atualizarStatusDaOs();
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
             }
         } catch (error) {
             console.error("Erro ao salvar ordem de corte:", error);
         }
     };
+
+
+    const atualizarStatusDaOs = async () => {
+
+        const idOs = localStorage.getItem('ordemServicoId');
+
+        const statusInciada = localStorage.getItem('statusOCiniciada');
+        const statusOC = localStorage.getItem('statusOC');
+        const statusGeradaOC = localStorage.getItem('statusGeradaOC');
+
+        let statusAtt;
+        if (statusInciada){
+            statusAtt = statusInciada
+        }else if (statusOC){
+            statusAtt = statusOC
+        }
+        else if (statusGeradaOC){
+            statusAtt = statusGeradaOC
+        }
+        
+
+        const data = {
+            status: statusAtt
+        };
+
+        try {
+            const response = await apiPut(`ordemServico/atualizarStatusOs/${idOs}`, data);
+      
+            if (response.status === STATUS_CODE.OK) {
+                attQtdeFalhasSobraMaterial();
+            }
+          } catch (error) {
+            console.error("Erro ao salvar ordem de serviço:", error);
+          }
+    }
+
+
+    // ---------- ESSA PARTE SERA ALTERADA PARA SALVAR AS SOBRAS NO ( materiaprima/atualizarMateriaPrima/ID )
+    const attQtdeFalhasSobraMaterial = async () => {
+        const data = {
+            qtdeMaterialFalhas: quantidadeFalhas,
+            qtdeMaterialRestante: quantidadeSobras,
+        };
+
+        window.console.log('DATA >>> '+data);
+
+        try {
+            const response = await apiPut(`materiaprima/atualizarFalhasRestantes/${materiaPrimaId}`, data);
+
+            if (response.status === STATUS_CODE.OK) {
+                             
+                localStorage.clear();
+                setOpen(true);
+                setTimeout(() => {
+                    setOpen(false);
+                }, 5000);
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar quantidades da materia prima:", error);
+        }
+    };
+
+
+
+  
+    const redirecionarCadastroListagemDeOS = () => {
+        navigate('/listaServico');
+    };
+
+
 
     return (
         <div className="materia-container">
@@ -250,7 +307,7 @@ const OrdemCorte: FC = () => {
                         <h2>Cadastro de Ordem de corte</h2>
                     </div>
                     <div className="top-right">
-                        <Alert severity="info">Atenção. Selecione apenas um Material por OC!</Alert>
+                        <Alert severity="warning">Atualmente, o sistema registra 'Sobras' e 'Falhas' para todos os materiais. Por favor, verifique os detalhes e tome as ações necessárias!</Alert>
                     </div>
                 </div>
 
@@ -265,7 +322,7 @@ const OrdemCorte: FC = () => {
                                         <StepLabel>
                                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                 {index === 0 && (
-                                                    <Button onClick={handleNavigateToMateriaPrima} sx={{ mr: 1 }}>
+                                                    <Button onClick={handleNext} sx={{ mr: 1 }}>
                                                         <AddIcon />
                                                     </Button>
                                                 )}
@@ -278,9 +335,15 @@ const OrdemCorte: FC = () => {
 
                             {activeStep === steps.length ? (
                                 <React.Fragment>
-                                    <Typography sx={{ mt: 2, mb: 1, display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
-                                        Todas as etapas concluídas foram concluídas!
-                                        <CheckIcon sx={{ color: 'green', fontSize: 30, ml: 1 }} />
+                                    <Typography sx={{ 
+                                            mt: 2, 
+                                            mb: 1, 
+                                            display: 'flex', 
+                                            fontSize: '15px', 
+                                            alignItems: 'center', 
+                                            fontWeight: 'bold' }}
+                                        >Todas as etapas foram concluídas com sucesso!
+                                        <CheckIcon sx={{ color: 'green', fontSize: 40, ml: 1 }} />
                                     </Typography>
                                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                                         <Box sx={{ flex: '1 1 auto' }} />
@@ -296,7 +359,7 @@ const OrdemCorte: FC = () => {
                                         </Button>
                                         <Box sx={{ flex: '1 1 auto' }} />
                                         <Button onClick={handleNext}>
-                                            {activeStep === steps.length - 1 ? 'Finalizar' : 'Próximo'}
+                                            {activeStep === steps.length - 1 ? 'Salvar corte' : 'Próximo'}
                                         </Button>
                                     </Box>
                                 </React.Fragment>
@@ -314,6 +377,8 @@ const OrdemCorte: FC = () => {
                                                     <TableCell>Quantidade</TableCell>
                                                     <TableCell>Largura</TableCell>
                                                     <TableCell>Código de Referência</TableCell>
+                                                    <TableCell>Sobras</TableCell>
+                                                    <TableCell>Falhas</TableCell>
                                                     <TableCell>Selecionar</TableCell>
                                                     <TableCell>Editar</TableCell>
                                                 </TableRow>
@@ -327,6 +392,8 @@ const OrdemCorte: FC = () => {
                                                     <TableCell>{materiaPrima.qtde}</TableCell>
                                                     <TableCell>{materiaPrima.largura}</TableCell>
                                                     <TableCell>{materiaPrima.codReferencia}</TableCell>
+                                                    <TableCell>{materiaPrima.qtdeMaterialRestante}</TableCell>
+                                                    <TableCell>{materiaPrima.qtdeMaterialFalhas}</TableCell>
                                                     <TableCell>
                                                         <Checkbox
                                                             checked={selectedMaterias.includes(materiaPrima.id)}
@@ -373,7 +440,6 @@ const OrdemCorte: FC = () => {
                                 <MateriaPrima />
                             )}
 
-
                             {activeStep === 1 && ( 
                                 <div className="form-container">
                                     <div className="materia-form">
@@ -396,28 +462,52 @@ const OrdemCorte: FC = () => {
                                 </div>
                             )}
 
+                                {activeStep === 2 && (
+                                                            <div className="cadastro-ordem-container">
+                                                                <div className="content-container">
+                                                                    <div className="form-container">
+                                                                        <div className="cadastro-ordem-form">
+                                                                            <div className="form-section">
+                                                                                <h3>Registro de Quantidades Restantes de Materiais</h3>
+                                                                                <div className="form-row">
+                                                                                    <div className="form-group">
+                                                                                        <label htmlFor="quantidadeSobras">Quantidade de Sobras*</label>
+                                                                                        <TextField
+                                                                                            id="quantidadeSobras"
+                                                                                            type="number"
+                                                                                            value={quantidadeSobras}
+                                                                                            onChange={(event) => setQuantidadeSobras(event.target.value === '' ? '' : Number(event.target.value))}
+                                                                                            fullWidth
+                                                                                            required
+                                                                                            sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className="form-group">
+                                                                                        <label htmlFor="quantidadeFalhas">Quantidade de Falhas*</label>
+                                                                                        <TextField
+                                                                                            id="quantidadeFalhas"
+                                                                                            type="number"
+                                                                                            value={quantidadeFalhas}
+                                                                                            onChange={(event) => setQuantidadeFalhas(event.target.value === '' ? '' : Number(event.target.value))}
+                                                                                            fullWidth
+                                                                                            required
+                                                                                            sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
 
-                            {activeStep === steps.length - 1 && (
-                                <button
-                                    type="submit"
-                                    className="submit-button"
-                                    onClick={salvarOrdemCorte}
-                                >
-                                    Salvar ordem de corte
-                                </button>
-                            )}
-
-                            <Modal open={open} onClose={() => setOpen(false)}>
-                                <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
-                                    <Alert variant="filled" sx={{ mb: 2 }}>Matéria prima salva com sucesso!</Alert>
-                                </Box>
-                            </Modal>
-                        </Box>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+                                                        </Box>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
 };
 
 export default OrdemCorte;

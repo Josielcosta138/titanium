@@ -6,6 +6,8 @@ export interface IOrdemCorte {
         qtde: number;
         largura: number;
         codReferencia: string;
+        qtdeMaterialRestante?: number;
+        qtdeMaterialFalhas?: number
     };
   }
   

@@ -79,9 +79,7 @@ const CadastroCliente: React.FC = () => {
   }
 
 
-
-
-  // ----------------------- PUT -------------------------------------//
+ // ----------------------- PUT -------------------------------------//
 
   const edidarCliente = async () => {
     const data = {
@@ -135,10 +133,6 @@ const CadastroCliente: React.FC = () => {
 
 
 
-
-
-
-
   const editarEndereco = async (clienteId: any, cidadeId: any) => {
     const data = {
       rua: logradouro,
@@ -159,9 +153,6 @@ const CadastroCliente: React.FC = () => {
       console.error("Erro ao salvar endereço:", error);
     }
   };
-
-
-
 
 
 
@@ -229,7 +220,6 @@ const CadastroCliente: React.FC = () => {
 
 
 
-
   const salvarEndereco = async (clienteId: any, cidadeId: any) => {
     const data = {
       rua: logradouro,
@@ -244,6 +234,7 @@ const CadastroCliente: React.FC = () => {
         setOpen(true);
         setTimeout(() => {
           setOpen(false);
+          window.location.reload();
         }, 5000);
       }
     } catch (error) {
@@ -252,14 +243,11 @@ const CadastroCliente: React.FC = () => {
   };
 
 
-
-
-
-  const salvarCidade = async (clienteId: any) => {
-    const data = {
-      name: municipio,
-      uf: uf,
-    };
+const salvarCidade = async (clienteId: any) => {
+  const data = {
+    name: municipio,
+    uf: uf,
+  };
 
     try {
       const response = await apiPost("/cidade/criarCidade", data);
@@ -275,6 +263,11 @@ const CadastroCliente: React.FC = () => {
       console.error("Erro ao salvar cidade:", error);
     }
   }
+
+
+const redirecionarListaDeClientes = () => {
+  navigate('/listaCliente')
+}
 
 
   return (
@@ -327,7 +320,7 @@ const CadastroCliente: React.FC = () => {
 
         {/* Botão e Filtros */}
         <div className="action-bar">
-          <button className="service-list-button">Lista de Serviço</button>
+          <button onClick={redirecionarListaDeClientes} className="service-list-button">Lista de Clientes</button>
           <div className="filter-container">
             <input type="text" placeholder="Pesquisar..." className="search-bar" />
             <button className="filter-button">Filtrar <i className="fa fa-caret-down"></i></button>

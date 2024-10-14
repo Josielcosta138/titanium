@@ -1,4 +1,5 @@
 export interface IOrdemServico {
+    enderecos: any
     id: number,
     qtdeRolos: number,
     dataEntrada: string,

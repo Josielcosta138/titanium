@@ -88,7 +88,7 @@
     margin-left: -75px;
 }
 
-.top-right .add-ordem-button {
+.top-right .add-ordem-button-os {
     background-color: #2ecc71;
 }
 
@@ -190,3 +190,10 @@
     border-radius: 4px;
     text-align: center;
   }
+
+
+  .add-ordem-button {
+    background-color: #844db8 !important; ; 
+    color: white !important; 
+  }
+  

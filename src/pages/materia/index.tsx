@@ -1,8 +1,9 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import "./index.css";
-import { apiPost, STATUS_CODE } from "../../api/RestClient";
+import { apiGet, apiPost, apiPut, STATUS_CODE } from "../../api/RestClient";
 import { IMateriaPrima } from "../../Interface/MateriaPrima/type";
 import { Alert, Box, Modal } from "@mui/material";
+
 
 
 
@@ -11,10 +12,51 @@ const MateriaPrima: FC = () => {
     const [comprimento, setComprimento] = useState<number>();
     const [qtde, setQtde] = useState<number>();
     const [largura, setLargura] = useState<number>();
+    const [qtdeMaterialFalhas, setQtdeMaterialFalhas] = useState<number>();
+    const [qtdeMaterialRestante, setQtdeMaterialRestante] = useState<number>();
     const [codReferencia, setCodReferencia] = useState<string>('');
     const [cores, setCores] = useState<string>('');
     const [materiaId, setIdMateria] = useState<number>();
     const [open, setOpen] = useState(false);
+
+
+    useEffect(() => {
+        const idMp = localStorage.getItem('idMateriaPrima')
+        if (idMp) {
+            carregarDadosMp(Number(idMp));
+        }
+    }, []);    
+    
+    const carregarDadosMp = async (id: Number) => {
+        try {
+            const responseMateriaPrima = await apiGet(`materiaprima/carregar/${id}`);
+            const dadosMp = responseMateriaPrima.data;
+    
+            setNome(dadosMp.nome);
+            setComprimento(dadosMp.comprimento);
+            setQtde(dadosMp.qtde);
+            setLargura(dadosMp.largura);
+            setCodReferencia(dadosMp.codReferencia);
+            setQtdeMaterialFalhas(dadosMp.qtdeMaterialFalhas);
+            setQtdeMaterialRestante(dadosMp.qtdeMaterialRestante);
+        } catch (error) {
+            console.error("Erro ao carregar dados da matéria prima:", error);
+        }
+    }
+
+
+
+    const gerenciadorDeBotaoSalvar = () => {
+        const idMp = localStorage.getItem('idMateriaPrima')
+
+        if(!idMp) {
+            salvarMateria()
+        }
+        else{
+            atualizarMateriaPrima(Number(idMp))
+        }
+    }
+
 
     const salvarMateria = async () => {
         const data = {
@@ -23,23 +65,53 @@ const MateriaPrima: FC = () => {
             qtde: qtde,
             largura: largura,
             codReferencia: codReferencia,
-            // cores: 'azul'
+            qtdeMaterialRestante: qtdeMaterialRestante,
+            qtdeMaterialFalhas: qtdeMaterialFalhas
         };
-
         try {
+
             const response = await apiPost(`/materiaprima/criarMateriaPrima`, data);
-
-            if (response.status === STATUS_CODE.CREATED) {
-                const materiaId = response.data.id;
-                setIdMateria(materiaId);
-                localStorage.setItem("idMateria-materiaPrima", materiaId);
-                atualizarPagina()
-
-            }
+                if (response.status === STATUS_CODE.CREATED) {
+                    const materiaId = response.data.id;
+                    setIdMateria(materiaId);
+                    localStorage.setItem("idMateria-materiaPrima", materiaId);
+                    atualizarPagina()
+                }
         } catch (error) {
             console.error("erro ao salvar materia: ", error);
         }
     };
+
+
+    const atualizarMateriaPrima = async (id : Number) => {
+        const data = {
+            nome: nome,
+            comprimento: comprimento,
+            qtde: qtde,
+            largura: largura,
+            codReferencia: codReferencia,
+            qtdeMaterialRestante: qtdeMaterialRestante,
+            qtdeMaterialFalhas: qtdeMaterialFalhas
+        };
+
+        try {
+            const response = await apiPut(`/materiaprima/atualizarMateriaPrima/${id}`, data)
+            if (response.status === STATUS_CODE.OK) {
+                localStorage.clear()
+                atualizarPagina()
+            }    
+        } catch (error) {
+            console.error("erro ao salvar materia: ", error);
+        }
+        
+
+    }
+
+
+
+
+
+
 
     const atualizarPagina = async () => {
         window.location.reload();
@@ -48,48 +120,14 @@ const MateriaPrima: FC = () => {
 
     return (
         <div className="materia-container">
-            {/* <div className="sidebar">
-                <div className="titulo-container">
-                    <div className="vertical-line"></div>
-                    <div className="titulo">Titanium</div>
-                </div>
-                <div className="profile-pic">
-                    <img src="https://via.placeholder.com/80" alt="Profile" />
-                </div>
-                <nav className="sidebar-nav">
-                    <ul>
-                        <li>Início</li>
-                        <li>Cadastro de Cliente</li>
-                        <li>Ordem de Serviço</li>
-                        <li>Listagem de Serviços</li>
-                        <li>Clientes</li>
-                        <li>Relatórios</li>
-                        <li>Configurações</li>
-                    </ul>
-                </nav>
-            </div> */}
-
-            <div className="content-container">
+            <div className="content-container">                
+                <hr className="full-line" />
+                <div className="form-container">
                 <div className="top-bar">
                     <div className="top-left">
-                        {/* <button className="back-button">
-                            <i className="fa fa-arrow-left"></i> Voltar
-                        </button> */}
-                        <h2>Cadastro de Materia Prima</h2>
+                        <h2>Cadastrar Materia Prima</h2>
                     </div>
-                    {/* <div className="top-right">
-                        <button className="icon-button">
-                            <i className="fa fa-cog"></i>
-                        </button>
-                        <button className="icon-button">
-                            <i className="fa fa-bell"></i>
-                        </button>
-                    </div> */}
                 </div>
-
-                <hr className="full-line" />
-
-                <div className="form-container">
                     <div className="materia-form">
                         <div className="form-row">
                             <div className="form-group">
@@ -146,18 +184,28 @@ const MateriaPrima: FC = () => {
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="cores">Cores</label>
+                                <label htmlFor="qtdeRestante">Quantidade restante</label>
                                 <input
-                                    type="text"
-                                    id="cores"
-                                    value={cores}
-                                    onChange={(e) => setCores(e.target.value)}
+                                    type="number"
+                                    id="qtdeRestante"
+                                    value={qtdeMaterialRestante}
+                                    onChange={(e) => setQtdeMaterialRestante(Number(e.target.value))}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="qtdeFalhas">Quantidade falhas</label>
+                                <input
+                                    type="number"
+                                    id="qtdeFalhas"
+                                    value={qtdeMaterialFalhas}
+                                    onChange={(e) => setQtdeMaterialFalhas(Number(e.target.value))}
                                 />
                             </div>
                         </div>
 
                         <button
-                            onClick={salvarMateria}
+                            onClick={gerenciadorDeBotaoSalvar}
                             type="submit"
                             className="submit-button"
                         >

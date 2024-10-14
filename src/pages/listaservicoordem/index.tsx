@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
-import { apiGet, STATUS_CODE } from '../../api/RestClient';
+import { apiGet, apiPut, STATUS_CODE } from '../../api/RestClient';
 import {
   Box,
   Button,
@@ -19,13 +19,18 @@ import { imprimirDadosOrdem } from '../../utils/generatePDF';
 import { IOrdemServico } from '../../Interface/OS/type';
 import { IOrdemCorte } from '../../Interface/OrdemCorte/type';
 import { IEnderecos } from '../../Interface/EnderecoCliente/type';
+import OrdemCorte from '../ordemCorte';
+import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
 
 const ListaOrdemServico: React.FC = () => {
   const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedOrdem, setSelectedOrdem] = useState<any>(null);
   const [page, setPage] = useState(1);
+  const [ordenTeste, setOrdemTeste] = useState<any>(null);
   const [totalPages, setTotalPages] = useState(1);
+  const [status, setStatus] = useState<string>(''); 
+  const [botoesDesabilitados, setBotoesDesabilitados] = useState(false);
   const navigate = useNavigate();
 
   const carregarOrdens = async () => {
@@ -54,13 +59,53 @@ const ListaOrdemServico: React.FC = () => {
     setPage(newPage);
   };
 
+
+  const rederionarCadastroOrdemCorte = async (idOc : number) => {
+    localStorage.setItem("statusOC", 'PENDENTE');
+    localStorage.setItem("ordemServicoId", idOc.toString());
+    navigate('/ordemCorte')
+  };
+
+
   useEffect(() => {
     carregarOrdens();
   }, [page]);
 
+
+
   const editarOrdem = (id: number) => {
+    localStorage.setItem('idOS', id.toString());
+
+    const ordemAtual = ordens.find(ordem => ordem.id === id);
+    if (ordemAtual) {
+        localStorage.setItem('statusAtual', ordemAtual.status);
+    }    
     navigate(`/ordemServico/${id}`);
   };
+
+
+
+  
+  const atualizarStatusDaOs = async (id: number) => {
+    const data = {
+        status: "FINALIZADA",
+    };
+
+    try {
+        const response = await apiPut(`ordemServico/atualizarStatusOs/${id}`, data);
+  
+        if (response.status === STATUS_CODE.OK) {
+          carregarOrdens();
+        }
+      } catch (error) {
+        console.error("Erro ao salvar ordem de serviço:", error);
+      }
+  }
+
+  
+  const redirecionarCadastroOS = () => {
+    navigate('/ordemServico')
+  }
 
 
   return (
@@ -95,7 +140,7 @@ const ListaOrdemServico: React.FC = () => {
             <h2>Ordens de Serviço</h2>
           </div>
           <div className="top-right">
-            <Button variant="contained" color="warning" className="add-ordem-button">Cadastrar Ordem</Button>
+            <Button onClick={redirecionarCadastroOS} variant="contained" color="warning" className="add-ordem-button-os">Cadastrar OS</Button>
           </div>
         </div>
 
@@ -164,19 +209,38 @@ const ListaOrdemServico: React.FC = () => {
                           >
                             {ordem.status}
                           </span>
+                          
                     </TableCell>
                     <TableCell>{ordem.cliente.razaoSocial}</TableCell>
                     <TableCell>{ordem.dataEntrada}</TableCell>
                     <TableCell>{ordem.dataEntrega}</TableCell>
                     <TableCell>
                       <Box className="action-buttons">
-                        <Button variant="contained" color="info"
-                          onClick={() => handleVerMais(ordem)}>Visualizar</Button>
-                        <Button variant="contained" color="success"
-                          onClick={() => imprimirDadosOrdem(ordem)}>Imprimir</Button>
-                        <Button variant="contained" color="warning"
-                          onClick={() => editarOrdem(ordem.id)}>Editar</Button>
+                        <Button 
+                          variant="contained" color="info"
+                          onClick={() => handleVerMais(ordem)}
+                          >Visualizar
+                        </Button>
+                        <Button 
+                          variant="contained" color='secondary'
+                          onClick={() => rederionarCadastroOrdemCorte(ordem.id)} 
+                          disabled={ordem.status === 'FINALIZADA'} 
+                          >Cadastrar OC
+                        </Button>
+                        <Button 
+                          variant="contained" color="warning"
+                          onClick={() => editarOrdem(ordem.id)} 
+                          disabled={ordem.status === 'FINALIZADA'} 
+                          >Editar
+                        </Button>
+                        <Button 
+                          variant="contained" color="success"
+                          onClick={() => atualizarStatusDaOs(ordem.id)} 
+                          disabled={ordem.status === 'FINALIZADA'} 
+                          >Finalizar
+                        </Button>
                       </Box>
+                      
                     </TableCell>
                   </TableRow>
                 ))}
@@ -222,8 +286,6 @@ const ListaOrdemServico: React.FC = () => {
              <Typography><strong>Data de Entrada:</strong> {selectedOrdem.dataEntrada}</Typography>
              <Typography><strong>Data de Entrega:</strong> {selectedOrdem.dataEntrega}</Typography>
              <Typography><strong>Quantidade de Peças:</strong> {selectedOrdem.qtdePecas}</Typography>
-             <Typography><strong>Quantidade de Material com Falhas:</strong> {selectedOrdem.qtdeMaterialFalhas}</Typography>
-             <Typography><strong>Quantidade de Material Restante:</strong> {selectedOrdem.qtdeMaterialRestante}</Typography>
              <Typography><strong>Valor por Peça:</strong> {selectedOrdem.valorPorPeca}</Typography>
              <Typography><strong>Valor Total:</strong> {selectedOrdem.valorTotal}</Typography>
              <Typography><strong>Código de Referência:</strong> {selectedOrdem.codReferenciaOs}</Typography>
@@ -271,20 +333,44 @@ const ListaOrdemServico: React.FC = () => {
             <Typography><strong>Código Ordem de corte:</strong> {ordemCorte.id}</Typography>
             <Typography><strong>Nome da Matéria-Prima:</strong> {ordemCorte.materiaPrima.nome}</Typography>
             <Typography><strong>Comprimento:</strong> {ordemCorte.materiaPrima.comprimento}</Typography>
-            <Typography><strong>Quantidade:</strong> {ordemCorte.materiaPrima.qtde}</Typography>
+            <Typography><strong>Quantidade de rolos:</strong> {ordemCorte.materiaPrima.qtde}</Typography>
             <Typography><strong>Largura:</strong> {ordemCorte.materiaPrima.largura}</Typography>
             <Typography><strong>Código de Referência:</strong> {ordemCorte.materiaPrima.codReferencia}</Typography>
-            <Typography variant="h6">----------------------------------------------------------------</Typography>
+            <Typography><strong>Sobras:</strong> {ordemCorte.materiaPrima.qtdeMaterialRestante}</Typography>
+            <Typography><strong>Falhas:</strong> {ordemCorte.materiaPrima.qtdeMaterialFalhas}</Typography>
+            <Typography variant="h6">----------------------------------------------------------------</Typography>            
             </div>
             ))}
 
                </div>
              )}
            
-             <Button onClick={handleClose}>Fechar</Button>
+           <Box sx={{ display: 'flex', justifyContent: 'flex', gap: '16px', mt: 2 }}>
+              <Button 
+                onClick={handleClose}
+                variant="contained"
+                color="primary"
+                sx={{ display: 'flex', alignItems: 'center' }}
+              >
+                Fechar
+              </Button>
+
+              <Button 
+                onClick={() => imprimirDadosOrdem(selectedOrdem)}
+                variant="contained"
+                color="primary"
+                sx={{ display: 'flex', alignItems: 'center' }}
+              >
+                Imprimir 
+                <LocalPrintshopIcon 
+                  sx={{ color: 'white', fontSize: '1.89rem', marginLeft: '8px' }} 
+                />
+              </Button>
+          </Box>
+
+
            </div>
            
-            
             )}
           </Box>
         </Modal>

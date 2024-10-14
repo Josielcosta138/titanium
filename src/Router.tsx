@@ -2,7 +2,6 @@ import { FC } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Login from "./components/login";
 import RecoverPassword from "./components/recuperarsenha";
-import OrderService from "./ordem/ordemdeservico";
 import OrderCliente from "./ordem/clientesordem";
 import ListaCliente from "./pages/listaclientes";
 import CadastroOrdemServico from "./ordem/ordemdeservico";
@@ -19,7 +18,7 @@ const Router : FC = () => {
         <BrowserRouter>
             <Routes>
                 {/* <Route path="/" element={<Navigate to="/home"/>}/> */}
-                {/* <Route path="/home" element={<Home />} index/> */}
+                <Route path="" element={<TelaInicial />} index/>
                 <Route path="/login" element={<Login />} />
                 <Route path="/recuperarSenha" element={<RecoverPassword />} />
                 <Route path="/ordemCliente" element={<OrderCliente />} />
@@ -32,9 +31,7 @@ const Router : FC = () => {
                 <Route path="/relatorios" element={<Relatorios />} />
                 <Route path="/ordemCorte" element={<OrdemCorte />} />
                 <Route path="/perfil" element={<PerfilConfig />} />
-
-
-              
+                <Route path="/ordemServico/:id" element={<CadastroOrdemServico />} />
             </Routes>
         </BrowserRouter>
     );
