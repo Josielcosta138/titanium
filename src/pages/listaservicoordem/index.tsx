@@ -31,7 +31,11 @@ const ListaOrdemServico: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [status, setStatus] = useState<string>(''); 
   const [botoesDesabilitados, setBotoesDesabilitados] = useState(false);
+  const [nomePesquisar, setNomePesquisar] = useState<string>('');
   const navigate = useNavigate();
+
+
+
 
   const carregarOrdens = async () => {
     try {
@@ -44,6 +48,27 @@ const ListaOrdemServico: React.FC = () => {
       console.error("Erro ao carregar ordens de serviço:", error);
     }
   };
+
+
+
+  const carregarOrdensPorNome = async () => {
+    try {
+
+      if (!nomePesquisar) {
+        carregarOrdens();
+      }else{
+        const response = await apiGet(`ordemServico/carregarNome/${nomePesquisar}`);
+        if (response.status === STATUS_CODE.OK) {
+          setOrdens(response.data);
+          setTotalPages(response.data.totalPages);
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao carregar ordens de serviço:", error);
+    }
+  }
+
+
 
   const handleVerMais = (ordem: IOrdemServico) => {
     setSelectedOrdem(ordem);
@@ -148,16 +173,20 @@ const ListaOrdemServico: React.FC = () => {
 
         <div className="action-bar">
           <div className="search-filter-container">
-            <input type="text" placeholder="Pesquisar..." className="search-bar" />
-            <button className="filter-button">Filtrar <i className="fa fa-caret-down"></i></button>
+            <input 
+              type="text" 
+              placeholder="Pesquisar por cliente..." 
+              className="search-bar" 
+              value={nomePesquisar}
+              onChange={(event) => setNomePesquisar(event.target.value)}
+            />
+            <button 
+              onClick={carregarOrdensPorNome} 
+              className="filter-button">Filtrar <i 
+              className="fa fa-caret-down">
+              </i></button>
           </div>
           <div className="pagination">
-            <Button 
-              disabled={page === 1}
-              onClick={() => handlePageChange(page - 1)}
-            >
-              Anterior
-            </Button>
             {Array.from({ length: totalPages }, (_, p) => (
               <Button
                 key={p + 1}
@@ -167,12 +196,6 @@ const ListaOrdemServico: React.FC = () => {
                 {p + 1}
               </Button>
             ))}
-            <Button 
-              disabled={page === totalPages}
-              onClick={() => handlePageChange(page + 1)}
-            >
-              Próximo
-            </Button>
           </div>
         </div>
 
