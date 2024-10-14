@@ -19,6 +19,7 @@
 .titulo-container {
     display: flex;
     align-items: center;
+    margin-bottom: 20px;
 }
 
 .vertical-line {
@@ -83,6 +84,8 @@
 
 .top-left h2 {
     margin: 0;
+    margin-top: 101px;
+    margin-left: -75px;
 }
 
 .top-right .add-ordem-button {
@@ -115,12 +118,15 @@
 }
 
 .filter-button {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
+    background-color: #fff;
+    color: #808080;
+    /* border: none; */
+    /* padding: 8px 16px; */
+    border-radius: 5px;
     cursor: pointer;
+    margin-left: auto;
+    padding: 5px;
+    border: 1px solid #ccc;
 }
 
 .pagination {

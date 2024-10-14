@@ -245,13 +245,13 @@ const Relatorios: React.FC = () => {
                 <Typography><strong>Valor Total:</strong> {selectedOrdem.valorTotal}</Typography>
                 <Typography><strong>Cliente:</strong> {selectedOrdem.cliente.razaoSocial}</Typography>
                 <Typography variant="h6">Endereços:</Typography>
-                {selectedOrdem.enderecos && selectedOrdem.enderecos.map((endereco: IEnderecos, index: number) => (
-                  <div key={index}>
+                {/* {selectedOrdem.enderecos && selectedOrdem.enderecos.map((endereco: IEnderecos, index: number) => (
+                  <div key={index}> */}
                     {/* <Typography><strong>Endereço:</strong> {endereco.endereco}</Typography>
                     <Typography><strong>Cidade:</strong> {endereco.cidade}</Typography>
                     <Typography><strong>Estado:</strong> {endereco.estado}</Typography> */}
-                  </div>
-                ))}
+                  {/* </div>
+                ))} */}
               </div>
             )}
             <Button variant="contained" color="error" onClick={handleClose}>Fechar</Button>
