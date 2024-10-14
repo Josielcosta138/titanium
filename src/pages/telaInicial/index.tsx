@@ -24,6 +24,7 @@ const TelaInicial: React.FC = () => {
   const [valorTotalCortesGerados, setValorTotalCortesGerados] = useState<any>(null);
   const [totalClientes, setTotalClientes] = useState<any>(null);
   const [faturamentoTotal, setFaturamentoTotal] = useState<any>(null);
+  const [economiaMaterialTotal, seteconomiaMaterialTotal] = useState<any>(null);
   const navigate = useNavigate(); 
 
   const carregarOrdensDeServico = async () => {
@@ -52,10 +53,11 @@ const TelaInicial: React.FC = () => {
 
   const carregarToolTips = async () => {
     try {
-      const [ordensResponse, clientesResponse, faturamentoResponse] = await Promise.all([
+      const [ordensResponse, clientesResponse, faturamentoResponse, materiaPrimaResponse] = await Promise.all([
         apiGet('/ordemCorte/carregarTotalDeOrdemCorte'),
         apiGet('/cliente/carregarTotalDeClientes'),
         apiGet('/ordemServico/carregarFaturamentoTotal'),
+        apiGet('/materiaprima/carregarEconomiaDeMaterial'),
       ]);
             if (ordensResponse.status === STATUS_CODE.OK) {
 
@@ -73,7 +75,10 @@ const TelaInicial: React.FC = () => {
               setFaturamentoTotal(faturamentoTotal);        
             }
 
-
+            if (materiaPrimaResponse.status === STATUS_CODE.OK) {
+              const economiaTotal = materiaPrimaResponse.data;
+              seteconomiaMaterialTotal(economiaTotal);        
+            }
 
     } catch (error) {
       console.error("Erro ao carregar ordens de serviço:", error);
@@ -81,9 +86,6 @@ const TelaInicial: React.FC = () => {
 
 
   }
-
-
-
 
 
   const handleVerMais = (cliente: IClientes) => {
@@ -184,8 +186,8 @@ const TelaInicial: React.FC = () => {
               : 'Carregando...'}</h1>
           </div>
           <div className="card orange-light">
-            <span>USUÁRIOS CADASTRADOS</span>
-            <h1>3</h1>
+            <span><strong>ECONOMIA DE MATERIAIS (+)</strong></span>
+            <h1>{economiaMaterialTotal != null ? economiaMaterialTotal : 'Carregando...'} MT</h1>
           </div>
         </div>
         <div className="button-container">

@@ -77,16 +77,39 @@ const OrdemCorte: FC = () => {
     const steps = ['Cadastrar Matéria prima', 'Cadastrar Grade', 'Finalizar ordem de corte'];
     const [status, setStatus] = useState<string>(''); 
     // No estado de OrdemCorte
-    const [quantidadeFalhas, setQuantidadeFalhas] = useState<number | ''>(''); 
-    const [quantidadeSobras, setQuantidadeSobras] = useState<number | ''>(''); 
-    const [qtde, setQtde] = useState<number>(); 
+    const [quantidadeFalhas, setQuantidadeFalhas] = useState<number | ''>(0); 
+    const [quantidadeSobras, setQuantidadeSobras] = useState<number | ''>(0); 
+    const [alertaErroCheckMaterial, setAlertaErroCheckMaterial] = useState(false);
 
 
 
 
+    const validarCheckMaterial = async () => {
+        const ordemServicoId = localStorage.getItem('ordemServicoId');
+        const idMateriaisLista = localStorage.getItem('idMateriaisLista');
+        const idGrade = localStorage.getItem('idGrade');
+
+        if(
+            !ordemServicoId ||
+            !idMateriaisLista ||
+            !idGrade
+        ){
+            setAlertaErroCheckMaterial(true);
+            setTimeout(() => {
+                window.console.log("CAMPO NULL");
+                setAlertaErroCheckMaterial(false);
+            }, 8000);
+            return false;
+        }
+        setAlertaErroCheckMaterial(false);
+        await salvarOrdemCorte(); 
+        return true;
+    }
+    
+    
     const handleNext = async () => {
         if (activeStep === steps.length - 1) {
-            await salvarOrdemCorte();
+            validarCheckMaterial();            
             
         } else {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -116,17 +139,6 @@ const OrdemCorte: FC = () => {
     const listaOrdemServico = async () => {
         navigate(`/listaServico`)
 
-    }
-
-    const YourComponent = () => {
-        const [selectedMaterias, setSelectedMaterias] = useState<number[]>([]);
-    
-        useEffect(() => {
-            const savedMaterias = localStorage.getItem('selectedMaterias');
-            if (savedMaterias) {
-                setSelectedMaterias(JSON.parse(savedMaterias));
-            }
-        }, []);
     }
 
 
@@ -194,7 +206,6 @@ const OrdemCorte: FC = () => {
                 setOpen(true);
                 setTimeout(() => {
                     setOpen(false);
-                    // localStorage.clear();
                 }, 5000);
             }
         } catch (error) {
@@ -263,15 +274,11 @@ const OrdemCorte: FC = () => {
     }
 
 
-    // ---------- ESSA PARTE SERA ALTERADA PARA SALVAR AS SOBRAS NO ( materiaprima/atualizarMateriaPrima/ID )
     const attQtdeFalhasSobraMaterial = async () => {
         const data = {
             qtdeMaterialFalhas: quantidadeFalhas,
             qtdeMaterialRestante: quantidadeSobras,
         };
-
-        window.console.log('DATA >>> '+data);
-
         try {
             const response = await apiPut(`materiaprima/atualizarFalhasRestantes/${materiaPrimaId}`, data);
 
@@ -290,13 +297,6 @@ const OrdemCorte: FC = () => {
 
 
 
-  
-    const redirecionarCadastroListagemDeOS = () => {
-        navigate('/listaServico');
-    };
-
-
-
     return (
         <div className="materia-container">
             <div className="sidebar">
@@ -307,7 +307,7 @@ const OrdemCorte: FC = () => {
                         <h2>Cadastro de Ordem de corte</h2>
                     </div>
                     <div className="top-right">
-                        <Alert severity="warning">Atualmente, o sistema registra 'Sobras' e 'Falhas' para todos os materiais. Por favor, verifique os detalhes e tome as ações necessárias!</Alert>
+                        <Alert severity="warning">Selecione "Um" material por OC!</Alert>
                     </div>
                 </div>
 
@@ -319,7 +319,14 @@ const OrdemCorte: FC = () => {
                             <Stepper activeStep={activeStep}>
                                 {steps.map((label, index) => (
                                     <Step key={label}>
-                                        <StepLabel>
+                                        <StepLabel 
+                                            sx={{ 
+                                                '& .MuiStepLabel-label': { 
+                                                  fontSize: '18px',
+                                                  fontWeight: 'bold'
+                                                } 
+                                              }}
+                                        >
                                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                 {index === 0 && (
                                                     <Button onClick={handleNext} sx={{ mr: 1 }}>
@@ -339,11 +346,12 @@ const OrdemCorte: FC = () => {
                                             mt: 2, 
                                             mb: 1, 
                                             display: 'flex', 
-                                            fontSize: '15px', 
+                                            fontSize: '18px',
+                                            justifyContent: 'center', 
                                             alignItems: 'center', 
                                             fontWeight: 'bold' }}
                                         >Todas as etapas foram concluídas com sucesso!
-                                        <CheckIcon sx={{ color: 'green', fontSize: 40, ml: 1 }} />
+                                        <CheckIcon sx={{ color: 'green', fontSize: 50, ml: 1 }} />
                                     </Typography>
                                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                                         <Box sx={{ flex: '1 1 auto' }} />
@@ -352,12 +360,36 @@ const OrdemCorte: FC = () => {
                                 </React.Fragment>
                             ) : (
                                 <React.Fragment>
-                                    <Typography sx={{ mt: 2, mb: 1 }}>Etapa {activeStep + 1}</Typography>
+                                    <Typography sx={{ mt: 2, mb: 1, fontSize: '1.20rem' }}>Etapa {activeStep + 1}</Typography>
                                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                                         <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
                                             Voltar
                                         </Button>
                                         <Box sx={{ flex: '1 1 auto' }} />
+
+
+                                        {alertaErroCheckMaterial && (
+                                            <Alert 
+                                            variant="filled" 
+                                            severity="error"
+                                            sx={{
+                                                position: 'fixed',
+                                                top: '20px',
+                                                left: '50%',
+                                                transform: 'translateX(-50%)',
+                                                zIndex: 9999,
+                                                width: '33%',
+                                                borderRadius: 2,
+                                                textAlign: 'center',
+                                                fontWeight: 'bold',
+                                                fontSize: '1.0rem'
+                                            }}
+                                            >
+                                            Todos os campos são obrigatórios! Certifique-se de que nenhum está vazio.
+                                            </Alert>
+                                        )}
+
+
                                         <Button onClick={handleNext}>
                                             {activeStep === steps.length - 1 ? 'Salvar corte' : 'Próximo'}
                                         </Button>
@@ -366,7 +398,18 @@ const OrdemCorte: FC = () => {
                             )}
 
                             {activeStep === 0 && (
+                                <MateriaPrima />
+                            )}
+
+                            <hr className="full-line" />
+
+                            {activeStep === 0 && (
                                 <div className="table-container">
+                                    <div className="top-bar">
+                                        <div className="top-left">
+                                            <h2>Selecione um material</h2>
+                                        </div>
+                                    </div>
                                     <TableContainer>
                                         <Table>
                                             <TableHead>
@@ -436,9 +479,7 @@ const OrdemCorte: FC = () => {
                                 </div>
                             )}
 
-                            {activeStep === 0 && (
-                                <MateriaPrima />
-                            )}
+                            {/* -- CADASTRO MATERIAL  */}
 
                             {activeStep === 1 && ( 
                                 <div className="form-container">
@@ -462,24 +503,24 @@ const OrdemCorte: FC = () => {
                                 </div>
                             )}
 
-                                {activeStep === 2 && (
-                                                            <div className="cadastro-ordem-container">
-                                                                <div className="content-container">
-                                                                    <div className="form-container">
-                                                                        <div className="cadastro-ordem-form">
-                                                                            <div className="form-section">
-                                                                                <h3>Registro de Quantidades Restantes de Materiais</h3>
-                                                                                <div className="form-row">
-                                                                                    <div className="form-group">
-                                                                                        <label htmlFor="quantidadeSobras">Quantidade de Sobras*</label>
-                                                                                        <TextField
-                                                                                            id="quantidadeSobras"
-                                                                                            type="number"
-                                                                                            value={quantidadeSobras}
-                                                                                            onChange={(event) => setQuantidadeSobras(event.target.value === '' ? '' : Number(event.target.value))}
-                                                                                            fullWidth
-                                                                                            required
-                                                                                            sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                            {activeStep === 2 && (
+                                            <div className="cadastro-ordem-container">
+                                                <div className="content-container">
+                                                    <div className="form-container">
+                                                        <div className="cadastro-ordem-form">
+                                                            <div className="form-section">
+                                                                <h3>Registro de Quantidades Restantes de Materiais</h3>
+                                                                    <div className="form-row">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="quantidadeSobras">Quantidade de Sobras*</label>
+                                                                                <TextField
+                                                                                    id="quantidadeSobras"
+                                                                                        type="number"
+                                                                                        value={quantidadeSobras}
+                                                                                        onChange={(event) => setQuantidadeSobras(event.target.value === '' ? '' : Number(event.target.value))}
+                                                                                        fullWidth
+                                                                                        required
+                                                                                        sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
                                                                                         />
                                                                                     </div>
                                                                                     <div className="form-group">

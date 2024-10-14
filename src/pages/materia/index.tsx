@@ -2,8 +2,8 @@ import { FC, useEffect, useState } from "react";
 import "./index.css";
 import { apiGet, apiPost, apiPut, STATUS_CODE } from "../../api/RestClient";
 import { IMateriaPrima } from "../../Interface/MateriaPrima/type";
-import { Alert, Box, Modal } from "@mui/material";
-
+import { Alert, Box, Modal, Tooltip } from "@mui/material";
+import InfoIcon from '@mui/icons-material/Info';
 
 
 
@@ -11,13 +11,13 @@ const MateriaPrima: FC = () => {
     const [nome, setNome] = useState<string>('');
     const [comprimento, setComprimento] = useState<number>();
     const [qtde, setQtde] = useState<number>();
-    const [largura, setLargura] = useState<number>();
-    const [qtdeMaterialFalhas, setQtdeMaterialFalhas] = useState<number>();
-    const [qtdeMaterialRestante, setQtdeMaterialRestante] = useState<number>();
+    const [largura, setLargura] = useState<number>(0);
+    const [qtdeMaterialFalhas, setQtdeMaterialFalhas] = useState<number>(0);
+    const [qtdeMaterialRestante, setQtdeMaterialRestante] = useState<number>(0);
     const [codReferencia, setCodReferencia] = useState<string>('');
-    const [cores, setCores] = useState<string>('');
     const [materiaId, setIdMateria] = useState<number>();
     const [open, setOpen] = useState(false);
+    const [alertaErro, setAlertaErro] = useState(false);
 
 
     useEffect(() => {
@@ -26,6 +26,7 @@ const MateriaPrima: FC = () => {
             carregarDadosMp(Number(idMp));
         }
     }, []);    
+
     
     const carregarDadosMp = async (id: Number) => {
         try {
@@ -44,6 +45,26 @@ const MateriaPrima: FC = () => {
         }
     }
 
+
+    const validarCamposObrigatorios = async () => {        
+        if (
+            !nome ||
+            !comprimento ||
+            !qtde ||
+            !largura ||
+            !codReferencia
+          ) { 
+            setAlertaErro(true);  
+            setTimeout(() => {
+              setAlertaErro(false);
+            }, 8000);   
+      
+            return false;
+          }
+          setAlertaErro(false);
+          gerenciadorDeBotaoSalvar()
+          return true;
+    }    
 
 
     const gerenciadorDeBotaoSalvar = () => {
@@ -108,25 +129,40 @@ const MateriaPrima: FC = () => {
     }
 
 
-
-
-
-
-
     const atualizarPagina = async () => {
         window.location.reload();
     }
 
 
     return (
-        <div className="materia-container">
+        <div className="teste-materia-container">
             <div className="content-container">                
                 <hr className="full-line" />
                 <div className="form-container">
-                <div className="top-bar">
-                    <div className="top-left">
-                        <h2>Cadastrar Materia Prima</h2>
-                    </div>
+                <div className="section-title">
+                <h2 
+                    style={{ 
+                    display: 'inline', 
+                    marginRight: '8px', 
+                    verticalAlign: 'middle', 
+                    paddingTop: '1px' 
+                    }}
+                >
+                    Cadastrar Matéria Prima
+                </h2>
+
+                <Tooltip                     
+                    title={
+                        <span style={{ 
+                            fontSize: '1.2rem', 
+                            color:"white" }}
+                            >Cadastrar nova matéria-prima para utilizar em ordens de corte futuras.
+                        </span>
+                      } 
+                    arrow placement="top"
+                >
+                    <InfoIcon sx={{ verticalAlign: 'middle', cursor: 'pointer' }} />
+                </Tooltip>
                 </div>
                     <div className="materia-form">
                         <div className="form-row">
@@ -169,7 +205,12 @@ const MateriaPrima: FC = () => {
                                     type="text"
                                     id="largura"
                                     value={largura}
-                                    onChange={(e) => setLargura(Number(e.target.value))}
+                                    onChange={(e) => {
+                                        const valorComVirgula = e.target.value.replace(',', '.');
+                                        if (!isNaN(Number(valorComVirgula)) || valorComVirgula === '') {
+                                          setLargura(Number(valorComVirgula));
+                                        }
+                                    }}
                                 />
                             </div>
 
@@ -203,9 +244,29 @@ const MateriaPrima: FC = () => {
                                 />
                             </div>
                         </div>
+                        {alertaErro && (
+                            <Alert 
+                            variant="filled" 
+                            severity="error"
+                            sx={{
+                                position: 'fixed',
+                                top: '20px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                zIndex: 9999,
+                                width: '33%',
+                                borderRadius: 2,
+                                textAlign: 'center',
+                                fontWeight: 'bold',
+                                fontSize: '1.0rem'
+                            }}
+                            >
+                            Todos os campos são obrigatórios! Certifique-se de que nenhum está vazio.
+                            </Alert>
+                        )}
 
                         <button
-                            onClick={gerenciadorDeBotaoSalvar}
+                            onClick={validarCamposObrigatorios}
                             type="submit"
                             className="submit-button"
                         >

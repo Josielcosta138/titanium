@@ -48,11 +48,6 @@ const CadastroOrdemServico: React.FC = () => {
   }, []);
 
 
-  const handleValorPecasChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value.replace(',', '.'); 
-    setValorPecas(value === '' ? '' : Number(value)); 
-  };
-
 
   const carregarDadosOrdemServico = async (id: number) => {
 

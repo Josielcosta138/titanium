@@ -10,7 +10,10 @@ body, html {
   height: 100vh;
 }
 
-
+.teste-materia-container {
+  display: flex;
+  height: 500px;
+}
 
 .sidebar {
   width: 20%;
