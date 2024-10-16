@@ -21,6 +21,7 @@ import { IOrdemCorte } from '../../Interface/OrdemCorte/type';
 import { IEnderecos } from '../../Interface/EnderecoCliente/type';
 import OrdemCorte from '../ordemCorte';
 import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const ListaOrdemServico: React.FC = () => {
   const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
@@ -133,6 +134,12 @@ const ListaOrdemServico: React.FC = () => {
   }
 
 
+
+  const redirecionarTelaInicial = () => {
+    navigate('/telaInicial')
+  }
+
+
   return (
     <div className="ordem-servico-container">
       <div className="sidebar">
@@ -159,8 +166,11 @@ const ListaOrdemServico: React.FC = () => {
       <div className="content-container">
         <div className="top-bar">
           <div className="top-left">
-            <button className="back-button">
-              <i className="fa fa-arrow-left"></i> Voltar
+            <button 
+              className="back-button"
+              onClick={redirecionarTelaInicial}
+              >
+              <FaArrowLeft />Voltar
             </button>
             <h2>Ordens de Serviço</h2>
           </div>
@@ -182,7 +192,7 @@ const ListaOrdemServico: React.FC = () => {
             />
             <button 
               onClick={carregarOrdensPorNome} 
-              className="filter-button">Filtrar <i 
+              className="filter-button">Pesquisar <i 
               className="fa fa-caret-down">
               </i></button>
           </div>
@@ -302,8 +312,7 @@ const ListaOrdemServico: React.FC = () => {
           <Box className="modal-box">
             {selectedOrdem && (
              <div>
-             <Typography variant="h5">Detalhes da Ordem de Serviço</Typography>
-             <Typography><strong>*</strong> </Typography>
+             <Typography variant="h5" sx={{textAlign: 'center'}}>Detalhes da Ordem de Serviço</Typography>
              <Typography><strong>Código OS:</strong> {selectedOrdem.id}</Typography>
              <Typography><strong>Quantidade de Rolos:</strong> {selectedOrdem.qtdeRolos}</Typography>
              <Typography><strong>Data de Entrada:</strong> {selectedOrdem.dataEntrada}</Typography>
@@ -316,21 +325,25 @@ const ListaOrdemServico: React.FC = () => {
              <Typography><strong>Número da Nota Fiscal:</strong> {selectedOrdem.numeorNotaFiscal}</Typography>
              <Typography><strong>Observações:</strong> {selectedOrdem.campoObservacao}</Typography>
              <Typography><strong>Status:</strong> {selectedOrdem.status}</Typography>
-             <Typography variant="h6">----------------------------------------------------------------</Typography>
-             <Typography variant="h6">Dados do Cliente</Typography>
+             <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
+                <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
+              </Typography>
+             <Typography variant="h6" sx={{textAlign: 'center'}}>Dados do Cliente</Typography>
              <Typography><strong>Código do Cliente:</strong> {selectedOrdem.cliente.id}</Typography>
              <Typography><strong>Razão Social:</strong> {selectedOrdem.cliente.razaoSocial}</Typography>
              <Typography><strong>Nome Fantasia:</strong> {selectedOrdem.cliente.nomeFantasia}</Typography>
              <Typography><strong>Email:</strong> {selectedOrdem.cliente.email}</Typography>
              <Typography><strong>Telefone:</strong> {selectedOrdem.cliente.telefone}</Typography>
              <Typography><strong>CNPJ:</strong> {selectedOrdem.cliente.cnpj}</Typography>
-             <Typography variant="h6">----------------------------------------------------------------</Typography>
+             <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
+                <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
+             </Typography>
 
 
 
              {selectedOrdem.enderecosCliemte && selectedOrdem.enderecosCliemte.length > 0 && (
             <div>
-              <Typography variant="h6">Endereços do Cliente</Typography>
+              <Typography variant="h6" sx={{textAlign: 'center'}}>Endereços do Cliente</Typography>
               {selectedOrdem.enderecosCliemte.map((endereco: IEnderecos, index: number) => (
                 <div key={index}>
                   <Typography><strong>Código do endereço:</strong> {endereco.id}</Typography>
@@ -342,7 +355,9 @@ const ListaOrdemServico: React.FC = () => {
                       <Typography><strong>Estado:</strong> {cidadeInfo.cidade.uf}</Typography>
                     </div>
                   ))}
-                  <Typography variant="h6">----------------------------------------------------------------</Typography>
+                  <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
+                      <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
+                  </Typography>
                 </div>
               ))}
             </div>
@@ -350,7 +365,7 @@ const ListaOrdemServico: React.FC = () => {
 
              {selectedOrdem.ordensDeCorte && selectedOrdem.ordensDeCorte.length > 0 && (
                <div>
-                 <Typography variant="h6">Materiais Usados na Ordem de Corte</Typography>
+                 <Typography variant="h6" sx={{textAlign: 'center'}}>Materiais Usados na Ordem de Corte</Typography>
                  {selectedOrdem.ordensDeCorte.map((ordemCorte: IOrdemCorte, index: number) => (
                     <div key={index}>
             <Typography><strong>Código Ordem de corte:</strong> {ordemCorte.id}</Typography>
@@ -361,7 +376,9 @@ const ListaOrdemServico: React.FC = () => {
             <Typography><strong>Código de Referência:</strong> {ordemCorte.materiaPrima.codReferencia}</Typography>
             <Typography><strong>Sobras:</strong> {ordemCorte.materiaPrima.qtdeMaterialRestante}</Typography>
             <Typography><strong>Falhas:</strong> {ordemCorte.materiaPrima.qtdeMaterialFalhas}</Typography>
-            <Typography variant="h6">----------------------------------------------------------------</Typography>            
+            <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
+                <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
+            </Typography>
             </div>
             ))}
 
