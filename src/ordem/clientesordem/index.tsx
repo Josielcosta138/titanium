@@ -10,7 +10,6 @@ import { IClientes } from '../../Interface/Cliente/type';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { faCog, faBell } from '@fortawesome/free-solid-svg-icons';
-import './index.css'; // Certifique-se de criar e importar seu arquivo CSS
 
 const CadastroCliente: React.FC = () => {
   const [clientes, setClientes] = useState<IClientes[]>([]);
