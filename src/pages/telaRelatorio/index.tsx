@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import { imprimirDadosOrdem } from '../../utils/generatePDF';
 import { IOrdemServico } from '../../Interface/OS/type';
 import { IEnderecos } from '../../Interface/EnderecoCliente/type';
+import Sidebar from '../../components/Sidebar';
 
 const Relatorios: React.FC = () => {
   const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
@@ -82,8 +83,8 @@ const Relatorios: React.FC = () => {
   );
 
   return (
-    <div className="relatorio-corte-container">
-      <div className="sidebar">
+    <div className="relatorio-corte-container"> <Sidebar></Sidebar>
+      {/* <div className="sidebar">
         <div className="titulo-container">
           <div className="vertical-line"></div>
           <div className="titulo">Titanium</div>
@@ -101,7 +102,7 @@ const Relatorios: React.FC = () => {
             <li>Configurações</li>
           </ul>
         </nav>
-      </div>
+      </div> */}
 
       <div className="content-container">
         <div className="top-bar">

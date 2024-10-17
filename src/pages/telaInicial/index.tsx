@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { IClientes } from '../../Interface/Cliente/type';
 import jsPDF from 'jspdf';
 import { IOrdemServico } from '../../Interface/OS/type';
+import Sidebar from '../../components/Sidebar';
 
 
 
@@ -148,8 +149,8 @@ const TelaInicial: React.FC = () => {
   }
 
   return (
-    <div className="container">
-      <aside className="sidebar">
+    <div className="container"> <Sidebar></Sidebar>
+      {/* <aside className="sidebar">
         <div className="titulo-container">
           <div className="vertical-line"></div>
           <div className="titulo">Titanium</div>
@@ -168,7 +169,7 @@ const TelaInicial: React.FC = () => {
             <li>Configurações</li>
           </ul>
         </nav>
-      </aside>
+      </aside> */}
       <main className="content">
         <div className="dashboard">
           <div className="card blue">

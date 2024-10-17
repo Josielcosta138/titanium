@@ -1,25 +1,12 @@
 import React from 'react';
 import './index.css';
+import Sidebar from '../../components/Sidebar';
 
 const ProfileSettings: React.FC = () => {
   return (
     <div className="profile-settings">
-      <aside className="sidebar">
-        <div className="profile-photo">
-          <img src="path/to/profile.jpg" alt="Brian O'Connor" className="profile-img" />
-        </div>
-        <h3 className="username">Brian O'Connor</h3>
-        <p className="user-type">Admin</p>
-        <nav className="navigation-menu">
-          <a href="/home" className="nav-item">🏠 Início</a>
-          <a href="/service-order" className="nav-item">📋 Ordem de Serviço</a>
-          <a href="/service-list" className="nav-item">📋 Lista de Serviço</a>
-          <a href="/clients" className="nav-item">👥 Clientes</a>
-          <a href="/reports" className="nav-item">📊 Relatórios</a>
-          <a href="/settings" className="nav-item">⚙️ Configurações</a>
-          <a href="/logout" className="nav-item">🚪 Sair</a>
-        </nav>
-      </aside>
+
+      <Sidebar></Sidebar>
 
       <div className="main-content">
         <header className="header">
@@ -41,15 +28,15 @@ const ProfileSettings: React.FC = () => {
           <section className="section">
             <h4>Dados da Conta</h4>
             <label>
-              CNPJ: 
+              CNPJ:
               <input type="text" placeholder="00.000.000/0000-00" />
             </label>
             <label>
-              Razão Social: 
+              Razão Social:
               <input type="text" placeholder="Razão Social Exemplo" />
             </label>
             <label>
-              Nome Fantasia: 
+              Nome Fantasia:
               <input type="text" placeholder="Nome Fantasia Exemplo" />
             </label>
           </section>
@@ -57,15 +44,15 @@ const ProfileSettings: React.FC = () => {
           <section className="section">
             <h4>Dados Pessoais</h4>
             <label>
-              Nome: 
+              Nome:
               <input type="text" placeholder="Nome Completo" />
             </label>
             <label>
-              E-mail: 
+              E-mail:
               <input type="email" placeholder="exemplo@dominio.com" />
             </label>
             <label>
-              Telefone/Celular: 
+              Telefone/Celular:
               <input type="text" placeholder="(00) 00000-0000" />
             </label>
           </section>
@@ -73,31 +60,31 @@ const ProfileSettings: React.FC = () => {
           <section className="section">
             <h4>Endereço</h4>
             <label>
-              CEP: 
+              CEP:
               <input type="text" placeholder="00000-000" />
             </label>
             <label>
-              Logradouro: 
+              Logradouro:
               <input type="text" placeholder="Rua/Avenida" />
             </label>
             <label>
-              Rua: 
+              Rua:
               <input type="text" placeholder="Número, Bloco, etc." />
             </label>
             <label>
-              Bairro: 
+              Bairro:
               <input type="text" placeholder="Bairro" />
             </label>
             <label>
-              Cidade: 
+              Cidade:
               <input type="text" placeholder="Cidade" />
             </label>
             <label>
-              Estado (UF): 
+              Estado (UF):
               <input type="text" placeholder="Estado" />
             </label>
             <label>
-              Complemento: 
+              Complemento:
               <input type="text" placeholder="Informações Adicionais" />
             </label>
           </section>
@@ -105,7 +92,7 @@ const ProfileSettings: React.FC = () => {
           <section className="section">
             <h4>Observações</h4>
             <label>
-              Observação: 
+              Observação:
               <textarea placeholder="Observações gerais, problemas, lembretes, etc." />
             </label>
           </section>

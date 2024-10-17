@@ -10,6 +10,7 @@ import { format, formatDate, parse, parseISO  } from "date-fns";
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
 import DescriptionIcon from '@mui/icons-material/Description';
+import Sidebar from '../../components/Sidebar';
 
 
 
@@ -264,8 +265,8 @@ const CadastroOrdemServico: React.FC = () => {
 
 
   return (
-    <div className="cadastro-ordem-container">
-      <div className="sidebar">
+    <div className="cadastro-ordem-container"> <Sidebar></Sidebar>
+      {/* <div className="sidebar">
         <div className="titulo-container">
           <div className="vertical-line"></div>
           <div className="titulo">Titanium</div>
@@ -284,7 +285,7 @@ const CadastroOrdemServico: React.FC = () => {
             <li>Configurações</li>
           </ul>
         </nav>
-      </div>
+      </div> */}
       <div className="content-container">
         <div className="top-bar">
           <div className="top-left">

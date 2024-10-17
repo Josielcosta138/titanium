@@ -13,7 +13,7 @@ const RecoverPassword: FC = () => {
     <div className="login-container">
       <div className="login-box">
         <div className="titulo-container">
-          <div className="vertical-line"></div>
+          <div className="vertical-line-recuperar"></div>
           <h1 className="titulo">Titanium</h1>
         </div>
         <p className="subtitulo">Sistema Avançado de Controle de Corte</p>

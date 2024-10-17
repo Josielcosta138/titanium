@@ -11,6 +11,7 @@ import TelaInicial from "./pages/telaInicial";
 import Relatorios from "./pages/telaRelatorio";
 import OrdemCorte from "./pages/ordemCorte";
 import PerfilConfig from "./pages/telaconfigperfil";
+import Sidebar from "./components/Sidebar";
 // import Home from "./pages/Home";
 
 const Router : FC = () => { 
@@ -32,6 +33,7 @@ const Router : FC = () => {
                 <Route path="/ordemCorte" element={<OrdemCorte />} />
                 <Route path="/perfil" element={<PerfilConfig />} />
                 <Route path="/ordemServico/:id" element={<CadastroOrdemServico />} />
+                <Route path="/sidebar" element={<Sidebar />}/>
             </Routes>
         </BrowserRouter>
     );

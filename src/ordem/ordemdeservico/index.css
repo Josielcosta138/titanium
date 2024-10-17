@@ -6,16 +6,7 @@
     background-color: #ffffff;  
 }
 
-.sidebar {
-    width: 20%;
-    background: linear-gradient(to bottom, #ffffff 0%, #c4c4c4 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    color: #000000;
-    height: 100vh; /* Estende o menu lateral até o fim da tela */
-}
+
 
 .titulo-container {
     display: flex;
