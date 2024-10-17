@@ -92,11 +92,9 @@ const CadastroOrdemServico: React.FC = () => {
       !quantidadeRolo ||
       !dataEntrada ||
       !dataEntrega ||
-      !notaFiscal ||
       !quantidadePecas ||
       !valorPecas ||
-      !valorTotal ||
-      !observacao
+      !valorTotal
     ) { 
       setAlertaErro(true);  
       setTimeout(() => {
@@ -451,41 +449,7 @@ const CadastroOrdemServico: React.FC = () => {
                       sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
                     />
                   </div>
-                  <div className="form-group">
-                  <label htmlFor="quantidadeSobras">Quantidade de Sobras*</label>
-                    <TextField
-                      id="quantidadeSobras"
-                      type="number"
-                      value={quantidadeSobras}
-                      onChange={(event) => {
-                        const valor = (Number(event.target.value));
-                        if(valor >= 0){
-                          setQuantidadeSobras(valor);
-                        }
-                      }}
-                      fullWidth
-                      required
-                      sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="quantidadeFalhas">Quantidade de Falhas*</label>
-                    <TextField
-                      id="quantidadeFalhas"
-                      type="number"
-                      value={quantidadeFalhas}
-                      onChange={(event) => {
-                        const valor = (Number(event.target.value));
-                        if (valor >= 0){
-                          setQuantidadeFalhas(valor);
-                        }
-                      }}
-                      fullWidth
-                      required
-                      sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
-                    />
-                  </div>
+                {/* teste */}
 
                   <div className="form-group">
                     <label htmlFor="valorPecas">Valor das Peças*</label>
