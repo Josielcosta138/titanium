@@ -58,7 +58,7 @@ body {
 
 .sidebar-nav ul li {
   padding: 10px;
-  border-bottom: 1px solid #444;
+  /* border-bottom: 1px solid #444; */
   color: #000; /* Cor do texto preto */
   cursor: pointer; /* Mostrar que é um item clicável */
 }

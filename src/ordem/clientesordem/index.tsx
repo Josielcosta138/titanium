@@ -10,6 +10,7 @@ import { IClientes } from '../../Interface/Cliente/type';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { faCog, faBell } from '@fortawesome/free-solid-svg-icons';
+import Sidebar from '../../components/Sidebar';
 
 const CadastroCliente: React.FC = () => {
   const [clientes, setClientes] = useState<IClientes[]>([]);
@@ -271,7 +272,9 @@ const redirecionarListaDeClientes = () => {
 
   return (
     <div className="cadastro-cliente-container">
-      <div className="sidebar">
+      <Sidebar></Sidebar>
+
+      {/* <div className="sidebar">
         <div className="titulo-container">
           <div className="vertical-line"></div>
           <div className="titulo">Titanium</div>
@@ -290,7 +293,7 @@ const redirecionarListaDeClientes = () => {
             <li>Configurações</li>
           </ul>
         </nav>
-      </div>
+      </div> */}
 
       <div className="content-container">
         {/* Barra Superior */}

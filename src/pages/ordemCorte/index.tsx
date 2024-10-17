@@ -27,6 +27,7 @@ import {
     TableRow
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
+import Sidebar from "../../components/Sidebar";
 
 
 
@@ -298,9 +299,8 @@ const OrdemCorte: FC = () => {
 
 
     return (
-        <div className="materia-container">
-            <div className="sidebar">
-            </div>
+        <div className="materia-container"><Sidebar></Sidebar>
+            
             <div className="content-container">
                 <div className="top-bar">
                     <div className="top-left">

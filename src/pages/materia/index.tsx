@@ -4,6 +4,7 @@ import { apiGet, apiPost, apiPut, STATUS_CODE } from "../../api/RestClient";
 import { IMateriaPrima } from "../../Interface/MateriaPrima/type";
 import { Alert, Box, Modal, Tooltip } from "@mui/material";
 import InfoIcon from '@mui/icons-material/Info';
+import Sidebar from "../../components/Sidebar";
 
 
 
@@ -135,7 +136,8 @@ const MateriaPrima: FC = () => {
 
 
     return (
-        <div className="teste-materia-container">
+        <div className="teste-materia-container">    
+
             <div className="content-container">                
                 <hr className="full-line" />
                 <div className="form-container">

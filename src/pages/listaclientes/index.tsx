@@ -18,6 +18,7 @@ import jsPDF from 'jspdf';
 import { FaArrowLeft } from 'react-icons/fa';
 import { faCaretDown, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Sidebar from '../../components/Sidebar';
 
 
 const Clientes: React.FC = () => {
@@ -94,9 +95,11 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
   }
 
 
-  return (
+  return (  
     <div className="clientes-container">
-      <div className="sidebar">
+            <Sidebar></Sidebar>
+
+      {/* <div className="sidebar">
         <div className="titulo-container">
           <div className="vertical-line"></div>
           <div className="titulo">Titanium</div>
@@ -115,7 +118,7 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
             <li>Configurações</li>
           </ul>
         </nav>
-      </div>
+      </div> */}
 
       <div className="content-container">
         {/* Barra Superior */}

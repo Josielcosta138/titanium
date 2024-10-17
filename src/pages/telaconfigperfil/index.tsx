@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
+import Sidebar from '../../components/Sidebar';
 import { FaArrowLeft } from "react-icons/fa"; // Ícone de voltar
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../api/RestClient';
@@ -271,7 +272,28 @@ const PerfilConfig: React.FC = () => {
     navigate('/telaInicial');
   };
 
+
   return (
+    
+    <div className="profile-settings">
+
+      <Sidebar></Sidebar>
+
+      <div className="main-content">
+        <header className="header">
+          <img src="path/to/logo.png" alt="TITANIUM Logo" className="logo" />
+          <button className="back-button">←</button>
+          <input type="text" className="search-bar" placeholder="Pesquisar..." />
+          <button className="notification-icon">🔔</button>
+        </header>
+
+        <div className="content">
+          <h2 className="main-title">CONFIGURAÇÕES</h2>
+          <h3 className="subtitle">INFORMAÇÕES DE PERFIL</h3>
+
+          <div className="profile-image-container">
+            <img src="path/to/profile.jpg" alt="Brian O'Connor" className="profile-img-rounded" />
+            <p className="edit-photo">Editar Foto</p>
     <div className="cadastro-cliente-container">
       <div className="sidebar">
         {/* Você pode adicionar conteúdo na sidebar se necessário */}
@@ -351,149 +373,77 @@ const PerfilConfig: React.FC = () => {
               <h2>Informações do Usuário</h2>
               <div className="form-row">
 
-              <div className="form-group search-cnpj-group">
-                <label htmlFor="searchCnpj">Informações cnpj: </label>
-                <div className="search-cnpj-input">
-                  <input
-                    type="text"
-                    id="searchCnpj"
-                    placeholder="00.000.000/0000-00"
-                    value={searchCnpj}
-                    onChange={(e) => setSearchCnpj(e.target.value)}
-                  />
-                  <button type="button" onClick={carregarClienteViaCnpj} className="search-button">
-                    <PersonSearchIcon />
-                  </button>
-                </div>
-              </div>
+          <section className="section">
+            <h4>Dados da Conta</h4>
+            <label>
+              CNPJ:
+              <input type="text" placeholder="00.000.000/0000-00" />
+            </label>
+            <label>
+              Razão Social:
+              <input type="text" placeholder="Razão Social Exemplo" />
+            </label>
+            <label>
+              Nome Fantasia:
+              <input type="text" placeholder="Nome Fantasia Exemplo" />
+            </label>
+          </section>
 
-                <div className="form-group">
-                  <label htmlFor="nome">Nome<span className="required">*</span></label>
-                  <input
-                    type="text"
-                    id="nome"
-                    value={nomeFantasia}
-                    onChange={(event) => setNomeFantasia(event.target.value)}
-                    placeholder="Nome do Cliente" required />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="email">E-mail<span className="required">*</span></label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder="exemplo@dominio.com" required />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="telefone">Número/Telefone<span className="required">*</span></label>
-                  <input
-                    type="tel"
-                    id="telefone"
-                    value={telefone}
-                    onChange={(event) => setTelefone(event.target.value)}
-                    placeholder="(00) 00000-0000" required />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="cnpj">CNPJ<span className="required">*</span></label>
-                  <input
-                    type="text"
-                    id="cnpj"
-                    value={cnpj}
-                    onChange={(event) => setCnpj(event.target.value)}
-                    placeholder="00.000.000/0000-00" required />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="nomeFantasia">Nome Fantasia</label>
-                  <input
-                    type="text"
-                    id="nomeFantasia"
-                    value={nomeFantasia}
-                    onChange={(event) => setNomeFantasia(event.target.value)}
-                    placeholder="Nome Fantasia" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="razaoSocial">Razão Social</label>
-                  <input
-                    type="text"
-                    id="razaoSocial"
-                    value={razaoSocial}
-                    onChange={(event) => setRazaoSocial(event.target.value)}
-                    placeholder="Razão Social" />
-                </div>
-              </div>
-            </div>
+          <section className="section">
+            <h4>Dados Pessoais</h4>
+            <label>
+              Nome:
+              <input type="text" placeholder="Nome Completo" />
+            </label>
+            <label>
+              E-mail:
+              <input type="email" placeholder="exemplo@dominio.com" />
+            </label>
+            <label>
+              Telefone/Celular:
+              <input type="text" placeholder="(00) 00000-0000" />
+            </label>
+          </section>
 
-            {/* Linha Divisória */}
-            <hr className="custom-divider" />
+          <section className="section">
+            <h4>Endereço</h4>
+            <label>
+              CEP:
+              <input type="text" placeholder="00000-000" />
+            </label>
+            <label>
+              Logradouro:
+              <input type="text" placeholder="Rua/Avenida" />
+            </label>
+            <label>
+              Rua:
+              <input type="text" placeholder="Número, Bloco, etc." />
+            </label>
+            <label>
+              Bairro:
+              <input type="text" placeholder="Bairro" />
+            </label>
+            <label>
+              Cidade:
+              <input type="text" placeholder="Cidade" />
+            </label>
+            <label>
+              Estado (UF):
+              <input type="text" placeholder="Estado" />
+            </label>
+            <label>
+              Complemento:
+              <input type="text" placeholder="Informações Adicionais" />
+            </label>
+          </section>
 
-            {/* Seção Endereço */}
-            <div className="sectionEndereco">
-              <h3>Endereço</h3>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="cep">CEP<span className="required">*</span></label>
-                  <input
-                    type="text"
-                    id="cep"
-                    value={cep}
-                    onChange={(event) => setCep(event.target.value)}
-                    placeholder="00000-000" required />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="rua">Rua<span className="required">*</span></label>
-                  <input
-                    type="text"
-                    id="rua"
-                    value={rua}
-                    onChange={(event) => setRua(event.target.value)}
-                    placeholder="Rua" required />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="bairro">Bairro<span className="required">*</span></label>
-                  <input
-                    type="text"
-                    id="bairro"
-                    value={bairro}
-                    onChange={(event) => setBairro(event.target.value)}
-                    placeholder="Bairro" required />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="cidade">Cidade<span className="required">*</span></label>
-                  <input
-                    type="text"
-                    id="cidade"
-                    value={municipio}
-                    onChange={(event) => setMunicipio(event.target.value)}
-                    placeholder="Cidade" required />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="estado">Estado (UF)<span className="required">*</span></label>
-                  <input
-                    type="text"
-                    id="estado"
-                    value={uf}
-                    onChange={(event) => setUf(event.target.value)}
-                    placeholder="UF" required />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="complemento">Complemento*</label>
-                  <input type="text" id="complemento" placeholder="Complemento" required />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="numero">Número<span className="required">*</span></label>
-                  <input type="text" id="numero" placeholder="Número" required />
-                </div>
-              </div>
-            </div>
-
+          <section className="section">
+            <h4>Observações</h4>
+            <label>
+              Observação:
+              <textarea placeholder="Observações gerais, problemas, lembretes, etc." />
+            </label>
+          </section
             {/* Linha Divisória */}
             <hr className="custom-divider" />
 

@@ -21,6 +21,7 @@ import { IOrdemCorte } from '../../Interface/OrdemCorte/type';
 import { IEnderecos } from '../../Interface/EnderecoCliente/type';
 import OrdemCorte from '../ordemCorte';
 import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
+import Sidebar from '../../components/Sidebar';
 import { FaArrowLeft } from 'react-icons/fa';
 
 const ListaOrdemServico: React.FC = () => {
@@ -142,8 +143,10 @@ const ListaOrdemServico: React.FC = () => {
 
   return (
     <div className="ordem-servico-container">
-      <div className="sidebar">
-        <div className="titulo-container">
+      <Sidebar></Sidebar>
+
+      {/* <div className="sidebar"> */}
+        {/* <div className="titulo-container">
           <div className="vertical-line"></div>
           <div className="titulo">Titanium</div>
         </div>
@@ -161,7 +164,7 @@ const ListaOrdemServico: React.FC = () => {
             <li>Configurações</li>
           </ul>
         </nav>
-      </div>
+      </div> */}
 
       <div className="content-container">
         <div className="top-bar">
