@@ -261,7 +261,7 @@ const ListaOrdemServico: React.FC = () => {
                           variant="contained" color='secondary'
                           onClick={() => rederionarCadastroOrdemCorte(ordem.id)} 
                           disabled={ordem.status === 'FINALIZADA'} 
-                          >Cadastrar OC
+                          >Ordem de Corte
                         </Button>
                         <Button 
                           variant="contained" color="warning"

@@ -274,225 +274,177 @@ const PerfilConfig: React.FC = () => {
 
 
   return (
-    
     <div className="profile-settings">
-
-      <Sidebar></Sidebar>
-
+      <Sidebar />
+  
       <div className="main-content">
-        <header className="header">
-          <img src="path/to/logo.png" alt="TITANIUM Logo" className="logo" />
-          <button className="back-button">←</button>
-          <input type="text" className="search-bar" placeholder="Pesquisar..." />
-          <button className="notification-icon">🔔</button>
-        </header>
-
-        <div className="content">
-          <h2 className="main-title">CONFIGURAÇÕES</h2>
-          <h3 className="subtitle">INFORMAÇÕES DE PERFIL</h3>
-
-          <div className="profile-image-container">
-            <img src="path/to/profile.jpg" alt="Brian O'Connor" className="profile-img-rounded" />
-            <p className="edit-photo">Editar Foto</p>
-    <div className="cadastro-cliente-container">
-      <div className="sidebar">
-        {/* Você pode adicionar conteúdo na sidebar se necessário */}
-      </div>
-
-      <div className="content-container">
-        {/* Barra Superior */}
-        <div className="top-bar">
-          <div className="top-left">
-            <button 
-              className="back-button"
-              onClick={redirecionarTelaInicial}>
-              <FaArrowLeft /> Voltar 
-            </button>
-            <h2>Perfil Usuário</h2>
-          </div>
-          <div className="top-right">
-            <button className="icon-button">
-              <FontAwesomeIcon icon={faCog} className="icon" />
-            </button>
-            <button className="icon-button">
-              <FontAwesomeIcon icon={faBell} className="icon" />
-            </button>
-          </div>
-        </div>
-        <hr className="full-line" />
-        <div className="action-bar">
-        <button 
-            onClick={redirecionarListaDeClientes} 
-            className="service-list-button" 
-            style={{ display: 'flex', alignItems: 'center', height: '30px' }}>
-          <PersonSearchIcon style={{ marginRight: '8px' }} />
-          Lista de Usuários
-        </button>  
-      </div>
-        <div className="form-container">
-          <div className="cadastro-cliente-form">
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-            <Avatar
-              src={profileImage}
-              sx={{ width: 120, height: 120, mb: 2 }}
-            />
-            <label htmlFor="icon-button-file">
-              <StyledInput
-                accept="image/*"
-                id="icon-button-file"
-                type="file"
-                onChange={handleImageChange}
-              />
-              <Button
-                variant="text"
-                component="span"
-                startIcon={<EditNoteIcon />}
-                sx={{ color: 'orange' }}
-              >
-                Editar Foto
-              </Button>
-            </label>
-            <Button
-                variant="text"
-                component="span"
-                startIcon={<HttpsIcon />}
-                sx={{ color: 'orange' }}
-              >
-                Redefinir senha
-              </Button>
-          </div>
-          <hr 
-            className="full-line" 
-            style={{ marginBottom: '60px' }} 
-          />
-            <div className="search-cnpj-container">
-              
-            </div>
-            {/* Seção Clientes */}
-            <div className="section">
-              <h2>Informações do Usuário</h2>
-              <div className="form-row">
-
-          <section className="section">
-            <h4>Dados da Conta</h4>
-            <label>
-              CNPJ:
-              <input type="text" placeholder="00.000.000/0000-00" />
-            </label>
-            <label>
-              Razão Social:
-              <input type="text" placeholder="Razão Social Exemplo" />
-            </label>
-            <label>
-              Nome Fantasia:
-              <input type="text" placeholder="Nome Fantasia Exemplo" />
-            </label>
-          </section>
-
-          <section className="section">
-            <h4>Dados Pessoais</h4>
-            <label>
-              Nome:
-              <input type="text" placeholder="Nome Completo" />
-            </label>
-            <label>
-              E-mail:
-              <input type="email" placeholder="exemplo@dominio.com" />
-            </label>
-            <label>
-              Telefone/Celular:
-              <input type="text" placeholder="(00) 00000-0000" />
-            </label>
-          </section>
-
-          <section className="section">
-            <h4>Endereço</h4>
-            <label>
-              CEP:
-              <input type="text" placeholder="00000-000" />
-            </label>
-            <label>
-              Logradouro:
-              <input type="text" placeholder="Rua/Avenida" />
-            </label>
-            <label>
-              Rua:
-              <input type="text" placeholder="Número, Bloco, etc." />
-            </label>
-            <label>
-              Bairro:
-              <input type="text" placeholder="Bairro" />
-            </label>
-            <label>
-              Cidade:
-              <input type="text" placeholder="Cidade" />
-            </label>
-            <label>
-              Estado (UF):
-              <input type="text" placeholder="Estado" />
-            </label>
-            <label>
-              Complemento:
-              <input type="text" placeholder="Informações Adicionais" />
-            </label>
-          </section>
-
-          <section className="section">
-            <h4>Observações</h4>
-            <label>
-              Observação:
-              <textarea placeholder="Observações gerais, problemas, lembretes, etc." />
-            </label>
-          </section
-            {/* Linha Divisória */}
-            <hr className="custom-divider" />
-
-            {/* Seção Outros */}
-            <div className="sectionObservacoes">
-              <h3>Outros</h3>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="observacao">Observação</label>
-                  <textarea id="observacao" placeholder="Observações adicionais"></textarea>
+  
+          <div className="cadastro-cliente-container">
+  
+            <div className="content-container">
+              <div className="top-bar">
+                <div className="top-left">
+                  <button className="back-button" onClick={redirecionarTelaInicial}>
+                    <FaArrowLeft /> Voltar
+                  </button>
+                  <h2>Perfil Usuário</h2>
+                </div>
+                <div className="top-right">
+                  <button className="icon-button">
+                    <FontAwesomeIcon icon={faCog} className="icon" />
+                  </button>
+                  <button className="icon-button">
+                    <FontAwesomeIcon icon={faBell} className="icon" />
+                  </button>
+                </div>
+              </div>
+              <hr className="full-line" />
+  
+              <div className="action-bar">
+                <button
+                  onClick={redirecionarListaDeClientes}
+                  className="service-list-button"
+                  style={{ display: 'flex', alignItems: 'center', height: '30px' }}>
+                  <PersonSearchIcon style={{ marginRight: '8px' }} />
+                  Lista de Usuários
+                </button>
+              </div>
+  
+              <div className="form-container">
+                <div className="cadastro-cliente-form">
+                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <Avatar
+                      src={profileImage}
+                      sx={{ width: 120, height: 120, mb: 2 }}
+                    />
+                    <label htmlFor="icon-button-file">
+                      <StyledInput
+                        accept="image/*"
+                        id="icon-button-file"
+                        type="file"
+                        onChange={handleImageChange}
+                      />
+                      <Button
+                        variant="text"
+                        component="span"
+                        startIcon={<EditNoteIcon />}
+                        sx={{ color: 'orange' }}>
+                        Editar Foto
+                      </Button>
+                    </label>
+                    <Button
+                      variant="text"
+                      component="span"
+                      startIcon={<HttpsIcon />}
+                      sx={{ color: 'orange' }}>
+                      Redefinir senha
+                    </Button>
+                  </div>
+  
+                  <hr className="full-line" style={{ marginBottom: '60px' }} />
+  
+                  <div className="section">
+                    <h2>Informações do Usuário</h2>
+                    <hr className="full-line" />
+                    <section className="section">
+                      <h4>Dados da Conta</h4>
+                      <label>
+                        CNPJ:
+                        <input type="text" placeholder="00.000.000/0000-00" />
+                      </label>
+                      <label>
+                        Razão Social:
+                        <input type="text" placeholder="Razão Social Exemplo" />
+                      </label>
+                      <label>
+                        Nome Fantasia:
+                        <input type="text" placeholder="Nome Fantasia Exemplo" />
+                      </label>
+                    </section>
+  
+                    <hr className="full-line" style={{ marginBottom: '60px' }} />
+                    <section className="section">
+                      <h4>Dados Pessoais</h4>
+                      <label>
+                        Nome:
+                        <input type="text" placeholder="Nome Completo" />
+                      </label>
+                      <label>
+                        E-mail:
+                        <input type="email" placeholder="exemplo@dominio.com" />
+                      </label>
+                      <label>
+                        Telefone/Celular:
+                        <input type="text" placeholder="(00) 00000-0000" />
+                      </label>
+                    </section>
+  
+                    <hr className="full-line" style={{ marginBottom: '60px' }} />
+                    <section className="section">
+                      <h4>Endereço</h4>
+                      <label>
+                        CEP:
+                        <input type="text" placeholder="00000-000" />
+                      </label>
+                      <label>
+                        Logradouro:
+                        <input type="text" placeholder="Rua/Avenida" />
+                      </label>
+                      <label>
+                        Rua:
+                        <input type="text" placeholder="Número, Bloco, etc." />
+                      </label>
+                      <label>
+                        Bairro:
+                        <input type="text" placeholder="Bairro" />
+                      </label>
+                      <label>
+                        Cidade:
+                        <input type="text" placeholder="Cidade" />
+                      </label>
+                      <label>
+                        Estado (UF):
+                        <input type="text" placeholder="Estado" />
+                      </label>
+                      <label>
+                        Complemento:
+                        <input type="text" placeholder="Informações Adicionais" />
+                      </label>
+                    </section>
+                    <hr className="custom-divider" />
+  
+                    <Button
+                      onClick={gerenciarSalvar}
+                      variant="contained"
+                      startIcon={<FontAwesomeIcon icon={faSave} className="icon" />}
+                      sx={{
+                        background: '#ed6c02',
+                        color: 'white',
+                        border: '1px solid',
+                        justifyContent: 'center',
+                        width: '200px',
+                        height: '50px',
+                        display: 'block',
+                        margin: '20px auto',
+                        '&:hover': {
+                          background: '#e55b00',
+                        },
+                      }}>
+                      Salvar Usuário
+                    </Button>
+  
+                    <Modal open={open} onClose={() => setOpen(false)}>
+                      <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
+                        <Alert variant="filled" sx={{ mb: 2 }}>Cliente e endereço cadastrados com sucesso!</Alert>
+                      </Box>
+                    </Modal>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Botão de Salvar */}
-            <Button
-              onClick={gerenciarSalvar}
-              variant="contained"
-              startIcon={<FontAwesomeIcon icon={faSave} className="icon" />}
-              sx={{
-                background: '#ed6c02',
-                color: 'white',
-                border: '1px solid',
-                justifyContent: 'center',
-                width: '200px',
-                height: '50px',
-                display: 'block',
-                margin: '20px auto',
-                '&:hover': {
-                  background: '#e55b00',
-                },
-              }}
-            >
-              Salvar Usuário
-            </Button>
-
-            {/* Mensagem de sucesso */}
-            <Modal
-              open={open}
-              onClose={() => setOpen(false)}
-            >
-              <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
-                <Alert variant="filled" sx={{ mb: 2 }}>Cliente e endereço cadastrados com sucesso!</Alert>
-              </Box>
-            </Modal>
           </div>
         </div>
       </div>
-    </div>
   );
 };
 
