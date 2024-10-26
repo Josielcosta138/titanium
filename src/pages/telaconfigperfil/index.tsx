@@ -283,7 +283,7 @@ const PerfilConfig: React.FC = () => {
         <header className="header">
           <img src="path/to/logo.png" alt="TITANIUM Logo" className="logo" />
           <button className="back-button">←</button>
-          <input type="text" className="search-bar" placeholder="Pesquisar..." />
+          <input type="text" className="search-bar-telaconfigperfil" placeholder="Pesquisar..." />
           <button className="notification-icon">🔔</button>
         </header>
 
