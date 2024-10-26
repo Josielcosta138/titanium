@@ -90,7 +90,8 @@ body, html {
   font-size: 14px;
   color: #6C6C6C;
   text-align: center;
-  margin-top: 5px;
+  margin-top: 15px;
+  margin-bottom: 5px;
 }
 
 .redefinir-senha {

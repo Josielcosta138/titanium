@@ -273,37 +273,12 @@ const redirecionarListaDeClientes = () => {
   return (
     <div className="cadastro-cliente-container">
       <Sidebar></Sidebar>
-
-      {/* <div className="sidebar">
-        <div className="titulo-container">
-          <div className="vertical-line"></div>
-          <div className="titulo">Titanium</div>
-        </div>
-        <div className="profile-pic">
-          <img src="https://via.placeholder.com/80" alt="Profile" />
-        </div>
-        <nav className="sidebar-nav">
-          <ul>
-            <li>Início</li>
-            <li>Cadastro de Cliente</li>
-            <li>Ordem de Serviço</li>
-            <li>Listagem de Serviços</li>
-            <li>Clientes</li>
-            <li>Relatórios</li>
-            <li>Configurações</li>
-          </ul>
-        </nav>
-      </div> */}
-
       <div className="content-container">
         {/* Barra Superior */}
         <div className="top-bar">
           <div className="top-left">
-            {/* <button className="back-button">
-              <i className="fa fa-arrow-left"></i> Voltar
-            </button> */}
             <button className="back-button">
-              <FaArrowLeft /> Voltar {/* Ícone de voltar adicionado aqui */}
+              <FaArrowLeft /> Voltar 
             </button>
             <h2>Cadastro de Cliente</h2>
           </div>

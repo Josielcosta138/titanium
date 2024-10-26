@@ -264,26 +264,6 @@ const CadastroOrdemServico: React.FC = () => {
 
   return (
     <div className="cadastro-ordem-container"> <Sidebar></Sidebar>
-      {/* <div className="sidebar">
-        <div className="titulo-container">
-          <div className="vertical-line"></div>
-          <div className="titulo">Titanium</div>
-        </div>
-        <div className="profile-pic">
-          <img src="https://via.placeholder.com/80" alt="Profile" />
-        </div>
-        <nav className="sidebar-nav">
-          <ul>
-            <li>Início</li>
-            <li>Cadastro de Cliente</li>
-            <li className="active">Ordem de Serviço</li>
-            <li>Listagem de Serviços</li>
-            <li>Clientes</li>
-            <li>Relatórios</li>
-            <li>Configurações</li>
-          </ul>
-        </nav>
-      </div> */}
       <div className="content-container">
         <div className="top-bar">
           <div className="top-left">

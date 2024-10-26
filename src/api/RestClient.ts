@@ -1,5 +1,17 @@
 import { Axios } from "axios";
-const api = new Axios({baseURL: "http://localhost:8085/titanium/"}); // endPoint LOCAL
+const api = new Axios({ baseURL: "http://localhost:8085/titanium/" });
+
+api.interceptors.response.use(response => {
+    if (response.status === STATUS_CODE.UNAUTHORIZED) {
+        window.location.href = "/login";
+    }
+    return response;
+}, error => {
+    if (error.response.status === STATUS_CODE.UNAUTHORIZED) {
+        window.location.href = "/login";
+    }
+    return error;
+});
 
 
 
@@ -9,11 +21,11 @@ export interface IDataResponse {
     message: string;
 }
 
-export interface AxiosResponse { 
+export interface AxiosResponse {
     data: any,
     status: number,
     statusText: string,
-    headers : any,
+    headers: any,
     request?: any;
 }
 
@@ -23,13 +35,27 @@ export enum STATUS_CODE {
     NO_CONTENT = 204,
     BAD_REQUEST = 400,
     INTERNAL_SERVER_ERROR = 500,
-    UNAUTHORIZED = 401, 
-
+    UNAUTHORIZED = 401,
 }
 
-export const apiGet = async (url : string) : Promise<IDataResponse> => {
+
+
+function configurarCabecalhoAutorizacao() {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+        return { Authorization: `Bearer ${token}` };
+    }
+    return {};
+}
+
+
+
+
+
+export const apiGet = async (url: string): Promise<IDataResponse> => {
     try {
-        const response : AxiosResponse = await api.get(url);
+        const headers = configurarCabecalhoAutorizacao();
+        const response: AxiosResponse = await api.get(url, { headers });
 
         if (response === undefined) {
             return {
@@ -45,7 +71,7 @@ export const apiGet = async (url : string) : Promise<IDataResponse> => {
         }
         return {
             status: response.status,
-            message : "OK",
+            message: "OK",
             data: JSON.parse(response.data),
         }
 
@@ -59,75 +85,83 @@ export const apiGet = async (url : string) : Promise<IDataResponse> => {
 
 
 
-export const apiPost = async (url: string, data: any) : Promise<IDataResponse> => {
- 
+
+
+
+export const apiPost = async (url: string, data: any): Promise<IDataResponse> => {
+
     try {
+
+        const headers = configurarCabecalhoAutorizacao();
         const response: AxiosResponse = await api.post(url, JSON.stringify(data), {
             headers: {
+                ...headers,
                 "Content-Type": "application/json"
             }
         });
- 
-        if(response === undefined){
+
+        if (response === undefined) {
             return {
                 status: STATUS_CODE.INTERNAL_SERVER_ERROR,
                 message: "Erro não mapeado",
             }
         }
- 
-        if(response.status === STATUS_CODE.NO_CONTENT){
+
+        if (response.status === STATUS_CODE.NO_CONTENT) {
             return {
                 status: response.status,
                 message: "Nenhum conteúdo foi retornado"
             }
         }
- 
+
         return {
             status: response.status,
             message: "OK",
             data: JSON.parse(response.data),
         }
-    } catch (e) {   
+    } catch (e) {
         return {
             status: STATUS_CODE.INTERNAL_SERVER_ERROR,
             message: "Erro não mapeado"
         }
     }
+
 }
 
 
 
 
+export const apiPut = async (url: string, data: any): Promise<IDataResponse> => {
 
-export const apiPut = async (url: string, data : any) : Promise<IDataResponse> => {
- 
     try {
+        const headers = configurarCabecalhoAutorizacao();
         const response: AxiosResponse = await api.put(url, JSON.stringify(data), {
             headers: {
+                ...headers,
                 "Content-Type": "application/json"
             }
         });
- 
-        if(response === undefined){
+
+        if (response === undefined) {
             return {
                 status: STATUS_CODE.INTERNAL_SERVER_ERROR,
                 message: "Erro não mapeado",
             }
         }
- 
-        if(response.status === STATUS_CODE.NO_CONTENT){
+
+        if (response.status === STATUS_CODE.NO_CONTENT) {
             return {
                 status: response.status,
                 message: "Nenhum conteúdo foi retornado"
             }
         }
- 
+
         return {
             status: response.status,
             message: "OK",
             data: JSON.parse(response.data),
         }
-    } catch (e) {   
+    } catch (e) {
         return {
             status: STATUS_CODE.INTERNAL_SERVER_ERROR,
             message: "Erro não mapeado"

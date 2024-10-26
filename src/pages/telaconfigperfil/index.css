@@ -124,10 +124,17 @@
   .section {
     margin-bottom: 20px;
   }
+
+  .section h4{
+    margin-bottom: 15px;
+  }
   
   .section label {
     display: block;
     margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
   }
   
   .section input,
@@ -154,3 +161,8 @@
     margin-top: 10px;
   }
   
+
+  .full-line {
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }

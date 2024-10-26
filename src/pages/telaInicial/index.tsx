@@ -28,6 +28,9 @@ const TelaInicial: React.FC = () => {
   const [economiaMaterialTotal, seteconomiaMaterialTotal] = useState<any>(null);
   const navigate = useNavigate(); 
 
+
+
+
   const carregarOrdensDeServico = async () => {
     try {
       carregarToolTips();

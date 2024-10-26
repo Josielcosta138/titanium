@@ -2,6 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faUserPlus, faTools, faList, faUsers, faChartBar, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import './index.css';
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar: React.FC = () => {
   const user = {
@@ -9,6 +10,14 @@ const Sidebar: React.FC = () => {
     role: 'Admin',
     profilePic: process.env.PUBLIC_URL + '/Logo.png',
   };
+  const navigate = useNavigate();
+
+
+  const redericionarLogin =() => {
+    sessionStorage.clear();
+    navigate('/login');
+  }
+ 
 
   return (
     <div className="sidebar">
@@ -22,7 +31,10 @@ const Sidebar: React.FC = () => {
       <div className="user-info">
         <div className="user-name">{user.name}</div>
         <div className="user-role">{user.role}</div>
-        <button className="logout-button">
+        <button 
+          onClick={redericionarLogin}
+          className="logout-button"
+          >
           <FontAwesomeIcon icon={faSignOutAlt} className="icon" /> Sair
         </button>
       </div>
