@@ -189,7 +189,7 @@ const ListaOrdemServico: React.FC = () => {
             <input 
               type="text" 
               placeholder="Pesquisar por cliente..." 
-              className="search-bar" 
+              className="search-bar-lista-serviço" 
               value={nomePesquisar}
               onChange={(event) => setNomePesquisar(event.target.value)}
             />

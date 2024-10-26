@@ -278,7 +278,6 @@ const PerfilConfig: React.FC = () => {
       <Sidebar />
   
       <div className="main-content">
-  
           <div className="cadastro-cliente-container">
   
             <div className="content-container">

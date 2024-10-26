@@ -114,7 +114,7 @@
     width: 100%; 
 }
 
-.search-bar {
+.search-bar-lista-serviço {
     font-size: large;
     padding: 8px;
     border: 1px solid #ddd;
@@ -129,7 +129,7 @@
     /* padding: 8px 16px; */
     border-radius: 5px;
     cursor: pointer;
-    margin-left: auto;
+    margin-left: 15px;
     padding: 5px;
     border: 1px solid #ccc;
     justify-content: center;

@@ -13,13 +13,13 @@ import {
   TableRow,
   Typography,
   CircularProgress,
-  TextField,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { imprimirDadosOrdem } from '../../utils/generatePDF';
 import { IOrdemServico } from '../../Interface/OS/type';
-import { IEnderecos } from '../../Interface/EnderecoCliente/type';
 import Sidebar from '../../components/Sidebar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 const Relatorios: React.FC = () => {
   const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
@@ -83,26 +83,8 @@ const Relatorios: React.FC = () => {
   );
 
   return (
-    <div className="relatorio-corte-container"> <Sidebar></Sidebar>
-      {/* <div className="sidebar">
-        <div className="titulo-container">
-          <div className="vertical-line"></div>
-          <div className="titulo">Titanium</div>
-        </div>
-        <div className="profile-pic">
-          <img src="https://via.placeholder.com/80" alt="Profile" />
-        </div>
-        <nav className="sidebar-nav">
-          <ul>
-            <li>Início</li>
-            <li>Cadastro de Cliente</li>
-            <li>Ordem de Serviço</li>
-            <li className="active">Relatórios</li>
-            <li>Clientes</li>
-            <li>Configurações</li>
-          </ul>
-        </nav>
-      </div> */}
+    <div className="relatorio-corte-container">
+      <Sidebar />
 
       <div className="content-container">
         <div className="top-bar">
@@ -112,7 +94,7 @@ const Relatorios: React.FC = () => {
             </button>
             <h2>Relatório de Corte</h2>
           </div>
-          <div className="top-right">
+          <div className="top-right-relatorio">
             <Button variant="contained" color="warning" className="add-relatorio-button">Cadastrar Relatório</Button>
           </div>
         </div>
@@ -120,35 +102,29 @@ const Relatorios: React.FC = () => {
         <hr className="full-line" />
 
         <div className="action-bar">
-          <TextField
-            variant="outlined"
-            placeholder="Pesquisar..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="search-bar"
-          />
-          <div className="pagination">
-            <Button
-              disabled={page === 1}
-              onClick={() => handlePageChange(page - 1)}
-            >
-              Anterior
-            </Button>
-            {Array.from({ length: totalPages }, (_, p) => (
-              <Button
-                key={p + 1}
-                onClick={() => handlePageChange(p + 1)}
-                className={page === p + 1 ? 'active-page' : ''}
-              >
-                {p + 1}
-              </Button>
-            ))}
-            <Button
-              disabled={page === totalPages}
-              onClick={() => handlePageChange(page + 1)}
-            >
-              Próximo
-            </Button>
+          <div className="search-filter-container">
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                placeholder="Pesquisar"
+                className="search-bar-listacliente"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                onKeyDown={(e) => e.key === 'Enter' && carregarOrdens()}
+              />
+              <FontAwesomeIcon icon={faSearch} className="search-icon" onClick={carregarOrdens} />
+            </div>
+
+
+            <select className="filter-select">
+              <option value="todos">Filtrar</option>
+              <option value="pendentes">Pendentes</option>
+              <option value="concluidos">Concluídos</option></select>
+
+
+            <button className="filter-button">
+              Filtrar <FontAwesomeIcon icon={faCaretDown} />
+            </button>
           </div>
         </div>
 
@@ -177,17 +153,7 @@ const Relatorios: React.FC = () => {
                       <TableCell>{ordem.id}</TableCell>
                       <TableCell>{ordem.codReferenciaOs}</TableCell>
                       <TableCell>
-                        <span
-                          className={`status-cell ${
-                            ordem.status === 'INICIADA'
-                              ? 'status-iniciada'
-                              : ordem.status === 'PENDENTE'
-                              ? 'status-pendente'
-                              : ordem.status === 'FINALIZADA'
-                              ? 'status-finalizada'
-                              : ''
-                          }`}
-                        >
+                        <span className={`status-cell ${ordem.status.toLowerCase()}`}>
                           {ordem.status}
                         </span>
                       </TableCell>
@@ -209,12 +175,7 @@ const Relatorios: React.FC = () => {
             <div className="results-info">
               Mostrando {filteredOrdens.length} de {ordens.length} resultados
               <div className="pagination-info">
-                <Button
-                  disabled={page === 1}
-                  onClick={() => handlePageChange(page - 1)}
-                >
-                  Anterior
-                </Button>
+                <Button disabled={page === 1} onClick={() => handlePageChange(page - 1)}>Anterior</Button>
                 {Array.from({ length: totalPages }, (_, p) => (
                   <Button
                     key={p + 1}
@@ -224,12 +185,7 @@ const Relatorios: React.FC = () => {
                     {p + 1}
                   </Button>
                 ))}
-                <Button
-                  disabled={page === totalPages}
-                  onClick={() => handlePageChange(page + 1)}
-                >
-                  Próximo
-                </Button>
+                <Button disabled={page === totalPages} onClick={() => handlePageChange(page + 1)}>Próximo</Button>
               </div>
             </div>
           </div>
@@ -245,14 +201,6 @@ const Relatorios: React.FC = () => {
                 <Typography><strong>Data de Entrega:</strong> {selectedOrdem.dataEntrega}</Typography>
                 <Typography><strong>Valor Total:</strong> {selectedOrdem.valorTotal}</Typography>
                 <Typography><strong>Cliente:</strong> {selectedOrdem.cliente.razaoSocial}</Typography>
-                <Typography variant="h6">Endereços:</Typography>
-                {/* {selectedOrdem.enderecos && selectedOrdem.enderecos.map((endereco: IEnderecos, index: number) => (
-                  <div key={index}> */}
-                    {/* <Typography><strong>Endereço:</strong> {endereco.endereco}</Typography>
-                    <Typography><strong>Cidade:</strong> {endereco.cidade}</Typography>
-                    <Typography><strong>Estado:</strong> {endereco.estado}</Typography> */}
-                  {/* </div>
-                ))} */}
               </div>
             )}
             <Button variant="contained" color="error" onClick={handleClose}>Fechar</Button>

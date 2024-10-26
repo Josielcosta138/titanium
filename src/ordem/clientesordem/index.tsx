@@ -299,7 +299,7 @@ const redirecionarListaDeClientes = () => {
         <div className="action-bar">
           <button onClick={redirecionarListaDeClientes} className="service-list-button">Lista de Clientes</button>
           <div className="filter-container">
-            <input type="text" placeholder="Pesquisar..." className="search-bar" />
+            <input type="text" placeholder="Pesquisar..." className="search-bar-clientes-ordem" />
             <button className="filter-button">Filtrar <i className="fa fa-caret-down"></i></button>
           </div>
         </div>

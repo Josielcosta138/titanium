@@ -258,7 +258,7 @@ const CadastroOrdemServico: React.FC = () => {
 
   useEffect(() => {
     carregarClientes();    
-  }, []);
+  }, []); 
 
 
 
