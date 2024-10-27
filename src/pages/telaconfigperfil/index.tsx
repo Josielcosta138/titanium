@@ -17,6 +17,8 @@ import {
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import HttpsIcon from '@mui/icons-material/Https';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import perfilUser from '../../../public/Logo.png'
 
 // Renomeando para evitar conflito de nomes
 const StyledInput = styled('input')({
@@ -24,10 +26,8 @@ const StyledInput = styled('input')({
 });
 
 const PerfilConfig: React.FC = () => {
-  const [clientes, setClientes] = useState<IClientes[]>([]);
   const { id } = useParams<{ id: string }>();
   const [nome, setNome] = useState<string>('');
-  const [searchCnpj, setSearchCnpj] = useState<string>('');
   const [razaoSocial, setRazaoSocial] = useState<string>('');
   const [nomeFantasia, setNomeFantasia] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -42,116 +42,114 @@ const PerfilConfig: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [clienteId, setIdCliente] = useState<number>();
   const [cidadeId, setIdCidade] = useState<number>();
+  const [idUsuario, setIdUsuario] = useState<number>();
+  const [idEndereco, setIdEndereco] = useState<number>();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Estado para a imagem do perfil
-  const [profileImage, setProfileImage] = useState("/placeholder.svg?height=100&width=100");
+  
 
-  useEffect(() => {
-    if (id) {
-      carregarCliente(Number(id));
-    }
-  }, [id]);
+  useEffect(() => {    
+      carregarCliente();
+  },[]);
 
-  const carregarCliente = async (id: number) => {
+  const carregarCliente = async () => {
     try {
-      const response = await apiGet(`endereco/carregar/${id}`);
+      const response = await apiGet(`enderecoUsuario/carregar`);
       if (response.status === STATUS_CODE.OK) {
-        const cliente = response.data;
+        const [user] = response.data;
 
-        setNomeFantasia(cliente.client.nomeFantasia || "");
-        setEmail(cliente.client.email || "");
-        setTelefone(cliente.client.telefone || "");
-        setCnpj(cliente.client.cnpj || "");
-        setRazaoSocial(cliente.client.razaoSocial || "");
-        setBairro(cliente.bairro || "");
-        setMunicipio(cliente.cidades.name || "");
-        setUf(cliente.cidades.uf || "");
-        setLogradouro(cliente.rua || "");
-        setCep(cliente.cep || "");
-        setIdCliente(cliente.client.id || undefined);
-        setIdCidade(cliente.cidades.id || undefined);
+        if(user){
+          setNomeFantasia(user.usuario.nomeFantasia || "");
+          setEmail(user.usuario.email || "");
+          setTelefone(user.usuario.telefone || "");
+          setCnpj(user.usuario.cnpj || "");
+          setRazaoSocial(user.usuario.razaoSocial || "");
+          setBairro(user.bairro || "");
+          setMunicipio(user.cidades.name || "");
+          setUf(user.cidades.uf || "");
+          setRua(user.rua || "");
+          setCep(user.cep || "");
+          setIdCliente(user.usuarioId || undefined);
+          setIdCidade(user.cidadeId || undefined);
+          setIdUsuario(user.usuario.id || undefined);
+          setIdEndereco(user.id || undefined);   
+          
+          
+          if (user.usuarioId) {
+            localStorage.setItem("idUsuario", user.usuarioId.toString());
+          }
+        }        
       }
+      
+
     } catch (error) {
       console.error("Erro ao carregar dados do cliente:", error);
     }
   };
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
-  const gerenciarSalvar = () => {
-    if (id) {
-      edidarCliente();
-    } else {
-      salvarCliente();
-    }
-  };
+ 
+
+
 
   // ----------------------- PUT -------------------------------------//
-
   const edidarCliente = async () => {
     const data = {
-      nome: razaoSocial,
-      fantasia: nomeFantasia,
+      razaoSocial: razaoSocial,
+      nomeFantasia: nomeFantasia,
       email: email,
       telefone: telefone,
       cnpj: cnpj,
     };
 
     try {
-      const response = await apiPut(`/cliente/atualizarCliente/${Number(clienteId)}`, data);
-      if (response.status === STATUS_CODE.OK) {
-        const updatedClienteId = response.data.id;
-        setIdCliente(updatedClienteId);
-        localStorage.setItem("idCliente", updatedClienteId.toString());
+      const response = await apiPut(`usuarios/atualizarUsuarios/${Number(idUsuario)}`, data);
 
-        await edidarCidade(updatedClienteId);
+      if (response.status === STATUS_CODE.OK) {
+        
+        const updatedUsuarioId = response.data.id;
+        localStorage.setItem("idUsuario", updatedUsuarioId.toString());
+        
+        await edidarCidade(updatedUsuarioId);
       }
     } catch (error) {
       console.error("Erro ao atualizar cliente:", error);
     }
   };
 
-  const edidarCidade = async (clienteId: number) => {
+  const edidarCidade = async (usuarioId: number) => {
     const data = {
       name: municipio,
       uf: uf,
     };
 
     try {
-      const response = await apiPut(`/cidade/atualizarCidade/${Number(cidadeId)}`, data);
+      const response = await apiPut(`cidadeUsuario/atualizarCidade/${Number(cidadeId)}`, data);
+
       if (response.status === STATUS_CODE.OK) {
         const updatedCidadeId = response.data.id;
         setIdCidade(updatedCidadeId);
         localStorage.setItem("idCidade", updatedCidadeId.toString());
 
-        await editarEndereco(clienteId, updatedCidadeId);
+        await editarEndereco(usuarioId, updatedCidadeId);
       }
     } catch (error) {
       console.error("Erro ao salvar cidade:", error);
     }
   };
 
-  const editarEndereco = async (clienteId: number, cidadeId: number) => {
+  const editarEndereco = async (usuarioId: number, cidadeId: number) => {
     const data = {
-      rua: logradouro,
+      rua: rua,
       bairro: bairro,
-      idCliente: clienteId,
+      idUsuario: usuarioId,
       idCidade: cidadeId,
     };
 
     try {
-      const response = await apiPut(`/endereco/atualizar/${id}`, data);
+      const response = await apiPut(`enderecoUsuario/atualizar/${idEndereco}`, data);
+
       if (response.status === STATUS_CODE.OK) {
         setOpen(true);
         setTimeout(() => {
@@ -163,115 +161,16 @@ const PerfilConfig: React.FC = () => {
     }
   };
 
-  // ------------------------------ POST ----------------------------------//
 
-  const formatarCnpj = (searchCnpj: string) => {
-    return searchCnpj.replace(/\D/g, '');
-  };
 
-  const carregarClienteViaCnpj = async () => {
-    try {
-      const cnpjFormatado = formatarCnpj(searchCnpj);
-      console.log(">>> Cnpj: ", cnpjFormatado);
-
-      const response = await apiGet(`cliente/carregarDadosApis/${cnpjFormatado}`);
-
-      if (response.status === STATUS_CODE.OK) {
-        console.log(response);
-
-        const dadosCliente = response.data;
-        setNome(dadosCliente.nome || "");
-        setNomeFantasia(dadosCliente.fantasia || "");
-        setEmail(dadosCliente.email || "");
-        setTelefone(dadosCliente.telefone || "");
-        setCnpj(dadosCliente.cnpj || "");
-        setRazaoSocial(dadosCliente.nome || "");
-        setBairro(dadosCliente.bairro || "");
-        setMunicipio(dadosCliente.municipio || "");
-        setUf(dadosCliente.uf || "");
-        setLogradouro(dadosCliente.logradouro || "");
-        setCep(dadosCliente.cep || "");
-      }
-    } catch (error) {
-      console.error("Erro ao carregar dados do cliente e endereços:", error);
-    }
-  };
-
-  const salvarCliente = async () => {
-    const data = {
-      fantasia: nomeFantasia,
-      telefone: telefone,
-      cnpj: cnpj,
-      nome: nome,
-      email: email,
-    };
-
-    try {
-      const response = await apiPost(`/cliente/criarClientes`, data);
-
-      if (response.status === STATUS_CODE.CREATED) {
-        const newClienteId = response.data.id;
-        setIdCliente(newClienteId);
-        localStorage.setItem("idCliente", newClienteId.toString());
-
-        await salvarCidade(newClienteId);
-      }
-    } catch (error) {
-      console.error("Erro ao salvar cliente:", error);
-    }
-  };
-
-  const salvarEndereco = async (clienteId: number, cidadeId: number) => {
-    const data = {
-      rua: logradouro,
-      bairro: bairro,
-      idCliente: clienteId,
-      idCidade: cidadeId,
-    };
-
-    try {
-      const response = await apiPost("/endereco/criar", data);
-      if (response.status === STATUS_CODE.CREATED) {
-        setOpen(true);
-        setTimeout(() => {
-          setOpen(false);
-          window.location.reload();
-        }, 5000);
-      }
-    } catch (error) {
-      console.error("Erro ao salvar endereço:", error);
-    }
-  };
-
-  const salvarCidade = async (clienteId: number) => {
-    const data = {
-      name: municipio,
-      uf: uf,
-    };
-
-    try {
-      const response = await apiPost("/cidade/criarCidade", data);
-
-      if (response.status === STATUS_CODE.CREATED) {
-        const newCidadeId = response.data.id;
-        setIdCidade(newCidadeId);
-        localStorage.setItem("idCidade", newCidadeId.toString());
-
-        await salvarEndereco(clienteId, newCidadeId);
-      }
-    } catch (error) {
-      console.error("Erro ao salvar cidade:", error);
-    }
-  };
-
-  const redirecionarListaDeClientes = () => {
-    navigate('/listaCliente');
-  };
 
   const redirecionarTelaInicial = () => {
     navigate('/telaInicial');
   };
 
+  const redirecionarRedefinirSenha = () => {
+    navigate('/recuperarSenha');
+  }
 
   return (
     <div className="profile-settings">
@@ -298,40 +197,27 @@ const PerfilConfig: React.FC = () => {
                 </div>
               </div>
               <hr className="full-line" />
-  
-              <div className="action-bar">
-                <button
-                  onClick={redirecionarListaDeClientes}
-                  className="service-list-button"
-                  style={{ display: 'flex', alignItems: 'center', height: '30px' }}>
-                  <PersonSearchIcon style={{ marginRight: '8px' }} />
-                  Lista de Usuários
-                </button>
-              </div>
-  
+                  
               <div className="form-container">
                 <div className="cadastro-cliente-form">
                   <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                     <Avatar
-                      src={profileImage}
+                      src={`/perfilUser.jpg`}
                       sx={{ width: 120, height: 120, mb: 2 }}
                     />
-                    <label htmlFor="icon-button-file">
-                      <StyledInput
-                        accept="image/*"
-                        id="icon-button-file"
-                        type="file"
-                        onChange={handleImageChange}
-                      />
-                      <Button
-                        variant="text"
-                        component="span"
-                        startIcon={<EditNoteIcon />}
-                        sx={{ color: 'orange' }}>
-                        Editar Foto
-                      </Button>
+                    <label >
+                    <Button                      
+                      variant="text"
+                      component="span"
+                      startIcon={<ManageAccountsIcon sx={{ width: 30, height: 30 }} />}
+                      sx={{ color: 'blue' }}>
+                      {nomeFantasia}
+                    </Button>
                     </label>
+
+
                     <Button
+                      onClick={redirecionarRedefinirSenha}
                       variant="text"
                       component="span"
                       startIcon={<HttpsIcon />}
@@ -347,73 +233,97 @@ const PerfilConfig: React.FC = () => {
                     <hr className="full-line" />
                     <section className="section">
                       <h4>Dados da Conta</h4>
-                      <label>
-                        CNPJ:
-                        <input type="text" placeholder="00.000.000/0000-00" />
+                      <label> CNPJ:</label>
+                        <input 
+                         type="text" 
+                         id="cnpj"
+                         value={cnpj}
+                         onChange={(event) => setCnpj(event.target.value)} 
+                         placeholder="00.000.000/0000-00" 
+                        />
+                      <label>Razão Social:</label>
+                        <input
+                        type="text"
+                        id="razaoSocial"
+                        value={razaoSocial}
+                        onChange={(event) => setRazaoSocial(event.target.value)}
+                        placeholder="Razão Social" /> 
+                      <label htmlFor="nome">Nome-Usuário<span className="required">*</span>
                       </label>
-                      <label>
-                        Razão Social:
-                        <input type="text" placeholder="Razão Social Exemplo" />
-                      </label>
-                      <label>
-                        Nome Fantasia:
-                        <input type="text" placeholder="Nome Fantasia Exemplo" />
-                      </label>
-                    </section>
-  
+                      <input
+                        type="text"
+                        id="nome"
+                        value={nomeFantasia}
+                        onChange={(event) => setNomeFantasia(event.target.value)}
+                        placeholder="Nome do Cliente" required />
+                      </section>
                     <hr className="full-line" style={{ marginBottom: '60px' }} />
                     <section className="section">
                       <h4>Dados Pessoais</h4>
-                      <label>
-                        Nome:
-                        <input type="text" placeholder="Nome Completo" />
-                      </label>
-                      <label>
-                        E-mail:
-                        <input type="email" placeholder="exemplo@dominio.com" />
-                      </label>
-                      <label>
-                        Telefone/Celular:
-                        <input type="text" placeholder="(00) 00000-0000" />
-                      </label>
+                      <label htmlFor="email">E-mail<span className="required">*</span></label>
+                      <input
+                        type="email"
+                        id="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        placeholder="exemplo@dominio.com" required />
+                      <label htmlFor="telefone">Número/Telefone<span className="required">*</span></label>
+                      <input
+                        type="tel"
+                        id="telefone"
+                        value={telefone}
+                        onChange={(event) => setTelefone(event.target.value)}
+                        placeholder="(00) 00000-0000" required />
                     </section>
   
                     <hr className="full-line" style={{ marginBottom: '60px' }} />
                     <section className="section">
                       <h4>Endereço</h4>
-                      <label>
-                        CEP:
-                        <input type="text" placeholder="00000-000" />
-                      </label>
-                      <label>
-                        Logradouro:
-                        <input type="text" placeholder="Rua/Avenida" />
-                      </label>
-                      <label>
-                        Rua:
-                        <input type="text" placeholder="Número, Bloco, etc." />
-                      </label>
-                      <label>
-                        Bairro:
-                        <input type="text" placeholder="Bairro" />
-                      </label>
-                      <label>
-                        Cidade:
-                        <input type="text" placeholder="Cidade" />
-                      </label>
-                      <label>
-                        Estado (UF):
-                        <input type="text" placeholder="Estado" />
-                      </label>
-                      <label>
-                        Complemento:
-                        <input type="text" placeholder="Informações Adicionais" />
-                      </label>
+                      <label htmlFor="cep">CEP<span className="required">*</span></label>
+                      <input
+                        type="text"
+                        id="cep"
+                        value={cep}
+                        onChange={(event) => setCep(event.target.value)}
+                        placeholder="00000-000" required 
+                      />           
+                      <label htmlFor="rua">Rua<span className="required">*</span></label>
+                      <input
+                        type="text"
+                        id="rua"
+                        value={rua}
+                        onChange={(event) => setRua(event.target.value)}
+                        placeholder="Rua" required 
+                      />
+                     <label htmlFor="bairro">Bairro<span className="required">*</span></label>
+                      <input
+                        type="text"
+                        id="bairro"
+                        value={bairro}
+                        onChange={(event) => setBairro(event.target.value)}
+                        placeholder="Bairro" required 
+                      />
+                      <label htmlFor="cidade">Cidade<span className="required">*</span></label>
+                      <input
+                        type="text"
+                        id="cidade"
+                        value={municipio}
+                        onChange={(event) => setMunicipio(event.target.value)}
+                        placeholder="Cidade" required 
+                      />
+                     <label htmlFor="estado">Estado (UF)<span className="required">*</span></label>
+                      <input
+                        type="text"
+                        id="estado"
+                        value={uf}
+                        onChange={(event) => setUf(event.target.value)}
+                        placeholder="UF" required 
+                      />               
                     </section>
                     <hr className="custom-divider" />
   
                     <Button
-                      onClick={gerenciarSalvar}
+                      onClick={edidarCliente}
                       variant="contained"
                       startIcon={<FontAwesomeIcon icon={faSave} className="icon" />}
                       sx={{
@@ -434,7 +344,7 @@ const PerfilConfig: React.FC = () => {
   
                     <Modal open={open} onClose={() => setOpen(false)}>
                       <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
-                        <Alert variant="filled" sx={{ mb: 2 }}>Cliente e endereço cadastrados com sucesso!</Alert>
+                        <Alert variant="filled" sx={{ mb: 2 }}>Usuário salvo com sucesso!</Alert>
                       </Box>
                     </Modal>
                   </div>

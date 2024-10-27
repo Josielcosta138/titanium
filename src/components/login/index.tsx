@@ -27,7 +27,7 @@ const Login: FC = () => {
           setOpen(false);
           sessionStorage.setItem("token", token);
           redirecionarTelaInicial(); 
-        }, 5000);    
+        },1000);    
       }
     } catch (error) {
       
