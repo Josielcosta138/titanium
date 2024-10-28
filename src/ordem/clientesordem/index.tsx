@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { FaArrowLeft } from "react-icons/fa"; // Importe o ícone de voltar
 import './index.css';
-import { FaSearch, FaArrowLeft } from "react-icons/fa"; // Importe o ícone de voltar
 // import { FaSearch } from "react-icons/fa";
+import { faBell, faCog, faSave } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
-import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../api/RestClient';
 import { Alert, Box, Modal } from '@mui/material';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { IClientes } from '../../Interface/Cliente/type';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave } from '@fortawesome/free-solid-svg-icons';
-import { faCog, faBell } from '@fortawesome/free-solid-svg-icons';
+import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../api/RestClient';
 import Sidebar from '../../components/Sidebar';
+import { IClientes } from '../../Interface/Cliente/type';
 
 const CadastroCliente: React.FC = () => {
   const [clientes, setClientes] = useState<IClientes[]>([]);
@@ -300,7 +299,7 @@ const redirecionarListaDeClientes = () => {
           <button onClick={redirecionarListaDeClientes} className="service-list-button">Lista de Clientes</button>
           <div className="filter-container">
             <input type="text" placeholder="Pesquisar..." className="search-bar-clientes-ordem" />
-            <button className="filter-button">Filtrar <i className="fa fa-caret-down"></i></button>
+            <button className="filter-button-clientesordem">Filtrar <i className="fa fa-caret-down"></i></button>
           </div>
         </div>
 

@@ -60,3 +60,7 @@
     align-items: flex-start;
   }
 }
+
+.imprimir-selecionados-button{
+  margin-left: 10px;
+}

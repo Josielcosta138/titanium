@@ -1,8 +1,8 @@
-import React from 'react';
+import { faChartBar, faCog, faHome, faList, faSignOutAlt, faTools, faUserPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faUserPlus, faTools, faList, faUsers, faChartBar, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import './index.css';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import './index.css';
 
 const Sidebar: React.FC = () => {
   const user = {
@@ -12,12 +12,10 @@ const Sidebar: React.FC = () => {
   };
   const navigate = useNavigate();
 
-
-  const redericionarLogin =() => {
+  const redirecionarLogin = () => {
     sessionStorage.clear();
     navigate('/login');
-  }
- 
+  };
 
   return (
     <div className="sidebar">
@@ -31,30 +29,33 @@ const Sidebar: React.FC = () => {
       <div className="user-info">
         <div className="user-name">{user.name}</div>
         <div className="user-role">{user.role}</div>
-        <button 
-          onClick={redericionarLogin}
-          className="logout-button"
-          >
+        <button onClick={redirecionarLogin} className="logout-button">
           <FontAwesomeIcon icon={faSignOutAlt} className="icon" /> Sair
         </button>
       </div>
       <nav className="sidebar-nav">
         <ul>
-          <li><FontAwesomeIcon icon={faHome} className="icon" /> Início</li>
-          <li><FontAwesomeIcon icon={faUserPlus} className="icon" /> Cadastro de Cliente</li>
-          <li><FontAwesomeIcon icon={faTools} className="icon" /> Ordem de Serviço</li>
-          <li><FontAwesomeIcon icon={faList} className="icon" /> Listagem de Serviços</li>
-          <li><FontAwesomeIcon icon={faUsers} className="icon" /> Clientes</li>
-          <li><FontAwesomeIcon icon={faChartBar} className="icon" /> Relatórios</li>
-          <li><FontAwesomeIcon icon={faCog} className="icon" /> Configurações</li>
-{/* 
-          FAZERRRRR EHHEEHEEHHEHEHEHEHHEHEHEHEHEHHE QUERO MORREEEE BRINCADERA VALORIZE A VIDA AMEM IRMAO <li onClick={redirecionarCadastroDeClientes}>Cadastro de Cliente</li>
-            <li onClick={redirecionarCadastroOs}>Ordem de Serviço</li>
-            <li onClick={redirecionarParaListaDeOs}>Listagem de Serviços</li>
-            <li onClick={redirecionarListaDeClientes}>Clientes</li>
-            <li onClick={redirecionarRelatorios}>Relatórios</li>
-
-           */}
+          <li onClick={() => navigate('/telaInicial')}>
+            <FontAwesomeIcon icon={faHome} className="icon" /> Início
+          </li>
+          <li onClick={() => navigate('/ordemCliente')}>
+            <FontAwesomeIcon icon={faUserPlus} className="icon" /> Cadastro de Cliente
+          </li>
+          <li onClick={() => navigate('/ordemServico')}>
+            <FontAwesomeIcon icon={faTools} className="icon" /> Ordem de Serviço
+          </li>
+          <li onClick={() => navigate('/listaServico')}>
+            <FontAwesomeIcon icon={faList} className="icon" /> Listagem de Serviços
+          </li>
+          <li onClick={() => navigate('/listaCliente')}>
+            <FontAwesomeIcon icon={faUsers} className="icon" /> Clientes
+          </li>
+          <li onClick={() => navigate('/relatorios')}>
+            <FontAwesomeIcon icon={faChartBar} className="icon" /> Relatórios
+          </li>
+          <li onClick={() => navigate('/perfil')}>
+            <FontAwesomeIcon icon={faCog} className="icon" /> Configurações
+          </li>
         </ul>
       </nav>
     </div>
@@ -62,3 +63,4 @@ const Sidebar: React.FC = () => {
 };
 
 export default Sidebar;
+

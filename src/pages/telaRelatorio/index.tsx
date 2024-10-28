@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import './index.css';
-import { apiGet, STATUS_CODE } from '../../api/RestClient';
+import { faCaretDown, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   Box,
   Button,
+  Checkbox,
+  CircularProgress,
+  Menu,
+  MenuItem,
   Modal,
   Table,
   TableBody,
@@ -11,15 +14,16 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
-  CircularProgress,
+  Typography
 } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { imprimirDadosOrdem } from '../../utils/generatePDF';
 import { IOrdemServico } from '../../Interface/OS/type';
+import { apiGet, STATUS_CODE } from '../../api/RestClient';
 import Sidebar from '../../components/Sidebar';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { imprimirDadosOrdem } from '../../utils/generatePDF';
+import './index.css';
 
 const Relatorios: React.FC = () => {
   const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
@@ -30,21 +34,24 @@ const Relatorios: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-
+  const [filterStatus, setFilterStatus] = useState<string>('todos');
+  const [selectedOrdens, setSelectedOrdens] = useState<IOrdemServico[]>([]);
+  const [showFilter, setShowFilter] = useState(false); // Estado para exibir/ocultar filtros
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const openMenu = Boolean(anchorEl);
 
   const carregarOrdens = async () => {
     setLoading(true);
     setError(null);
-
     try {
       const response = await apiGet('/ordemServico/carregar');
       if (response.status === STATUS_CODE.OK) {
-        setOrdens(response.data);
-        setTotalPages(response.data.totalPages);
+        const data = response.data;
+        setOrdens(data);
+        setTotalPages(data.totalPages);
       }
     } catch (error) {
-      console.error("Erro ao carregar ordens de serviço:", error);
       setError('Falha ao carregar ordens de serviço.');
     } finally {
       setLoading(false);
@@ -61,13 +68,17 @@ const Relatorios: React.FC = () => {
     setSelectedOrdem(null);
   };
 
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
 
   useEffect(() => {
     carregarOrdens();
-  }, [page]);
+  }, [page, filterStatus]);
 
   const editarOrdem = (id: number) => {
     navigate(`/ordemServico/${id}`);
@@ -77,10 +88,25 @@ const Relatorios: React.FC = () => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredOrdens = ordens.filter(ordem =>
-    ordem.codReferenciaOs.includes(searchTerm) ||
-    ordem.cliente.razaoSocial.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredOrdens = ordens.filter((ordem) =>
+    (filterStatus === 'todos' || ordem.status.toLowerCase() === filterStatus) &&
+    (ordem.codReferenciaOs.includes(searchTerm) ||
+      ordem.cliente.razaoSocial.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const handleSelectOrdem = (ordem: IOrdemServico) => {
+    setSelectedOrdens(selectedOrdens.includes(ordem)
+      ? selectedOrdens.filter((o) => o !== ordem)
+      : [...selectedOrdens, ordem]);
+  };
+
+  const handleImprimirSelecionados = () => {
+    selectedOrdens.forEach(imprimirDadosOrdem);
+  };
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   return (
     <div className="relatorio-corte-container">
@@ -90,12 +116,20 @@ const Relatorios: React.FC = () => {
         <div className="top-bar">
           <div className="top-left">
             <button className="back-button">
-              <i className="fa fa-arrow-left"></i> Voltar
+              <i className="fa fa-arrow-left"></i><FaArrowLeft /> Voltar
             </button>
             <h2>Relatório de Corte</h2>
           </div>
           <div className="top-right-relatorio">
-            <Button variant="contained" color="warning" className="add-relatorio-button">Cadastrar Relatório</Button>
+            <Button
+              variant="contained"
+              color="success"
+              className="imprimir-selecionados-button"
+              onClick={handleImprimirSelecionados}
+              disabled={selectedOrdens.length === 0}
+            >
+              Imprimir Selecionados
+            </Button>
           </div>
         </div>
 
@@ -110,23 +144,92 @@ const Relatorios: React.FC = () => {
                 className="search-bar-listacliente"
                 value={searchTerm}
                 onChange={handleSearchChange}
-                onKeyDown={(e) => e.key === 'Enter' && carregarOrdens()}
+                onKeyDown={(e) => e.key === 'Enter' && carregarOrdens()} // mantém a pesquisa com Enter
               />
               <FontAwesomeIcon icon={faSearch} className="search-icon" onClick={carregarOrdens} />
             </div>
 
 
-            <select className="filter-select">
-              <option value="todos">Filtrar</option>
-              <option value="pendentes">Pendentes</option>
-              <option value="concluidos">Concluídos</option></select>
-
-
-            <button className="filter-button">
+            <Button className="filter-button" onClick={handleMenuClick}>
               Filtrar <FontAwesomeIcon icon={faCaretDown} />
-            </button>
+            </Button>
+
+            <Menu
+              anchorEl={anchorEl}
+              open={openMenu}
+              onClose={handleMenuClose}
+            >
+
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                Código OS
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                  Cliente
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                Referência
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                  Modelo
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                  Tipo de Tecido
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                  Data-Entrada
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                  Data-Saída
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                  Quantidade de Rolos
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                Quantidade de Falhas
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                Quantidade de Sobras
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                  Valor por Peças
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                  Quantidade de Peças
+                </label>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <label>
+                  Valor Total
+                </label>
+              </MenuItem>
+            </Menu>
           </div>
         </div>
+
+
 
         {loading ? (
           <CircularProgress />
@@ -138,25 +241,27 @@ const Relatorios: React.FC = () => {
               <Table>
                 <TableHead>
                   <TableRow>
+                    <TableCell>Selecionar</TableCell>
                     <TableCell>Código OS</TableCell>
-                    <TableCell>Cod-Referência</TableCell>
-                    <TableCell>Status</TableCell>
                     <TableCell>Cliente</TableCell>
-                    <TableCell>Data-entrada</TableCell>
-                    <TableCell>Data-entrega</TableCell>
+                    <TableCell>Referência</TableCell>
+                    <TableCell>Modelo</TableCell>
+                    <TableCell>Tipo de Tecido</TableCell>
+                    <TableCell>Data-Entrada</TableCell>
                     <TableCell>Ações</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredOrdens.map(ordem => (
+                  {filteredOrdens.map((ordem) => (
                     <TableRow key={ordem.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedOrdens.includes(ordem)}
+                          onChange={() => handleSelectOrdem(ordem)}
+                        />
+                      </TableCell>
                       <TableCell>{ordem.id}</TableCell>
                       <TableCell>{ordem.codReferenciaOs}</TableCell>
-                      <TableCell>
-                        <span className={`status-cell ${ordem.status.toLowerCase()}`}>
-                          {ordem.status}
-                        </span>
-                      </TableCell>
                       <TableCell>{ordem.cliente.razaoSocial}</TableCell>
                       <TableCell>{ordem.dataEntrada}</TableCell>
                       <TableCell>{ordem.dataEntrega}</TableCell>
@@ -178,37 +283,35 @@ const Relatorios: React.FC = () => {
                 <Button disabled={page === 1} onClick={() => handlePageChange(page - 1)}>Anterior</Button>
                 {Array.from({ length: totalPages }, (_, p) => (
                   <Button
-                    key={p + 1}
+                    key={p}
+                    color={page === p + 1 ? 'primary' : 'inherit'}
                     onClick={() => handlePageChange(p + 1)}
-                    className={page === p + 1 ? 'active-page' : ''}
                   >
                     {p + 1}
                   </Button>
                 ))}
-                <Button disabled={page === totalPages} onClick={() => handlePageChange(page + 1)}>Próximo</Button>
+                <Button disabled={page === totalPages} onClick={() => handlePageChange(page + 1)}>Próxima</Button>
               </div>
             </div>
           </div>
         )}
-
-        <Modal open={open} onClose={handleClose}>
-          <Box className="modal-box">
-            {selectedOrdem && (
-              <div>
-                <Typography variant="h5">Detalhes da Ordem de Serviço</Typography>
-                <Typography><strong>Código OS:</strong> {selectedOrdem.id}</Typography>
-                <Typography><strong>Data de Entrada:</strong> {selectedOrdem.dataEntrada}</Typography>
-                <Typography><strong>Data de Entrega:</strong> {selectedOrdem.dataEntrega}</Typography>
-                <Typography><strong>Valor Total:</strong> {selectedOrdem.valorTotal}</Typography>
-                <Typography><strong>Cliente:</strong> {selectedOrdem.cliente.razaoSocial}</Typography>
-              </div>
-            )}
-            <Button variant="contained" color="error" onClick={handleClose}>Fechar</Button>
-          </Box>
-        </Modal>
       </div>
+
+      <Modal open={open} onClose={handleClose}>
+        <div className="modal-content">
+          {selectedOrdem && (
+            <div>
+              <Typography variant="h5">Detalhes da Ordem</Typography>
+              <Typography>ID: {selectedOrdem.id}</Typography>
+              <Typography>Código OS: {selectedOrdem.codReferenciaOs}</Typography>
+              <Typography>Cliente: {selectedOrdem.cliente.razaoSocial}</Typography>
+            </div>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };
 
 export default Relatorios;
+
