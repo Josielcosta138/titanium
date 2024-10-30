@@ -88,7 +88,7 @@ const ListaOrdemServico: React.FC = () => {
 
 
   const rederionarCadastroOrdemCorte = async (idOc : number) => {
-    localStorage.setItem("statusOC", 'PENDENTE');
+    localStorage.setItem("statusOC", 'PRODUZINDO');
     localStorage.setItem("ordemServicoId", idOc.toString());
     navigate('/ordemCorte')
   };
@@ -234,10 +234,10 @@ const ListaOrdemServico: React.FC = () => {
                     <TableCell>
                           <span
                             className={`status-cell ${
-                              ordem.status === 'INICIADA'
-                                ? 'status-iniciada'
-                                : ordem.status === 'PENDENTE'
+                              ordem.status === 'PENDENTE'
                                 ? 'status-pendente'
+                                : ordem.status === 'PRODUZINDO' //ALTERADO
+                                ? 'status-producao'
                                 : ordem.status === 'FINALIZADA'
                                 ? 'status-finalizada'
                                 : ''
