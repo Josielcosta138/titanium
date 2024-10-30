@@ -242,10 +242,10 @@ const TelaInicial: React.FC = () => {
               <TableCell>
                 <span
                   className={`status-cell ${
-                    ordem.status === 'INICIADA'
-                      ? 'status-iniciada'
-                      : ordem.status === 'PENDENTE'
+                    ordem.status === 'PENDENTE'
                       ? 'status-pendente'
+                      : ordem.status === 'PRODUZINDO'
+                      ? 'status-producao'
                       : ordem.status === 'FINALIZADA'
                       ? 'status-finalizada'
                       : ''
