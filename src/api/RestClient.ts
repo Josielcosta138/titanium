@@ -13,8 +13,6 @@ api.interceptors.response.use(response => {
     return error;
 });
 
-
-
 export interface IDataResponse {
     status: number,
     data?: any,
