@@ -4,63 +4,112 @@
 
 .content-container {
   flex-grow: 1;
-  padding: 20px; /* Adicione um espaçamento ao redor do conteúdo */
+  padding: 20px;
+  overflow: hidden; /* Esconde o overflow horizontal */
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.top-left {
+  display: flex;
+  align-items: center;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.top-right-relatorio {
+  display: flex;
+  align-items: center;
+}
+
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-filter-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-bar-listacliente {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+}
+
+.filter-button {
+  margin-left: 10px;
 }
 
 .table-container {
-  margin-top: 20px;
   overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.table {
+.table-container::-webkit-scrollbar {
+  display: none;
+}
+
+table {
   width: 100%;
+  border-collapse: collapse;
 }
 
-.table th {
-  background-color: #f0f0f0;
+th, td {
+  padding: 8px 12px;
   text-align: left;
-  padding: 10px;
-}
-
-.table td {
-  padding: 10px;
   border-bottom: 1px solid #ddd;
 }
 
-.action-buttons button {
-  margin-right: 5px;
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-right: -100px;
 }
 
-.action-buttons button:hover {
-  opacity: 0.8; /* Efeito de hover */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-@media (max-width: 768px) {
-  .relatorio-corte-container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-  }
-
-  .content-container {
-    padding: 10px;
-  }
-
-  .top-bar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .search-filter-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.modal-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 4px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 600px;
 }
 
-.imprimir-selecionados-button{
-  margin-left: 10px;
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
 }

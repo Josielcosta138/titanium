@@ -240,8 +240,9 @@
 
 .action-buttons {
     display: flex;
-    justify-content: space-between;
-    gap: 10px;
+    /* justify-content: space-between; */
+    /* gap: 10px; */
+    margin-right: -107px;
 }
 
 .modal-box {

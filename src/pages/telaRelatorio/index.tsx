@@ -36,7 +36,7 @@ const Relatorios: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('todos');
   const [selectedOrdens, setSelectedOrdens] = useState<IOrdemServico[]>([]);
-  const [showFilter, setShowFilter] = useState(false); // Estado para exibir/ocultar filtros
+  const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -115,8 +115,9 @@ const Relatorios: React.FC = () => {
       <div className="content-container">
         <div className="top-bar">
           <div className="top-left">
-            <button className="back-button">
-              <i className="fa fa-arrow-left"></i><FaArrowLeft /> Voltar
+            <button onClick={() => navigate('/telaInicial')} className="back-button">
+              <i className="fa fa-arrow-left">
+                </i><FaArrowLeft /> Voltar
             </button>
             <h2>Relatório de Corte</h2>
           </div>
@@ -149,7 +150,6 @@ const Relatorios: React.FC = () => {
               <FontAwesomeIcon icon={faSearch} className="search-icon" onClick={carregarOrdens} />
             </div>
 
-
             <Button className="filter-button" onClick={handleMenuClick}>
               Filtrar <FontAwesomeIcon icon={faCaretDown} />
             </Button>
@@ -159,77 +159,48 @@ const Relatorios: React.FC = () => {
               open={openMenu}
               onClose={handleMenuClose}
             >
-
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                Código OS
-                </label>
+                <label>Código OS</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                  Cliente
-                </label>
+                <label>Cliente</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                Referência
-                </label>
+                <label>Referência</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                  Modelo
-                </label>
+                <label>Modelo</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                  Tipo de Tecido
-                </label>
+                <label>Tipo de Tecido</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                  Data-Entrada
-                </label>
+                <label>Data-Entrada</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                  Data-Saída
-                </label>
+                <label>Data-Saída</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                  Quantidade de Rolos
-                </label>
+                <label>Quantidade de Rolos</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                Quantidade de Falhas
-                </label>
+                <label>Quantidade de Falhas</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                Quantidade de Sobras
-                </label>
+                <label>Quantidade de Sobras</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                  Valor por Peças
-                </label>
+                <label>Valor por Peças</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                  Quantidade de Peças
-                </label>
+                <label>Quantidade de Peças</label>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <label>
-                  Valor Total
-                </label>
+                <label>Valor Total</label>
               </MenuItem>
             </Menu>
           </div>
         </div>
-
-
 
         {loading ? (
           <CircularProgress />
@@ -246,8 +217,8 @@ const Relatorios: React.FC = () => {
                     <TableCell>Cliente</TableCell>
                     <TableCell>Referência</TableCell>
                     <TableCell>Modelo</TableCell>
-                    <TableCell>Tipo de Tecido</TableCell>
                     <TableCell>Data-Entrada</TableCell>
+                    <TableCell>Valor Total</TableCell>
                     <TableCell>Ações</TableCell>
                   </TableRow>
                 </TableHead>
@@ -261,15 +232,16 @@ const Relatorios: React.FC = () => {
                         />
                       </TableCell>
                       <TableCell>{ordem.id}</TableCell>
-                      <TableCell>{ordem.codReferenciaOs}</TableCell>
                       <TableCell>{ordem.cliente.razaoSocial}</TableCell>
+                      <TableCell>{ordem.codReferenciaOs}</TableCell>
+                      <TableCell>{ordem.modelo}</TableCell>
                       <TableCell>{ordem.dataEntrada}</TableCell>
-                      <TableCell>{ordem.dataEntrega}</TableCell>
+                      <TableCell>{ordem.valorTotal}</TableCell>
                       <TableCell>
                         <Box className="action-buttons">
                           <Button variant="contained" color="info" onClick={() => handleVerMais(ordem)}>Visualizar</Button>
+                          {/* <Button variant="contained" color="secondary" onClick={() => editarOrdem(ordem.id)}>Editar</Button> */}
                           <Button variant="contained" color="success" onClick={() => imprimirDadosOrdem(ordem)}>Imprimir</Button>
-                          <Button variant="contained" color="warning" onClick={() => editarOrdem(ordem.id)}>Editar</Button>
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -277,35 +249,44 @@ const Relatorios: React.FC = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <div className="results-info">
-              Mostrando {filteredOrdens.length} de {ordens.length} resultados
-              <div className="pagination-info">
-                <Button disabled={page === 1} onClick={() => handlePageChange(page - 1)}>Anterior</Button>
-                {Array.from({ length: totalPages }, (_, p) => (
-                  <Button
-                    key={p}
-                    color={page === p + 1 ? 'primary' : 'inherit'}
-                    onClick={() => handlePageChange(p + 1)}
-                  >
-                    {p + 1}
-                  </Button>
-                ))}
-                <Button disabled={page === totalPages} onClick={() => handlePageChange(page + 1)}>Próxima</Button>
-              </div>
-            </div>
           </div>
         )}
+
+        <div className="pagination">
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <Button
+              key={index}
+              variant={index + 1 === page ? 'contained' : 'text'}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </Button>
+          ))}
+        </div>
       </div>
 
       <Modal open={open} onClose={handleClose}>
-        <div className="modal-content">
+        <div className="modal-container">
+          <h2>Detalhes da Ordem de Serviço</h2>
           {selectedOrdem && (
-            <div>
-              <Typography variant="h5">Detalhes da Ordem</Typography>
-              <Typography>ID: {selectedOrdem.id}</Typography>
-              <Typography>Código OS: {selectedOrdem.codReferenciaOs}</Typography>
-              <Typography>Cliente: {selectedOrdem.cliente.razaoSocial}</Typography>
-            </div>
+            <>
+              <p>ID: {selectedOrdem.id}</p>
+              <p>Cliente: {selectedOrdem.cliente.razaoSocial}</p>
+              <p>Referência: {selectedOrdem.codReferenciaOs}</p>
+              <p>Modelo: {selectedOrdem.modelo}</p>
+              <p>Data de Entrada: {selectedOrdem.dataEntrada}</p>
+              <p>Data de Saída: {selectedOrdem.dataEntrega}</p>
+              <p>Quantidade de Rolos: {selectedOrdem.qtdeRolos}</p>
+              <p>Quantidade de Falhas: {selectedOrdem.qtdeMaterialFalhas}</p>
+              <p>Quantidade de Sobras: {selectedOrdem.qtdeMaterialRestante}</p>
+              <p>Valor por Peças: {selectedOrdem.valorPorPeca}</p>
+              <p>Quantidade de Peças: {selectedOrdem.qtdePecas}</p>
+              <p>Valor Total: {selectedOrdem.valorTotal}</p>
+              <Box className="modal-buttons">
+                <Button variant="contained" color="info" onClick={() => imprimirDadosOrdem(selectedOrdem)}>Imprimir</Button>
+                <Button variant="contained" color="error" onClick={handleClose}>Fechar</Button>
+              </Box>
+            </>
           )}
         </div>
       </Modal>
@@ -314,4 +295,3 @@ const Relatorios: React.FC = () => {
 };
 
 export default Relatorios;
-
