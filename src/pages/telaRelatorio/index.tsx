@@ -136,7 +136,7 @@ const Relatorios: React.FC = () => {
 
         <hr className="full-line" />
 
-        <div className="action-bar">
+        <div className="action-bar-relatorio">
           <div className="search-filter-container">
             <div className="search-input-wrapper">
               <input
@@ -150,9 +150,9 @@ const Relatorios: React.FC = () => {
               <FontAwesomeIcon icon={faSearch} className="search-icon" onClick={carregarOrdens} />
             </div>
 
-            <Button className="filter-button" onClick={handleMenuClick}>
+            {/* <Button className="filter-button" onClick={handleMenuClick}>
               Filtrar <FontAwesomeIcon icon={faCaretDown} />
-            </Button>
+            </Button> */}
 
             <Menu
               anchorEl={anchorEl}
