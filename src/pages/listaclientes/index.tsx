@@ -209,7 +209,7 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
                     <TableCell>{cliente.client.telefone}</TableCell>
                     <TableCell>{cliente.cidades.name}</TableCell>
                     <TableCell>
-                      <Box className="action-buttons">
+                      <Box className="action-buttons-cliente">
                         <Button variant="contained" color="info" 
                           onClick={() => handleVerMais(cliente)}>Visualizar</Button>
                         <Button variant="contained" color="success"
