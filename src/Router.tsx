@@ -19,7 +19,7 @@ const Router : FC = () => {
         <BrowserRouter>
             <Routes>
                 {/* <Route path="/" element={<Navigate to="/home"/>}/> */}
-                <Route path="" element={<TelaInicial />} index/>
+                <Route path="" element={<Login />} index/>
                 <Route path="/login" element={<Login />} />
                 <Route path="/recuperarSenha" element={<RecoverPassword />} />
                 <Route path="/ordemCliente" element={<OrderCliente />} />

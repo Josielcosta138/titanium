@@ -8,7 +8,18 @@ import jsPDF from 'jspdf';
 import { IOrdemServico } from '../../Interface/OS/type';
 import Sidebar from '../../components/Sidebar';
 
+import Stack from '@mui/material/Stack';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import { BarChart } from '@mui/x-charts/BarChart';
+import { axisClasses } from '@mui/x-charts/ChartsAxis';
+import { dataset, valueFormatter } from './weather';
 
+// import { LineChart } from '@mui/x-charts/LineChart';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const TelaInicial: React.FC = () => {
  
@@ -151,28 +162,97 @@ const TelaInicial: React.FC = () => {
     navigate('/ordemCliente/');
   }
 
+
+
+
+  const dataGrafico = [
+    { name: "Jan", valores: 2 },
+    { name: "Fev", valores: 5.5 },
+    { name: "Mar", valores: 2 },
+    { name: "Abr", valores: 8.5 },
+    { name: "Mai", valores: 1.5 },
+    { name: "Jun", valores: 5 },
+    { name: "Jul", valores: 6 },
+    { name: "Ago", valores: 3 },
+    { name: "Set", valores: 7 },
+    { name: "Out", valores: 4.5 },
+    { name: "Nov", valores: 6.5 },
+    { name: "Dez", valores: 9 },
+
+  ];
+
+  const dataGraficoSobras = [
+    { name: "Jan", valores: 2 },
+    { name: "Fev", valores: 5.5 },
+    { name: "Mar", valores: 2 },
+    { name: "Abr", valores: 8.5 },
+    { name: "Mai", valores: 1.5 },
+    { name: "Jun", valores: 5 },
+    { name: "Jul", valores: 6 },
+    { name: "Ago", valores: 3 },
+    { name: "Set", valores: 7 },
+    { name: "Out", valores: 4.5 },
+    { name: "Nov", valores: 6.5 },
+    { name: "Dez", valores: 9 },
+
+  ];
+
+
+  const App = () => {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginTop: '30px' }}>
+        <BasicLineChart />
+        <BasicLineChartSobras />
+      </div>
+    );
+  };
+  
+  const BasicLineChart = () => {
+    return (
+      <div style={{ textAlign: 'center' }}>
+        <h4 style={{ textAlign: 'left', marginLeft: '240px' }}>Faturamento mensal</h4>
+        <LineChart
+          width={600}
+          height={400}
+          data={dataGrafico}
+          margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="valores" stroke="#ea6a00" />
+        </LineChart>
+      </div>
+    );
+  };
+  
+  const BasicLineChartSobras = () => {
+    return (
+      <div style={{ textAlign: 'center' }}>
+        <h4 style={{ textAlign: 'left', marginLeft: '280px' }}>Materiais de Sobras</h4>
+        <LineChart
+          width={600}
+          height={400}
+          data={dataGraficoSobras}
+          margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="valores" stroke="#ea6a00" />
+        </LineChart>
+      </div>
+    );
+  };
+  
+
+
   return (
     <div className="container"> <Sidebar></Sidebar>
-      {/* <aside className="sidebar">
-        <div className="titulo-container">
-          <div className="vertical-line"></div>
-          <div className="titulo">Titanium</div>
-        </div>
-        <div className="profile-pic">
-          <img src="https://via.placeholder.com/80" alt="Profile" />
-        </div>
-        <nav className="sidebar-nav">
-          <ul>
-            <li>Início</li>
-            <li onClick={redirecionarCadastroDeClientes}>Cadastro de Cliente</li>
-            <li onClick={redirecionarCadastroOs}>Ordem de Serviço</li>
-            <li onClick={redirecionarParaListaDeOs}>Listagem de Serviços</li>
-            <li onClick={redirecionarListaDeClientes}>Clientes</li>
-            <li onClick={redirecionarRelatorios}>Relatórios</li>
-            <li>Configurações</li>
-          </ul>
-        </nav>
-      </aside> */}
       <main className="content">
         <div className="dashboard">
           <div className="card blue">
@@ -273,8 +353,11 @@ const TelaInicial: React.FC = () => {
 
             </Table>
           </TableContainer>
+        
+        < App />  
+        {/* < BasicLineChartSobras /> */}
 
-
+      
 
           <div className="pagination">
             <Button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>&lt;</Button>

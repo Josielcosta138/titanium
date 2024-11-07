@@ -32,6 +32,7 @@ const CadastroCliente: React.FC = () => {
   const [cidadeId, setIdCidade] = useState<number>();
   const location = useLocation();
   const navigate = useNavigate();
+  const [alertaErro, setAlertaErro] = useState(false);
 
 
 
@@ -76,6 +77,36 @@ const CadastroCliente: React.FC = () => {
       salvarCliente();
     }
   }
+
+
+
+  const validarCamposObrigatorios = async () => {
+
+    if (
+        !razaoSocial ||
+        !nomeFantasia ||
+        !email ||
+        !telefone||
+        !cnpj||
+        !uf||
+        !municipio||
+        !bairro||
+        !logradouro
+    ) {
+        setAlertaErro(true);
+        setTimeout(() => {
+          setAlertaErro(false);
+        }, 6000)
+        return false;
+    }
+    gerenciarSalvar()
+    setAlertaErro(false);
+    return true;
+  }
+
+
+
+
 
 
  // ----------------------- PUT -------------------------------------//
@@ -282,12 +313,6 @@ const redirecionarListaDeClientes = () => {
             <h2>Cadastro de Cliente</h2>
           </div>
           <div className="top-right">
-            <button className="icon-button">
-              <FontAwesomeIcon icon={faCog} className="icon" />
-            </button>
-            <button className="icon-button">
-              <FontAwesomeIcon icon={faBell} className="icon" />
-            </button>
           </div>
         </div>
 
@@ -297,10 +322,6 @@ const redirecionarListaDeClientes = () => {
         {/* Botão e Filtros */}
         <div className="action-bar">
           <button onClick={redirecionarListaDeClientes} className="service-list-button">Lista de Clientes</button>
-          <div className="filter-container">
-            <input type="text" placeholder="Pesquisar..." className="search-bar-clientes-ordem" />
-            <button className="filter-button-clientesordem">Filtrar <i className="fa fa-caret-down"></i></button>
-          </div>
         </div>
 
         {/* Formulário de Cadastro */}
@@ -479,8 +500,31 @@ const redirecionarListaDeClientes = () => {
               </div>
             </div>
 
+            {alertaErro && (
+                <Alert 
+                   variant="filled" 
+                   severity="error"
+                  sx={{
+                    position: 'fixed',
+                    top: '20px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 9999,
+                    width: '33%',
+                    borderRadius: 2,
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '1.0rem'
+                  }}
+                >
+                  Todos os campos são obrigatórios! Certifique-se de que nenhum está vazio.
+                </Alert>
+              )}
+
+
+
             <button
-              onClick={gerenciarSalvar}
+              onClick={validarCamposObrigatorios}
               type="submit"
               className="submit-button">
               <FontAwesomeIcon icon={faSave}
