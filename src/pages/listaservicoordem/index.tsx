@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import './index.css';
 import { apiGet, apiPut, STATUS_CODE } from '../../api/RestClient';
 import {
+  Alert,
   Box,
   Button,
+  CircularProgress,
   Modal,
   Table,
   TableBody,
@@ -27,6 +29,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 const ListaOrdemServico: React.FC = () => {
   const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
   const [open, setOpen] = useState(false);
+  const [openEmail, setOpenEmail] = useState(false);
   const [selectedOrdem, setSelectedOrdem] = useState<any>(null);
   const [page, setPage] = useState(1);
   const [ordenTeste, setOrdemTeste] = useState<any>(null);
@@ -35,7 +38,7 @@ const ListaOrdemServico: React.FC = () => {
   const [botoesDesabilitados, setBotoesDesabilitados] = useState(false);
   const [nomePesquisar, setNomePesquisar] = useState<string>('');
   const navigate = useNavigate();
-
+  const [isLoading, setIsLoading] = useState(false);
 
 
 
@@ -121,13 +124,38 @@ const ListaOrdemServico: React.FC = () => {
     try {
         const response = await apiPut(`ordemServico/atualizarStatusOs/${id}`, data);
   
-        if (response.status === STATUS_CODE.OK) {
-          carregarOrdens();
+        if (response.status === STATUS_CODE.OK) {          
+          enviarEmailCliente(id);
         }
       } catch (error) {
         console.error("Erro ao salvar ordem de serviço:", error);
       }
   }
+
+
+  const enviarEmailCliente = async (id: number) => { 
+    setIsLoading(true); 
+    const data = {};
+  
+    try {
+      const response = await apiPut(`ordemServico/enviarEmail/${id}`, data);
+      if (response.status === STATUS_CODE.OK) {
+        console.log("E-mail enviado. ");    
+      }
+
+      setTimeout(() => {
+        setOpenEmail(true);
+        setTimeout(() => setOpenEmail(false), 5000);
+      }, 1000); 
+
+      
+    } catch (error) {
+      console.error("Erro ao enviar e-mail: ", error);
+    } finally {
+      setIsLoading(false);
+      carregarOrdens();
+    }
+  };
 
   
   const redirecionarCadastroOS = () => {
@@ -144,28 +172,6 @@ const ListaOrdemServico: React.FC = () => {
   return (
     <div className="ordem-servico-container">
       <Sidebar></Sidebar>
-
-      {/* <div className="sidebar"> */}
-        {/* <div className="titulo-container">
-          <div className="vertical-line"></div>
-          <div className="titulo">Titanium</div>
-        </div>
-        <div className="profile-pic">
-          <img src="https://via.placeholder.com/80" alt="Profile" />
-        </div>
-        <nav className="sidebar-nav">
-          <ul>
-            <li>Início</li>
-            <li>Cadastro de Cliente</li>
-            <li className="active">Ordem de Serviço</li>
-            <li>Listagem de Serviços</li>
-            <li>Clientes</li>
-            <li>Relatórios</li>
-            <li>Configurações</li>
-          </ul>
-        </nav>
-      </div> */}
-
       <div className="content-container">
         <div className="top-bar">
           <div className="top-left">
@@ -181,8 +187,15 @@ const ListaOrdemServico: React.FC = () => {
             <Button onClick={redirecionarCadastroOS} variant="contained" color="warning" className="add-ordem-button-os">Cadastrar OS</Button>
           </div>
         </div>
-
         <hr className="full-line" />
+        {isLoading && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
+            <CircularProgress />
+            <Typography variant="body1" style={{ marginTop: 10 }}>
+              Enviando e-mail ao cliente...
+            </Typography>
+          </div>
+        )}
 
         <div className="action-bar">
           <div className="search-filter-container">
@@ -236,7 +249,7 @@ const ListaOrdemServico: React.FC = () => {
                             className={`status-cell ${
                               ordem.status === 'PENDENTE'
                                 ? 'status-pendente'
-                                : ordem.status === 'PRODUZINDO' //ALTERADO
+                                : ordem.status === 'PRODUZINDO'
                                 ? 'status-producao'
                                 : ordem.status === 'FINALIZADA'
                                 ? 'status-finalizada'
@@ -275,14 +288,21 @@ const ListaOrdemServico: React.FC = () => {
                           disabled={ordem.status === 'FINALIZADA'} 
                           >Finalizar
                         </Button>
-                      </Box>
-                      
+                        <Modal open={openEmail} onClose={() => setOpenEmail(false)}>
+                            <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
+                              <Alert variant="filled" sx={{ mb: 4 }}>
+                              E-mail enviado com sucesso! O cliente foi notificado sobre a conclusão da Ordem de Serviço.
+                        </Alert>
+                        </Box>
+                        </Modal>          
+                      </Box>                                                               
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
+            
           <div className="results-info">
             Mostrando 1 de 6 de {ordens.length} resultados
             <div className="pagination-info">
@@ -409,11 +429,8 @@ const ListaOrdemServico: React.FC = () => {
                   sx={{ color: 'white', fontSize: '1.89rem', marginLeft: '8px' }} 
                 />
               </Button>
-          </Box>
-
-
+            </Box>
            </div>
-           
             )}
           </Box>
         </Modal>
