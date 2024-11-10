@@ -3,7 +3,7 @@
 .cadastro-cliente-container {
     display: flex;
     height: 100vh;
-    background-color: #ffffff;
+    /* background-color: #ffffff; */
 }
 
 .sidebar {
@@ -93,6 +93,7 @@
 .content-container {
     width: 80%;
     padding: 20px;
+    /* margin-top: 30px; */
 }
 
 .top-bar {

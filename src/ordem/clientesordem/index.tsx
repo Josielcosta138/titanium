@@ -276,18 +276,18 @@ const redirecionarListaDeClientes = () => {
         {/* Barra Superior */}
         <div className="top-bar">
           <div className="top-left">
-            <button className="back-button">
+            <button onClick={() => navigate('/telaInicial')} className="back-button">
               <FaArrowLeft /> Voltar 
             </button>
             <h2>Cadastro de Cliente</h2>
           </div>
           <div className="top-right">
-            <button className="icon-button">
+            {/* <button className="icon-button">
               <FontAwesomeIcon icon={faCog} className="icon" />
             </button>
             <button className="icon-button">
               <FontAwesomeIcon icon={faBell} className="icon" />
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -297,10 +297,10 @@ const redirecionarListaDeClientes = () => {
         {/* Botão e Filtros */}
         <div className="action-bar">
           <button onClick={redirecionarListaDeClientes} className="service-list-button">Lista de Clientes</button>
-          <div className="filter-container">
+          {/* <div className="filter-container">
             <input type="text" placeholder="Pesquisar..." className="search-bar-clientes-ordem" />
             <button className="filter-button-clientesordem">Filtrar <i className="fa fa-caret-down"></i></button>
-          </div>
+          </div> */}
         </div>
 
         {/* Formulário de Cadastro */}

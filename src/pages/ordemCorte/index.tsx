@@ -303,7 +303,7 @@ const OrdemCorte: FC = () => {
             
             <div className="content-container">
                 <div className="top-bar">
-                    <div className="top-left">
+                    <div className="top-left-corte">
                         <h2>Cadastro de Ordem de corte</h2>
                     </div>
                     <div className="top-right">
@@ -406,7 +406,7 @@ const OrdemCorte: FC = () => {
                             {activeStep === 0 && (
                                 <div className="table-container">
                                     <div className="top-bar">
-                                        <div className="top-left">
+                                        <div className="top-left-material">
                                             <h2>Selecione um material</h2>
                                         </div>
                                     </div>
