@@ -25,6 +25,7 @@ import OrdemCorte from '../ordemCorte';
 import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
 import Sidebar from '../../components/Sidebar';
 import { FaArrowLeft } from 'react-icons/fa';
+import ConfirmarFinalizarOS from '../../components/ModelConfirmacaoFinalizarOS';
 
 const ListaOrdemServico: React.FC = () => {
   const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
@@ -39,6 +40,8 @@ const ListaOrdemServico: React.FC = () => {
   const [nomePesquisar, setNomePesquisar] = useState<string>('');
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [ordemIdParaFinalizar, setOrdemIdParaFinalizar] = useState<number | null>(null);
 
 
 
@@ -114,6 +117,17 @@ const ListaOrdemServico: React.FC = () => {
   };
 
 
+  const handleOpenConfirmDialog = (id: number) => {
+    setOrdemIdParaFinalizar(id);
+    setOpenConfirmDialog(true);
+  };
+
+  const handleCloseConfirmDialog = (confirmed: boolean) => {
+    setOpenConfirmDialog(false);
+    if (confirmed && ordemIdParaFinalizar !== null) {
+      atualizarStatusDaOs(ordemIdParaFinalizar);
+    }
+  };
 
   
   const atualizarStatusDaOs = async (id: number) => {
@@ -282,12 +296,21 @@ const ListaOrdemServico: React.FC = () => {
                           disabled={ordem.status === 'FINALIZADA'} 
                           >Editar
                         </Button>
+
+
                         <Button 
                           variant="contained" color="success"
-                          onClick={() => atualizarStatusDaOs(ordem.id)} 
+                          // onClick={() => atualizarStatusDaOs(ordem.id)} 
+                          onClick={() => handleOpenConfirmDialog(ordem.id)} 
                           disabled={ordem.status === 'FINALIZADA'} 
                           >Finalizar
                         </Button>
+                        <ConfirmarFinalizarOS 
+                          open={openConfirmDialog} 
+                          onClose={handleCloseConfirmDialog} 
+                        />      
+
+
                         <Modal open={openEmail} onClose={() => setOpenEmail(false)}>
                             <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
                               <Alert variant="filled" sx={{ mb: 4 }}>
@@ -302,6 +325,7 @@ const ListaOrdemServico: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          
             
           <div className="results-info">
             Mostrando 1 de 6 de {ordens.length} resultados
