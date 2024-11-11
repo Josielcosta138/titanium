@@ -1,39 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
 import { apiGet, STATUS_CODE } from '../../api/RestClient';
-import {
-  Box,
-  Button,
-  Modal,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography
-} from '@mui/material';
+import { 
+  Box, 
+  Button, 
+  Modal, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { IClientes } from '../../Interface/Cliente/type';
 import jsPDF from 'jspdf';
-import { FaArrowLeft } from 'react-icons/fa'; 
+import { FaArrowLeft } from 'react-icons/fa';
 import { faCaretDown, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Sidebar from '../../components/Sidebar';
-import { IOrdemServico } from '../../Interface/OS/type';
+
 
 const Clientes: React.FC = () => {
-  const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
   const [clientes, setClientes] = useState<IClientes[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<any>(null);
-  const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1); // Estado para controle da página
-  const [totalPages, setTotalPages] = useState(1);   // Estado para controle do total de páginas
-  const [nomePesquisar, setNomePesquisar] = useState(''); // Estado para o campo de pesquisa
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const [totalPages, setTotalPages] = useState(1);   // Estado para controle do total de páginas
+  const navigate = useNavigate(); 
 
   const carregarClientes = async () => {
     try {
@@ -44,35 +38,6 @@ const Clientes: React.FC = () => {
         setTotalPages(response.data.totalPages);
       }
 
-    } catch (error) {
-      console.error("Erro ao carregar clientes:", error);
-    }
-  };
-
-  const carregarOrdens = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await apiGet('/ordemServico/carregar');
-      if (response.status === STATUS_CODE.OK) {
-        const data = response.data;
-        setOrdens(data);
-        setTotalPages(data.totalPages);
-      }
-    } catch (error) {
-      setError('Falha ao carregar ordens de serviço.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const carregarClientesPorNome = async (nome: string) => {
-    try {
-      const response = await apiGet(`endereco/carregar?nome=${nome}`);
-      if (response.status === STATUS_CODE.OK) {
-        setClientes(response.data);
-        setTotalPages(response.data.totalPages);
-      }
     } catch (error) {
       console.error("Erro ao carregar clientes:", error);
     }
@@ -92,22 +57,22 @@ const Clientes: React.FC = () => {
     setPage(newPage);
   };
 
-  // useEffect(() => {
-  //   carregarClientes();
-  // }, [page]);
+  useEffect(() => {
+    carregarClientes();
+  }, [page]);
 
-
+  
   const editarCliente = (id: number) => {
     navigate(`/ordemCliente/${id}`);
   }
-
+  
 
   const imprimirDadosCliente = (cliente: IClientes) => {
     if (!cliente) {
       console.error('Nenhum cliente selecionado');
       return;
     }
-
+   
 
     const doc = new jsPDF();
 
@@ -129,86 +94,16 @@ const Clientes: React.FC = () => {
     navigate('/ordemCliente')
   }
 
-  // const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setNomePesquisar(e.target.value);
-  //   if (e.target.value === '') {
-  //     carregarClientes();
-  //   } else {
-  //     carregarClientesPorNome(e.target.value);
-  //   }
-  // };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNomePesquisar(e.target.value);
-    if (e.target.value.trim() === '') {
-      // Caso o campo esteja vazio, exibe todos os clientes novamente
-      carregarClientes();  // Chama a função para carregar todos os clientes
-    } else {
-      // Caso contrário, filtra os clientes pelo nome
-      carregarClientesPorNome(e.target.value);
-    }
-  };
-  
-
-  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      carregarClientesPorNome(nomePesquisar);
-    }
-  };
-
-  const handleSearchIconClick = () => {
-    if (nomePesquisar.trim() === '') {
-      carregarClientes();  // Se a pesquisa estiver vazia, carrega todos os clientes
-    } else {
-      carregarClientesPorNome(nomePesquisar);  // Caso contrário, filtra os clientes pelo nome
-    }
-  };
-  
-
-  // useEffect(() => {
-  //   carregarClientes();
-  // }, [page]);
-
-  useEffect(() => {
-    if (nomePesquisar.trim() === '') {
-      carregarClientes();  // Carrega todos os clientes
-    } else {
-      carregarClientesPorNome(nomePesquisar);  // Filtra clientes por nome
-    }
-  }, [page, nomePesquisar]);  // Isso garante que a lista seja recarregada corretamente
-  
-
-  return (
+  return (  
     <div className="clientes-container">
-      <Sidebar></Sidebar>
-
-      {/* <div className="sidebar">
-        <div className="titulo-container">
-          <div className="vertical-line"></div>
-          <div className="titulo">Titanium</div>
-        </div>
-        <div className="profile-pic">
-          <img src="https://via.placeholder.com/80" alt="Profile" />
-        </div>
-        <nav className="sidebar-nav">
-          <ul>
-            <li>Início</li>
-            <li>Cadastro de Cliente</li>
-            <li>Ordem de Serviço</li>
-            <li>Listagem de Serviços</li>
-            <li className="active">Clientes</li>
-            <li>Relatórios</li>
-            <li>Configurações</li>
-          </ul>
-        </nav>
-      </div> */}
-
+            <Sidebar></Sidebar>
       <div className="content-container">
         {/* Barra Superior */}
         <div className="top-bar">
           <div className="top-left">
-            <button onClick={() => navigate('/telaInicial')} className="back-button">
-              <FaArrowLeft />Voltar
+            <button className="back-button">
+            <FaArrowLeft />Voltar
             </button>
             <h2>Lista de Clientes</h2>
           </div>
@@ -220,87 +115,20 @@ const Clientes: React.FC = () => {
         {/* Linha Divisória */}
         <hr className="full-line" />
 
-        {/* Filtros e Navegação
-        <div className="action-bar">
-          <div className="search-filter-container">
-            <input type="text" placeholder="Pesquisar..." className="search-bar" />
-            <button className="filter-button">Filtrar <i className="fa fa-caret-down"></i></button>
-          </div>
-          <div className="pagination">
-            <Button 
-              disabled={page === 1}
-              onClick={() => handlePageChange(page - 1)}
-            >
-              Anterior
-            </Button>
-            {Array.from({ length: totalPages }, (_, p) => (
-              <Button
-                key={p + 1}
-                onClick={() => handlePageChange(p + 1)}
-                className={page === p + 1 ? 'active-page' : ''}
-              >
-                {p + 1}
-              </Button>
-            ))}
-            <Button 
-              disabled={page === totalPages}
-              onClick={() => handlePageChange(page + 1)}
-            >
-              Próximo
-            </Button>
-          </div>
-        </div> */}
+      
 
-
-        {/* Filtros e Navegação */}
-        {/* <div className="action-bar">
-          <div className="search-filter-container">
-            <div className="search-input-wrapper">
-              <input 
-              type="text" 
-              placeholder="Digite seu Cliente" 
-              className="search-bar-listacliente" 
-              value={nomePesquisar}
-              onChange={handleSearchChange}
-              onKeyPress={handleSearchKeyPress}
-              />
-              <FontAwesomeIcon icon={faSearch} className="search-icon" onClick={handleSearchIconClick} />
-            </div> */}
-            
-            {/* <div className="action-bar-relatorio">
-          <div className="search-filter-container">
-            <div className="search-input-wrapper">
-              <input
-                type="text"
-                placeholder="Pesquisar"
-                className="search-bar-listacliente"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                onKeyDown={(e) => e.key === 'Enter' && carregarClientes()} // mantém a pesquisa com Enter
-              />
-              <FontAwesomeIcon icon={faSearch} className="search-icon" onClick={carregarClientes} />
-            </div>
-
-          </div>
-        </div> */}
-
-
-<div className="action-bar-relatorio">
-          <div className="search-filter-container">
-            <div className="search-input-wrapper">
-              <input
-                type="text"
-                placeholder="Pesquisar"
-                className="search-bar-listacliente"
-                value={nomePesquisar}
-                onChange={handleSearchChange}
-                onKeyDown={handleSearchKeyPress} // mantém a pesquisa com Enter
-              />
-              <FontAwesomeIcon icon={faSearch} className="search-icon" onClick={handleSearchIconClick} />
-            </div>
-          </div>
+{/* Filtros e Navegação */}
+<div className="action-bar">
+      <div className="search-filter-container">
+        <div className="search-input-wrapper">
+          <input type="text" placeholder="Digite seu Cliente" className="search-bar-listacliente" />
+          <FontAwesomeIcon icon={faSearch} className="search-icon" />
         </div>
-
+        <button className="filter-button">
+          Pesquisar 
+        </button>
+      </div>
+    </div>
         {/* Tabela de Clientes */}
         <div className="table-container">
           <TableContainer>
@@ -325,7 +153,7 @@ const Clientes: React.FC = () => {
                     <TableCell>{cliente.cidades.name}</TableCell>
                     <TableCell>
                       <Box className="action-buttons-cliente">
-                        <Button variant="contained" color="info"
+                        <Button variant="contained" color="info" 
                           onClick={() => handleVerMais(cliente)}>Visualizar</Button>
                         <Button variant="contained" color="success"
                           onClick={() => imprimirDadosCliente(cliente)}>Imprimir</Button>
@@ -341,7 +169,7 @@ const Clientes: React.FC = () => {
           <div className="results-info">
             Mostrando 1 de 6 de {clientes.length} resultados
             <div className="pagination-info">
-              <Button
+              <Button 
                 disabled={page === 1}
                 onClick={() => handlePageChange(page - 1)}
               >
@@ -356,7 +184,7 @@ const Clientes: React.FC = () => {
                   {p + 1}
                 </Button>
               ))}
-              <Button
+              <Button 
                 disabled={page === totalPages}
                 onClick={() => handlePageChange(page + 1)}
               >
@@ -368,27 +196,26 @@ const Clientes: React.FC = () => {
 
         {/* Modal de Detalhes do Cliente */}
         <Modal open={open} onClose={handleClose}>
-          <Box className="modal-box">
-            {selectedCliente && (
-              <div>
-                <Typography variant="h6">Detalhes do Cliente</Typography>
-                <Typography><strong>Nome:</strong> {selectedCliente.client?.nomeFantasia}</Typography>
-                <Typography><strong>Email:</strong> {selectedCliente.client?.email}</Typography>
-                <Typography><strong>Telefone:</strong> {selectedCliente.client?.telefone}</Typography>
-                <Typography><strong>Cidade:</strong> {selectedCliente.cidades?.name}</Typography>
-                <Typography><strong>Endereço:</strong> {selectedCliente.rua}, {selectedCliente.bairro}</Typography>
-                {/* <Typography><strong>Ordens de serviço:</strong> {selectedCliente.client?.ordensServico.length > 0 
+  <Box className="modal-box">
+    {selectedCliente && (
+      <div>
+        <Typography variant="h6">Detalhes do Cliente</Typography>
+        <Typography><strong>Nome:</strong> {selectedCliente.client?.nomeFantasia}</Typography>
+        <Typography><strong>Email:</strong> {selectedCliente.client?.email}</Typography>
+        <Typography><strong>Telefone:</strong> {selectedCliente.client?.telefone}</Typography>
+        <Typography><strong>Cidade:</strong> {selectedCliente.cidades?.name}</Typography>
+        <Typography><strong>Endereço:</strong> {selectedCliente.rua}, {selectedCliente.bairro}</Typography>
+        {/* <Typography><strong>Ordens de serviço:</strong> {selectedCliente.client?.ordensServico.length > 0 
           ? selectedCliente.client.ordensServico.join(', ') 
           : 'Nenhuma ordem de serviço no momento.'}</Typography> */}
-                <Button onClick={handleClose}>Fechar</Button>
-              </div>
-            )}
-          </Box>
-        </Modal>
+        <Button onClick={handleClose}>Fechar</Button>
+      </div>
+    )}
+  </Box>
+</Modal>
       </div>
     </div>
   );
 }
 
 export default Clientes;
-
