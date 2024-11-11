@@ -4,7 +4,7 @@
   }
   
   .header {
-    display: flex;
+    display: -webkit-box;
     align-items: center;
     padding: 10px;
     background-color: #f1f1f1;
@@ -21,7 +21,8 @@
     border: none;
     cursor: pointer;
     font-size: 16px;
-    /* margin-left: 22px; */
+    /* margin-left: 22px; PARAMOSS AGORA NO BACKGROUND BRANCO PRA ARRUMAR NO CONFIG PERFIL*/
+    margin-top: -20px;
   }
   
   .search-bar-telaconfigperfil {

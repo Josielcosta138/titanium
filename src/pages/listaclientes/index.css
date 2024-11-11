@@ -3,7 +3,7 @@
 .clientes-container {
     display: flex;
     height: 100vh;
-    background-color: #ffffff;
+    /* background-color: #ffffff; */
 }
 
 .sidebar {
@@ -240,9 +240,9 @@
 
 .action-buttons-cliente {
     display: flex;
-    /* justify-content: space-between; */
-    /* gap: 10px; */
-    margin-right: -16px;
+    justify-content: center; 
+    gap: 10px;
+    margin-right: -17px;
 }
 
 .modal-box {

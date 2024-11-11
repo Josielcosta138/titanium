@@ -11,6 +11,7 @@ import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
 import DescriptionIcon from '@mui/icons-material/Description';
 import Sidebar from '../../components/Sidebar';
+import { FaArrowLeft } from 'react-icons/fa';
 
 
 
@@ -268,7 +269,7 @@ const CadastroOrdemServico: React.FC = () => {
         <div className="top-bar">
           <div className="top-left">
             <button className="back-button">
-              <i className="fa fa-arrow-left"></i> Voltar
+              <i className="fa fa-arrow-left"></i><FaArrowLeft /> Voltar
             </button>
 
           </div></div>

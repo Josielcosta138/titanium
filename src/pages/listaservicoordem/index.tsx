@@ -25,7 +25,10 @@ import OrdemCorte from '../ordemCorte';
 import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
 import Sidebar from '../../components/Sidebar';
 import { FaArrowLeft } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import ConfirmarFinalizarOS from '../../components/ModelConfirmacaoFinalizarOS';
+
 
 const ListaOrdemServico: React.FC = () => {
   const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
@@ -35,48 +38,81 @@ const ListaOrdemServico: React.FC = () => {
   const [page, setPage] = useState(1);
   const [ordenTeste, setOrdemTeste] = useState<any>(null);
   const [totalPages, setTotalPages] = useState(1);
-  const [status, setStatus] = useState<string>(''); 
+  const [status, setStatus] = useState<string>('');
   const [botoesDesabilitados, setBotoesDesabilitados] = useState(false);
   const [nomePesquisar, setNomePesquisar] = useState<string>('');
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [ordemIdParaFinalizar, setOrdemIdParaFinalizar] = useState<number | null>(null);
 
 
 
+  // const carregarOrdens = async () => {
+  //   try {
+  //     const response = await apiGet('/ordemServico/carregar');
+  //     if (response.status === STATUS_CODE.OK) {
+  //       setOrdens(response.data);
+  //       setTotalPages(response.data.totalPages);
+  //     }
+  //   } catch (error) {
+  //     console.error("Erro ao carregar ordens de serviço:", error);
+  //   }
+  // };
+
   const carregarOrdens = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await apiGet('/ordemServico/carregar');
       if (response.status === STATUS_CODE.OK) {
-        setOrdens(response.data);
-        setTotalPages(response.data.totalPages);
+        const data = response.data;
+        setOrdens(data);
+        setTotalPages(data.totalPages);
       }
     } catch (error) {
-      console.error("Erro ao carregar ordens de serviço:", error);
+      setError('Falha ao carregar ordens de serviço.');
+    } finally {
+      setLoading(false);
     }
   };
 
+  // const carregarOrdensPorNome = async () => {
+  //   try {
 
+  //     if (!nomePesquisar) {
+  //       carregarOrdens();
+  //     }else{
+  //       const response = await apiGet(`ordemServico/carregarNome/${nomePesquisar}`);
+  //       if (response.status === STATUS_CODE.OK) {
+  //         setOrdens(response.data);
+  //         setTotalPages(response.data.totalPages);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Erro ao carregar ordens de serviço:", error);
+  //   }
+  // }
 
-  const carregarOrdensPorNome = async () => {
+  const carregarOrdensPorNome = async (nome: string) => {
+    setLoading(true);
+    setError(null);
     try {
-
-      if (!nomePesquisar) {
-        carregarOrdens();
-      }else{
-        const response = await apiGet(`ordemServico/carregarNome/${nomePesquisar}`);
-        if (response.status === STATUS_CODE.OK) {
-          setOrdens(response.data);
-          setTotalPages(response.data.totalPages);
-        }
+      const response = await apiGet(`ordemServico/carregarNome/${nome}`);
+      if (response.status === STATUS_CODE.OK) {
+        const data = response.data;
+        setOrdens(data);
+        setTotalPages(data.totalPages);
       }
     } catch (error) {
-      console.error("Erro ao carregar ordens de serviço:", error);
+      setError('Falha ao carregar ordens de serviço.');
+    } finally {
+      setLoading(false);
     }
-  }
-
-
+  };
 
   const handleVerMais = (ordem: IOrdemServico) => {
     setSelectedOrdem(ordem);
@@ -90,6 +126,21 @@ const ListaOrdemServico: React.FC = () => {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
+    carregarOrdens(); // Atualizar a lista ao mudar de página
+  };
+
+  // const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setSearchTerm(event.target.value);
+  // };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = event.target.value;
+    setNomePesquisar(searchValue);
+    if (searchValue.trim() === '') {
+      carregarOrdens(); // Carregar todas as ordens se o campo de busca estiver vazio
+    } else {
+      carregarOrdensPorNome(searchValue); // Carregar ordens filtradas pelo nome
+    }
   };
 
 
@@ -97,6 +148,16 @@ const ListaOrdemServico: React.FC = () => {
     localStorage.setItem("statusOC", 'PRODUZINDO');
     localStorage.setItem("ordemServicoId", idOc.toString());
     navigate('/ordemCorte')
+  };
+
+  const handleSearchKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      carregarOrdensPorNome(nomePesquisar);
+    }
+  };
+
+  const handleSearchClick = () => {
+    carregarOrdensPorNome(nomePesquisar);
   };
 
 
@@ -111,11 +172,16 @@ const ListaOrdemServico: React.FC = () => {
 
     const ordemAtual = ordens.find(ordem => ordem.id === id);
     if (ordemAtual) {
-        localStorage.setItem('statusAtual', ordemAtual.status);
-    }    
+      localStorage.setItem('statusAtual', ordemAtual.status);
+    }
     navigate(`/ordemServico/${id}`);
   };
 
+
+
+  const formatarDataCorreta = (data: string): string => {
+    const dataSemFuso = new Date(data + 'T00:00:00');
+    return dataSemFuso.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
 
   const handleOpenConfirmDialog = (id: number) => {
     setOrdemIdParaFinalizar(id);
@@ -127,15 +193,16 @@ const ListaOrdemServico: React.FC = () => {
     if (confirmed && ordemIdParaFinalizar !== null) {
       atualizarStatusDaOs(ordemIdParaFinalizar);
     }
+
   };
 
-  
   const atualizarStatusDaOs = async (id: number) => {
     const data = {
-        status: "FINALIZADA",
+      status: "FINALIZADA",
     };
 
     try {
+
         const response = await apiPut(`ordemServico/atualizarStatusOs/${id}`, data);
   
         if (response.status === STATUS_CODE.OK) {          
@@ -143,7 +210,11 @@ const ListaOrdemServico: React.FC = () => {
         }
       } catch (error) {
         console.error("Erro ao salvar ordem de serviço:", error);
+
       }
+    } catch (error) {
+      console.error("Erro ao salvar ordem de serviço:", error);
+    }
   }
 
 
@@ -171,7 +242,7 @@ const ListaOrdemServico: React.FC = () => {
     }
   };
 
-  
+
   const redirecionarCadastroOS = () => {
     navigate('/ordemServico')
   }
@@ -189,10 +260,10 @@ const ListaOrdemServico: React.FC = () => {
       <div className="content-container">
         <div className="top-bar">
           <div className="top-left">
-            <button 
+            <button
               className="back-button"
               onClick={redirecionarTelaInicial}
-              >
+            >
               <FaArrowLeft />Voltar
             </button>
             <h2>Ordens de Serviço</h2>
@@ -211,20 +282,38 @@ const ListaOrdemServico: React.FC = () => {
           </div>
         )}
 
-        <div className="action-bar">
+        {/* <div className="action-bar"> */}
+        <div className="action-bar-relatorio">
+
+
           <div className="search-filter-container">
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                placeholder="Pesquisar"
+                className="search-bar-listacliente"
+                // value={searchTerm}
+                value={nomePesquisar}
+                onChange={handleSearchChange}
+                onKeyDown={handleSearchKeyPress} // Adiciona a funcionalidade de pressionar Enter
+              // onKeyDown={(e) => e.key === 'Enter' && carregarOrdens()} // mantém a pesquisa com Enter
+              />
+              <FontAwesomeIcon icon={faSearch} className="search-icon" onClick={carregarOrdens} />
+            </div>
+
+            {/* <div className="search-filter-container">
             <input 
               type="text" 
-              placeholder="Pesquisar por cliente..." 
+              placeholder="Pesquisar" 
               className="search-bar-lista-serviço" 
               value={nomePesquisar}
               onChange={(event) => setNomePesquisar(event.target.value)}
-            />
-            <button 
+            /> */}
+            {/* <button 
               onClick={carregarOrdensPorNome} 
               className="filter-button">Pesquisar <i 
               className="fa fa-caret-down">
-              </i></button>
+              </i></button> */}
           </div>
           <div className="pagination">
             {Array.from({ length: totalPages }, (_, p) => (
@@ -259,44 +348,29 @@ const ListaOrdemServico: React.FC = () => {
                     <TableCell>{ordem.id}</TableCell>
                     <TableCell>{ordem.codReferenciaOs}</TableCell>
                     <TableCell>
-                          <span
-                            className={`status-cell ${
-                              ordem.status === 'PENDENTE'
-                                ? 'status-pendente'
-                                : ordem.status === 'PRODUZINDO'
-                                ? 'status-producao'
-                                : ordem.status === 'FINALIZADA'
-                                ? 'status-finalizada'
-                                : ''
-                            }`}
-                          >
-                            {ordem.status}
-                          </span>
-                          
                     </TableCell>
                     <TableCell>{ordem.cliente.razaoSocial}</TableCell>
-                    <TableCell>{ordem.dataEntrada}</TableCell>
-                    <TableCell>{ordem.dataEntrega}</TableCell>
+                    <TableCell>{formatarDataCorreta(ordem.dataEntrada)}</TableCell>
+                    <TableCell>{formatarDataCorreta(ordem.dataEntrega)}</TableCell>
                     <TableCell>
                       <Box className="action-buttons">
-                        <Button 
+                        <Button
                           variant="contained" color="info"
                           onClick={() => handleVerMais(ordem)}
-                          >Visualizar
+                        >Visualizar
                         </Button>
-                        <Button 
+                        <Button
                           variant="contained" color='secondary'
-                          onClick={() => rederionarCadastroOrdemCorte(ordem.id)} 
-                          disabled={ordem.status === 'FINALIZADA'} 
-                          >Ordem de Corte
+                          onClick={() => rederionarCadastroOrdemCorte(ordem.id)}
+                          disabled={ordem.status === 'FINALIZADA'}
+                        >Ordem de Corte
                         </Button>
-                        <Button 
+                        <Button
                           variant="contained" color="warning"
-                          onClick={() => editarOrdem(ordem.id)} 
-                          disabled={ordem.status === 'FINALIZADA'} 
-                          >Editar
+                          onClick={() => editarOrdem(ordem.id)}
+                          disabled={ordem.status === 'FINALIZADA'}
+                        >Editar
                         </Button>
-
 
                         <Button 
                           variant="contained" color="success"
@@ -330,7 +404,7 @@ const ListaOrdemServico: React.FC = () => {
           <div className="results-info">
             Mostrando 1 de 6 de {ordens.length} resultados
             <div className="pagination-info">
-              <Button 
+              <Button
                 disabled={page === 1}
                 onClick={() => handlePageChange(page - 1)}
               >
@@ -345,7 +419,7 @@ const ListaOrdemServico: React.FC = () => {
                   {p + 1}
                 </Button>
               ))}
-              <Button 
+              <Button
                 disabled={page === totalPages}
                 onClick={() => handlePageChange(page + 1)}
               >
@@ -358,6 +432,7 @@ const ListaOrdemServico: React.FC = () => {
         <Modal open={open} onClose={handleClose}>
           <Box className="modal-box">
             {selectedOrdem && (
+
              <div>
              <Typography variant="h5" sx={{textAlign: 'center'}}>Detalhes da Ordem de Serviço</Typography>
              <Typography><strong>Código OS:</strong> {selectedOrdem.id}</Typography>

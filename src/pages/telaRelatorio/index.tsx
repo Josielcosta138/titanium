@@ -88,6 +88,11 @@ const Relatorios: React.FC = () => {
     setSearchTerm(event.target.value);
   };
 
+  const formatarDataCorreta = (data: string): string => {
+    const dataSemFuso = new Date(data + 'T00:00:00'); 
+    return dataSemFuso.toLocaleDateString('pt-BR', { timeZone: 'UTC' }); 
+  };
+
   const filteredOrdens = ordens.filter((ordem) =>
     (filterStatus === 'todos' || ordem.status.toLowerCase() === filterStatus) &&
     (ordem.codReferenciaOs.includes(searchTerm) ||
@@ -235,7 +240,7 @@ const Relatorios: React.FC = () => {
                       <TableCell>{ordem.cliente.razaoSocial}</TableCell>
                       <TableCell>{ordem.codReferenciaOs}</TableCell>
                       <TableCell>{ordem.modelo}</TableCell>
-                      <TableCell>{ordem.dataEntrada}</TableCell>
+                      <TableCell>{formatarDataCorreta(ordem.dataEntrada)}</TableCell>
                       <TableCell>{ordem.valorTotal}</TableCell>
                       <TableCell>
                         <Box className="action-buttons">

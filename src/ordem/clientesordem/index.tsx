@@ -307,7 +307,7 @@ const redirecionarListaDeClientes = () => {
         {/* Barra Superior */}
         <div className="top-bar">
           <div className="top-left">
-            <button className="back-button">
+            <button onClick={() => navigate('/telaInicial')} className="back-button">
               <FaArrowLeft /> Voltar 
             </button>
             <h2>Cadastro de Cliente</h2>

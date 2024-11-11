@@ -187,14 +187,14 @@ const PerfilConfig: React.FC = () => {
                   </button>
                   <h2>Perfil Usuário</h2>
                 </div>
-                <div className="top-right">
+                {/* <div className="top-right">
                   <button className="icon-button">
                     <FontAwesomeIcon icon={faCog} className="icon" />
                   </button>
                   <button className="icon-button">
                     <FontAwesomeIcon icon={faBell} className="icon" />
                   </button>
-                </div>
+                </div> */}
               </div>
               <hr className="full-line" />
                   
@@ -332,7 +332,7 @@ const PerfilConfig: React.FC = () => {
                         border: '1px solid',
                         justifyContent: 'center',
                         width: '200px',
-                        height: '50px',
+                        height: '70px',
                         display: 'block',
                         margin: '20px auto',
                         '&:hover': {
