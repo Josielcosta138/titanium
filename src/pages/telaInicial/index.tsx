@@ -175,8 +175,8 @@ const TelaInicial: React.FC = () => {
             if (totalMaterialPorMesResponse.status === STATUS_CODE.OK) {
               const matMensal = totalMaterialPorMesResponse.data;
               
-              if (matMensal.december !== undefined) {
-                setDecember(matMensal.december);
+              if (matMensal.DECEMBER !== undefined) {
+                setDecember(matMensal.DECEMBER);
               }
             
               if (matMensal.NOVEMBER !== undefined) {
