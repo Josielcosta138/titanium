@@ -7,7 +7,6 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { styled } from '@mui/material/styles';
 
-
 interface ConfirmarOCProps {
   open: boolean;
   onClose: (confirmed: boolean) => void;
@@ -29,7 +28,7 @@ const CustomDialogContentText = styled(DialogContentText)({
 });
 
 
-export default function ConfirmarOC({ open, onClose }: ConfirmarOCProps) {
+export default function ConfirmarFinalizarOS({ open, onClose }: ConfirmarOCProps) {
     const handleConfirm = () => {
       onClose(true); 
     };
@@ -46,11 +45,11 @@ export default function ConfirmarOC({ open, onClose }: ConfirmarOCProps) {
         aria-describedby="alert-dialog-description"
       >
         <CustomDialogTitle id="alert-dialog-title">
-          {"Atenção!"}
-        </CustomDialogTitle>
+        {"Atenção!"}
+      </CustomDialogTitle>
         <DialogContent>
           <CustomDialogContentText id="alert-dialog-description">
-            Deseja cadastrar Ordem de Corte?
+            Deseja realmente finalizar a Ordem de serviço?
           </CustomDialogContentText>
         </DialogContent>
         <DialogActions>

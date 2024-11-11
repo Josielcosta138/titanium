@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import './index.css';
 import { apiGet, apiPut, STATUS_CODE } from '../../api/RestClient';
 import {
+  Alert,
   Box,
   Button,
+  CircularProgress,
   Modal,
   Table,
   TableBody,
@@ -25,10 +27,13 @@ import Sidebar from '../../components/Sidebar';
 import { FaArrowLeft } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import ConfirmarFinalizarOS from '../../components/ModelConfirmacaoFinalizarOS';
+
 
 const ListaOrdemServico: React.FC = () => {
   const [ordens, setOrdens] = useState<IOrdemServico[]>([]);
   const [open, setOpen] = useState(false);
+  const [openEmail, setOpenEmail] = useState(false);
   const [selectedOrdem, setSelectedOrdem] = useState<any>(null);
   const [page, setPage] = useState(1);
   const [ordenTeste, setOrdemTeste] = useState<any>(null);
@@ -40,7 +45,9 @@ const ListaOrdemServico: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [ordemIdParaFinalizar, setOrdemIdParaFinalizar] = useState<number | null>(null);
 
 
 
@@ -136,8 +143,9 @@ const ListaOrdemServico: React.FC = () => {
     }
   };
 
-  const rederionarCadastroOrdemCorte = async (idOc: number) => {
-    localStorage.setItem("statusOC", 'PENDENTE');
+
+  const rederionarCadastroOrdemCorte = async (idOc : number) => {
+    localStorage.setItem("statusOC", 'PRODUZINDO');
     localStorage.setItem("ordemServicoId", idOc.toString());
     navigate('/ordemCorte')
   };
@@ -170,9 +178,22 @@ const ListaOrdemServico: React.FC = () => {
   };
 
 
+
   const formatarDataCorreta = (data: string): string => {
     const dataSemFuso = new Date(data + 'T00:00:00');
     return dataSemFuso.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+
+  const handleOpenConfirmDialog = (id: number) => {
+    setOrdemIdParaFinalizar(id);
+    setOpenConfirmDialog(true);
+  };
+
+  const handleCloseConfirmDialog = (confirmed: boolean) => {
+    setOpenConfirmDialog(false);
+    if (confirmed && ordemIdParaFinalizar !== null) {
+      atualizarStatusDaOs(ordemIdParaFinalizar);
+    }
+
   };
 
   const atualizarStatusDaOs = async (id: number) => {
@@ -181,15 +202,45 @@ const ListaOrdemServico: React.FC = () => {
     };
 
     try {
-      const response = await apiPut(`ordemServico/atualizarStatusOs/${id}`, data);
 
-      if (response.status === STATUS_CODE.OK) {
-        carregarOrdens();
+        const response = await apiPut(`ordemServico/atualizarStatusOs/${id}`, data);
+  
+        if (response.status === STATUS_CODE.OK) {          
+          enviarEmailCliente(id);
+        }
+      } catch (error) {
+        console.error("Erro ao salvar ordem de serviço:", error);
+
       }
     } catch (error) {
       console.error("Erro ao salvar ordem de serviço:", error);
     }
   }
+
+
+  const enviarEmailCliente = async (id: number) => { 
+    setIsLoading(true); 
+    const data = {};
+  
+    try {
+      const response = await apiPut(`ordemServico/enviarEmail/${id}`, data);
+      if (response.status === STATUS_CODE.OK) {
+        console.log("E-mail enviado. ");    
+      }
+
+      setTimeout(() => {
+        setOpenEmail(true);
+        setTimeout(() => setOpenEmail(false), 5000);
+      }, 1000); 
+
+      
+    } catch (error) {
+      console.error("Erro ao enviar e-mail: ", error);
+    } finally {
+      setIsLoading(false);
+      carregarOrdens();
+    }
+  };
 
 
   const redirecionarCadastroOS = () => {
@@ -206,28 +257,6 @@ const ListaOrdemServico: React.FC = () => {
   return (
     <div className="ordem-servico-container">
       <Sidebar></Sidebar>
-
-      {/* <div className="sidebar"> */}
-      {/* <div className="titulo-container">
-          <div className="vertical-line"></div>
-          <div className="titulo">Titanium</div>
-        </div>
-        <div className="profile-pic">
-          <img src="https://via.placeholder.com/80" alt="Profile" />
-        </div>
-        <nav className="sidebar-nav">
-          <ul>
-            <li>Início</li>
-            <li>Cadastro de Cliente</li>
-            <li className="active">Ordem de Serviço</li>
-            <li>Listagem de Serviços</li>
-            <li>Clientes</li>
-            <li>Relatórios</li>
-            <li>Configurações</li>
-          </ul>
-        </nav>
-      </div> */}
-
       <div className="content-container">
         <div className="top-bar">
           <div className="top-left">
@@ -243,8 +272,15 @@ const ListaOrdemServico: React.FC = () => {
             <Button onClick={redirecionarCadastroOS} variant="contained" color="warning" className="add-ordem-button-os">Cadastrar OS</Button>
           </div>
         </div>
-
         <hr className="full-line" />
+        {isLoading && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
+            <CircularProgress />
+            <Typography variant="body1" style={{ marginTop: 10 }}>
+              Enviando e-mail ao cliente...
+            </Typography>
+          </div>
+        )}
 
         {/* <div className="action-bar"> */}
         <div className="action-bar-relatorio">
@@ -312,19 +348,6 @@ const ListaOrdemServico: React.FC = () => {
                     <TableCell>{ordem.id}</TableCell>
                     <TableCell>{ordem.codReferenciaOs}</TableCell>
                     <TableCell>
-                      <span
-                        className={`status-cell ${ordem.status === 'INICIADA'
-                          ? 'status-iniciada'
-                          : ordem.status === 'PENDENTE'
-                            ? 'status-pendente'
-                            : ordem.status === 'FINALIZADA'
-                              ? 'status-finalizada'
-                              : ''
-                          }`}
-                      >
-                        {ordem.status}
-                      </span>
-
                     </TableCell>
                     <TableCell>{ordem.cliente.razaoSocial}</TableCell>
                     <TableCell>{formatarDataCorreta(ordem.dataEntrada)}</TableCell>
@@ -348,20 +371,36 @@ const ListaOrdemServico: React.FC = () => {
                           disabled={ordem.status === 'FINALIZADA'}
                         >Editar
                         </Button>
-                        <Button
-                          variant="contained" color="success"
-                          onClick={() => atualizarStatusDaOs(ordem.id)}
-                          disabled={ordem.status === 'FINALIZADA'}
-                        >Finalizar
-                        </Button>
-                      </Box>
 
+                        <Button 
+                          variant="contained" color="success"
+                          // onClick={() => atualizarStatusDaOs(ordem.id)} 
+                          onClick={() => handleOpenConfirmDialog(ordem.id)} 
+                          disabled={ordem.status === 'FINALIZADA'} 
+                          >Finalizar
+                        </Button>
+                        <ConfirmarFinalizarOS 
+                          open={openConfirmDialog} 
+                          onClose={handleCloseConfirmDialog} 
+                        />      
+
+
+                        <Modal open={openEmail} onClose={() => setOpenEmail(false)}>
+                            <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
+                              <Alert variant="filled" sx={{ mb: 4 }}>
+                              E-mail enviado com sucesso! O cliente foi notificado sobre a conclusão da Ordem de Serviço.
+                        </Alert>
+                        </Box>
+                        </Modal>          
+                      </Box>                                                               
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
+          
+            
           <div className="results-info">
             Mostrando 1 de 6 de {ordens.length} resultados
             <div className="pagination-info">
@@ -393,106 +432,104 @@ const ListaOrdemServico: React.FC = () => {
         <Modal open={open} onClose={handleClose}>
           <Box className="modal-box">
             {selectedOrdem && (
-              <div>
-                <Typography variant="h5" sx={{ textAlign: 'center' }}>Detalhes da Ordem de Serviço</Typography>
-                <Typography><strong>Código OS:</strong> {selectedOrdem.id}</Typography>
-                <Typography><strong>Quantidade de Rolos:</strong> {selectedOrdem.qtdeRolos}</Typography>
-                <Typography><strong>Data de Entrada:</strong> {selectedOrdem.dataEntrada}</Typography>
-                <Typography><strong>Data de Entrega:</strong> {selectedOrdem.dataEntrega}</Typography>
-                <Typography><strong>Quantidade de Peças:</strong> {selectedOrdem.qtdePecas}</Typography>
-                <Typography><strong>Valor por Peça:</strong> {selectedOrdem.valorPorPeca}</Typography>
-                <Typography><strong>Valor Total:</strong> {selectedOrdem.valorTotal}</Typography>
-                <Typography><strong>Código de Referência:</strong> {selectedOrdem.codReferenciaOs}</Typography>
-                <Typography><strong>Modelo:</strong> {selectedOrdem.modelo}</Typography>
-                <Typography><strong>Número da Nota Fiscal:</strong> {selectedOrdem.numeorNotaFiscal}</Typography>
-                <Typography><strong>Observações:</strong> {selectedOrdem.campoObservacao}</Typography>
-                <Typography><strong>Status:</strong> {selectedOrdem.status}</Typography>
-                <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
-                  <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
-                </Typography>
-                <Typography variant="h6" sx={{ textAlign: 'center' }}>Dados do Cliente</Typography>
-                <Typography><strong>Código do Cliente:</strong> {selectedOrdem.cliente.id}</Typography>
-                <Typography><strong>Razão Social:</strong> {selectedOrdem.cliente.razaoSocial}</Typography>
-                <Typography><strong>Nome Fantasia:</strong> {selectedOrdem.cliente.nomeFantasia}</Typography>
-                <Typography><strong>Email:</strong> {selectedOrdem.cliente.email}</Typography>
-                <Typography><strong>Telefone:</strong> {selectedOrdem.cliente.telefone}</Typography>
-                <Typography><strong>CNPJ:</strong> {selectedOrdem.cliente.cnpj}</Typography>
-                <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
-                  <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
-                </Typography>
+
+             <div>
+             <Typography variant="h5" sx={{textAlign: 'center'}}>Detalhes da Ordem de Serviço</Typography>
+             <Typography><strong>Código OS:</strong> {selectedOrdem.id}</Typography>
+             <Typography><strong>Quantidade de Rolos:</strong> {selectedOrdem.qtdeRolos}</Typography>
+             <Typography><strong>Data de Entrada:</strong> {selectedOrdem.dataEntrada}</Typography>
+             <Typography><strong>Data de Entrega:</strong> {selectedOrdem.dataEntrega}</Typography>
+             <Typography><strong>Quantidade de Peças:</strong> {selectedOrdem.qtdePecas}</Typography>
+             <Typography><strong>Valor por Peça:</strong> {selectedOrdem.valorPorPeca}</Typography>
+             <Typography><strong>Valor Total:</strong> {selectedOrdem.valorTotal}</Typography>
+             <Typography><strong>Código de Referência:</strong> {selectedOrdem.codReferenciaOs}</Typography>
+             <Typography><strong>Modelo:</strong> {selectedOrdem.modelo}</Typography>
+             <Typography><strong>Número da Nota Fiscal:</strong> {selectedOrdem.numeorNotaFiscal}</Typography>
+             <Typography><strong>Observações:</strong> {selectedOrdem.campoObservacao}</Typography>
+             <Typography><strong>Status:</strong> {selectedOrdem.status}</Typography>
+             <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
+                <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
+              </Typography>
+             <Typography variant="h6" sx={{textAlign: 'center'}}>Dados do Cliente</Typography>
+             <Typography><strong>Código do Cliente:</strong> {selectedOrdem.cliente.id}</Typography>
+             <Typography><strong>Razão Social:</strong> {selectedOrdem.cliente.razaoSocial}</Typography>
+             <Typography><strong>Nome Fantasia:</strong> {selectedOrdem.cliente.nomeFantasia}</Typography>
+             <Typography><strong>Email:</strong> {selectedOrdem.cliente.email}</Typography>
+             <Typography><strong>Telefone:</strong> {selectedOrdem.cliente.telefone}</Typography>
+             <Typography><strong>CNPJ:</strong> {selectedOrdem.cliente.cnpj}</Typography>
+             <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
+                <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
+             </Typography>
 
 
 
-                {selectedOrdem.enderecosCliemte && selectedOrdem.enderecosCliemte.length > 0 && (
-                  <div>
-                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Endereços do Cliente</Typography>
-                    {selectedOrdem.enderecosCliemte.map((endereco: IEnderecos, index: number) => (
-                      <div key={index}>
-                        <Typography><strong>Código do endereço:</strong> {endereco.id}</Typography>
-                        <Typography><strong>Rua:</strong> {endereco.rua}</Typography>
-                        <Typography><strong>Bairro:</strong> {endereco.bairro}</Typography>
-                        {endereco.cidadeResponseDomList.map((cidadeInfo, cidadeIndex) => (
-                          <div key={cidadeIndex}>
-                            <Typography><strong>Cidade:</strong> {cidadeInfo.cidade.name}</Typography>
-                            <Typography><strong>Estado:</strong> {cidadeInfo.cidade.uf}</Typography>
-                          </div>
-                        ))}
-                        <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
-                          <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
-                        </Typography>
-                      </div>
-                    ))}
-                  </div>
-                )}
+             {selectedOrdem.enderecosCliemte && selectedOrdem.enderecosCliemte.length > 0 && (
+            <div>
+              <Typography variant="h6" sx={{textAlign: 'center'}}>Endereços do Cliente</Typography>
+              {selectedOrdem.enderecosCliemte.map((endereco: IEnderecos, index: number) => (
+                <div key={index}>
+                  <Typography><strong>Código do endereço:</strong> {endereco.id}</Typography>
+                  <Typography><strong>Rua:</strong> {endereco.rua}</Typography>
+                  <Typography><strong>Bairro:</strong> {endereco.bairro}</Typography>
+                  {endereco.cidadeResponseDomList.map((cidadeInfo, cidadeIndex) => (
+                    <div key={cidadeIndex}>
+                      <Typography><strong>Cidade:</strong> {cidadeInfo.cidade.name}</Typography>
+                      <Typography><strong>Estado:</strong> {cidadeInfo.cidade.uf}</Typography>
+                    </div>
+                  ))}
+                  <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
+                      <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
+                  </Typography>
+                </div>
+              ))}
+            </div>
+            )}
 
-                {selectedOrdem.ordensDeCorte && selectedOrdem.ordensDeCorte.length > 0 && (
-                  <div>
-                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Materiais Usados na Ordem de Corte</Typography>
-                    {selectedOrdem.ordensDeCorte.map((ordemCorte: IOrdemCorte, index: number) => (
-                      <div key={index}>
-                        <Typography><strong>Código Ordem de corte:</strong> {ordemCorte.id}</Typography>
-                        <Typography><strong>Nome da Matéria-Prima:</strong> {ordemCorte.materiaPrima.nome}</Typography>
-                        <Typography><strong>Comprimento:</strong> {ordemCorte.materiaPrima.comprimento}</Typography>
-                        <Typography><strong>Quantidade de rolos:</strong> {ordemCorte.materiaPrima.qtde}</Typography>
-                        <Typography><strong>Largura:</strong> {ordemCorte.materiaPrima.largura}</Typography>
-                        <Typography><strong>Código de Referência:</strong> {ordemCorte.materiaPrima.codReferencia}</Typography>
-                        <Typography><strong>Sobras:</strong> {ordemCorte.materiaPrima.qtdeMaterialRestante}</Typography>
-                        <Typography><strong>Falhas:</strong> {ordemCorte.materiaPrima.qtdeMaterialFalhas}</Typography>
-                        <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
-                          <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
-                        </Typography>
-                      </div>
-                    ))}
+             {selectedOrdem.ordensDeCorte && selectedOrdem.ordensDeCorte.length > 0 && (
+               <div>
+                 <Typography variant="h6" sx={{textAlign: 'center'}}>Materiais Usados na Ordem de Corte</Typography>
+                 {selectedOrdem.ordensDeCorte.map((ordemCorte: IOrdemCorte, index: number) => (
+                    <div key={index}>
+            <Typography><strong>Código Ordem de corte:</strong> {ordemCorte.id}</Typography>
+            <Typography><strong>Nome da Matéria-Prima:</strong> {ordemCorte.materiaPrima.nome}</Typography>
+            <Typography><strong>Comprimento:</strong> {ordemCorte.materiaPrima.comprimento}</Typography>
+            <Typography><strong>Quantidade de rolos:</strong> {ordemCorte.materiaPrima.qtde}</Typography>
+            <Typography><strong>Largura:</strong> {ordemCorte.materiaPrima.largura}</Typography>
+            <Typography><strong>Código de Referência:</strong> {ordemCorte.materiaPrima.codReferencia}</Typography>
+            <Typography><strong>Sobras:</strong> {ordemCorte.materiaPrima.qtdeMaterialRestante}</Typography>
+            <Typography><strong>Falhas:</strong> {ordemCorte.materiaPrima.qtdeMaterialFalhas}</Typography>
+            <Typography variant="h6" sx={{ width: '100%', textAlign: 'center', display: 'block', marginTop: '16px' }}>
+                <span style={{ display: 'block', borderBottom: '1px solid #000', width: '100%' }}></span>
+            </Typography>
+            </div>
+            ))}
 
-                  </div>
-                )}
+               </div>
+             )}
+           
+           <Box sx={{ display: 'flex', justifyContent: 'flex', gap: '16px', mt: 2 }}>
+              <Button 
+                onClick={handleClose}
+                variant="contained"
+                color="primary"
+                sx={{ display: 'flex', alignItems: 'center' }}
+              >
+                Fechar
+              </Button>
 
-                <Box sx={{ display: 'flex', justifyContent: 'flex', gap: '16px', mt: 2 }}>
-                  <Button
-                    onClick={handleClose}
-                    variant="contained"
-                    color="primary"
-                    sx={{ display: 'flex', alignItems: 'center' }}
-                  >
-                    Fechar
-                  </Button>
-
-                  <Button
-                    onClick={() => imprimirDadosOrdem(selectedOrdem)}
-                    variant="contained"
-                    color="primary"
-                    sx={{ display: 'flex', alignItems: 'center' }}
-                  >
-                    Imprimir
-                    <LocalPrintshopIcon
-                      sx={{ color: 'white', fontSize: '1.89rem', marginLeft: '8px' }}
-                    />
-                  </Button>
-                </Box>
-
-
-              </div>
-
+              <Button 
+                onClick={() => imprimirDadosOrdem(selectedOrdem)}
+                variant="contained"
+                color="primary"
+                sx={{ display: 'flex', alignItems: 'center' }}
+              >
+                Imprimir 
+                <LocalPrintshopIcon 
+                  sx={{ color: 'white', fontSize: '1.89rem', marginLeft: '8px' }} 
+                />
+              </Button>
+            </Box>
+           </div>
             )}
           </Box>
         </Modal>

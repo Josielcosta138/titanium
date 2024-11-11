@@ -217,7 +217,7 @@ const OrdemCorte: FC = () => {
 
 
     const salvarOrdemCorte = async () => {
-        localStorage.setItem("statusGeradaOC", 'PENDENTE');
+        localStorage.setItem("statusGeradaOC", 'PRODUZINDO');
 
         const ordemServicoId = localStorage.getItem('ordemServicoId');
         const data = {

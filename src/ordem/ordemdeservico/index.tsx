@@ -135,10 +135,10 @@ const CadastroOrdemServico: React.FC = () => {
   const salvarOrdemServico = async (comOC : any) => {
 
 
-    let statusAtualizado = "INICIADA";
+    let statusAtualizado = "PENDENTE";
     
     if(comOC === true) {
-      statusAtualizado = "PENDENTE";
+      statusAtualizado = "PRODUZINDO";
     }
     setStatusAtt(statusAtualizado);
 
@@ -172,7 +172,7 @@ const CadastroOrdemServico: React.FC = () => {
         setTimeout(() => {
           setOpen(false);
           if(comOC === true) {
-            localStorage.setItem("statusOCiniciada", 'PENDENTE');
+            localStorage.setItem("statusOCiniciada", 'PRODUZINDO');
             rederionarCadastroOrdemCorte();            
           }else{
             rederionarCadastroListagemDeOS();
