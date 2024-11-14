@@ -6,7 +6,7 @@
     background-color: #f4f6f9;
 }
 
-.sidebar {
+/* .sidebar {
     width: 240px;
     background-color: #2c3e50;
     color: #fff;
@@ -14,7 +14,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-}
+} */
 
 .titulo-container {
     display: flex;
@@ -105,7 +105,7 @@
 }
 
 .top-right .add-ordem-button-os {
-    background-color: #2ecc71;
+    background-color: #2e7d32;
 }
 
 .full-line {
@@ -126,7 +126,7 @@
     align-items: center;
     justify-content: flex-start;
     margin-left: 0;
-    padding-left: 25px;
+    padding-left: 30px;
     width: 100%;
 }
 

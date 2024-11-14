@@ -101,7 +101,7 @@ const OrdemCorte: FC = () => {
                 setAlertaErroCheckMaterial(false);
             }, 8000);
             return false;
-        }
+        }   
         setAlertaErroCheckMaterial(false);
         await salvarOrdemCorte(); 
         return true;
@@ -459,9 +459,9 @@ const OrdemCorte: FC = () => {
                                     <div className="results-info">
                                         Mostrando 1 de 6 de {materiasPrimas.length} resultados
                                         <div className="pagination-info">
-                                            <Button disabled={page === 1} onClick={() => handlePageChange(page - 1)}>
+                                            {/* <Button disabled={page === 1} onClick={() => handlePageChange(page - 1)}>
                                                 Anterior
-                                            </Button>
+                                            </Button> */}
                                             {Array.from({ length: totalPages }, (_, p) => (
                                                 <Button
                                                     key={p + 1}
@@ -471,9 +471,9 @@ const OrdemCorte: FC = () => {
                                                     {p + 1}
                                                 </Button>
                                             ))}
-                                            <Button disabled={page === totalPages} onClick={() => handlePageChange(page + 1)}>
+                                            {/* <Button disabled={page === totalPages} onClick={() => handlePageChange(page + 1)}>
                                                 Próximo
-                                            </Button>
+                                            </Button> */}
                                         </div>
                                     </div>
                                 </div>
