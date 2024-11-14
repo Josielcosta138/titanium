@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
 import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../api/RestClient';
-import { Alert, Box, Modal,  TextField, Button, Select, MenuItem, FormControl, Checkbox, FormControlLabel, Tooltip, AlertTitle } from '@mui/material';
+import { Alert, Box, Modal, TextField, Button, Select, MenuItem, FormControl, Checkbox, FormControlLabel, Tooltip, AlertTitle, InputAdornment } from '@mui/material';
 import { IClientes } from '../../Interface/Cliente/type';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { Navigate, useNavigate } from 'react-router-dom';
 import ConfirmarOC from '../../components/ModelConfirmacaoOC';
-import { format, formatDate, parse, parseISO  } from "date-fns";
+import { format, formatDate, parse, parseISO } from "date-fns";
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -17,21 +17,21 @@ import { FaArrowLeft } from 'react-icons/fa';
 
 
 const CadastroOrdemServico: React.FC = () => {
-  const [clienteId, setClienteId] = useState<number | ''>(''); 
-  const [codReferenciaOs, setCodReferenciaOs] = useState<string>(''); 
+  const [clienteId, setClienteId] = useState<number | ''>('');
+  const [codReferenciaOs, setCodReferenciaOs] = useState<string>('');
   const [modelo, setModelo] = useState<string>('');
-  const [quantidadeRolo, setQuantidadeRolo] = useState<number | ''>(0); 
+  const [quantidadeRolo, setQuantidadeRolo] = useState<number | ''>(0);
   const [quantidadePecas, setQuantidadePecas] = useState<number | ''>(0);
   const [quantidadeFalhas, setQuantidadeFalhas] = useState<number | ''>(0);
-  const [quantidadeSobras, setQuantidadeSobras] = useState<number | ''>(0); 
+  const [quantidadeSobras, setQuantidadeSobras] = useState<number | ''>(0);
   const [valorPecas, setValorPecas] = useState<number | ''>();
   const [valorTotal, setValorTotal] = useState<number | ''>('');
-  const [notaFiscal, setNotaFiscal] = useState<number | ''>(0); 
+  const [notaFiscal, setNotaFiscal] = useState<number | ''>(0);
   const dataAtual = new Date().toISOString().split('T')[0];
-  const [dataEntrada, setdataEntrada] = useState<string>(dataAtual); 
-  const [dataEntrega, setdataEntrega] = useState<string>(dataAtual); 
+  const [dataEntrada, setdataEntrada] = useState<string>(dataAtual);
+  const [dataEntrega, setdataEntrega] = useState<string>(dataAtual);
   const [observacao, setObservacao] = useState<string>('');
-  const [status, setStatus] = useState<string>(''); 
+  const [status, setStatus] = useState<string>('');
   const [statusAtt, setStatusAtt] = useState<string>('');
   const [open, setOpen] = useState(false);
   const [clientes, setClientes] = useState<IClientes[]>([]);
@@ -40,7 +40,7 @@ const CadastroOrdemServico: React.FC = () => {
   const navigate = useNavigate();
   const [alertaErro, setAlertaErro] = useState(false);
 
-  
+
 
   useEffect(() => {
     const idOS = localStorage.getItem('idOS');
@@ -61,21 +61,21 @@ const CadastroOrdemServico: React.FC = () => {
         const date = parseISO(inputDate);
         return format(date, 'dd/MM/yyyy');
       };
-    
-        setQuantidadeRolo(dadosDaOs.qtdeRolos || 0);
-        setdataEntrada(dadosDaOs.dataEntrada ? formatData(dadosDaOs.dataEntrada) : "");
-        setdataEntrega(dadosDaOs.dataEntrega ? formatData(dadosDaOs.dataEntrega) : "");
-        setQuantidadePecas(dadosDaOs.qtdePecas || 0);
-        setQuantidadeFalhas(dadosDaOs.qtdeMaterialFalhas || 0.0);
-        setQuantidadeSobras(dadosDaOs.qtdeMaterialRestante || 0.0);
-        setValorPecas(dadosDaOs.valorPorPeca || 0.0);
-        setValorTotal(dadosDaOs.valorTotal || 0.0);
-        setCodReferenciaOs(dadosDaOs.codReferenciaOs || "");
-        setModelo(dadosDaOs.modelo || "");
-        setNotaFiscal(dadosDaOs.numeorNotaFiscal || 0);
-        setObservacao(dadosDaOs.campoObservacao || "");
-        setStatus(dadosDaOs.status || "");
-        setClienteId(dadosDaOs.cliente.id || 0);
+
+      setQuantidadeRolo(dadosDaOs.qtdeRolos || 0);
+      setdataEntrada(dadosDaOs.dataEntrada ? formatData(dadosDaOs.dataEntrada) : "");
+      setdataEntrega(dadosDaOs.dataEntrega ? formatData(dadosDaOs.dataEntrega) : "");
+      setQuantidadePecas(dadosDaOs.qtdePecas || 0);
+      setQuantidadeFalhas(dadosDaOs.qtdeMaterialFalhas || 0.0);
+      setQuantidadeSobras(dadosDaOs.qtdeMaterialRestante || 0.0);
+      setValorPecas(dadosDaOs.valorPorPeca || 0.0);
+      setValorTotal(dadosDaOs.valorTotal || 0.0);
+      setCodReferenciaOs(dadosDaOs.codReferenciaOs || "");
+      setModelo(dadosDaOs.modelo || "");
+      setNotaFiscal(dadosDaOs.numeorNotaFiscal || 0);
+      setObservacao(dadosDaOs.campoObservacao || "");
+      setStatus(dadosDaOs.status || "");
+      setClienteId(dadosDaOs.cliente.id || 0);
 
     } catch (error) {
       console.error("Erro ao carregar dados do cliente e endereços:", error);
@@ -85,7 +85,7 @@ const CadastroOrdemServico: React.FC = () => {
   }
 
   const validarCamposObrigatorios = async () => {
-    
+
     if (
       !clienteId ||
       !codReferenciaOs ||
@@ -96,11 +96,11 @@ const CadastroOrdemServico: React.FC = () => {
       !quantidadePecas ||
       !valorPecas ||
       !valorTotal
-    ) { 
-      setAlertaErro(true);  
+    ) {
+      setAlertaErro(true);
       setTimeout(() => {
         setAlertaErro(false);
-      }, 8000);   
+      }, 8000);
 
       return false;
     }
@@ -112,32 +112,32 @@ const CadastroOrdemServico: React.FC = () => {
 
   const validarChamadaDeOrdemCorte = () => {
     const idOS = localStorage.getItem('idOS');
-      if(!idOS){
-        setOpenConfirmarOC(true);    
-      }else{
-        atualizarOrdemServico();
-      }
+    if (!idOS) {
+      setOpenConfirmarOC(true);
+    } else {
+      atualizarOrdemServico();
+    }
   };
 
 
   const handleCloseConfirmarOC = (confirmed: boolean) => {
     setOpenConfirmarOC(false)
-  
-    if(confirmed) {
+
+    if (confirmed) {
       salvarOrdemServico(true);
-    } 
-    else { 
+    }
+    else {
       salvarOrdemServico(false);
     }
   };
 
 
-  const salvarOrdemServico = async (comOC : any) => {
+  const salvarOrdemServico = async (comOC: any) => {
 
 
     let statusAtualizado = "PENDENTE";
-    
-    if(comOC === true) {
+
+    if (comOC === true) {
       statusAtualizado = "PRODUZINDO";
     }
     setStatusAtt(statusAtualizado);
@@ -151,12 +151,12 @@ const CadastroOrdemServico: React.FC = () => {
       qtdeMaterialRestante: quantidadeSobras,
       valorPorPeca: valorPecas,
       valorTotal: valorTotal,
-      codReferenciaOs: codReferenciaOs ,
+      codReferenciaOs: codReferenciaOs,
       modelo: modelo,
       numeorNotaFiscal: notaFiscal,
       campoObservacao: observacao,
       status: statusAtualizado,
-      clienteId: clienteId, 
+      clienteId: clienteId,
     };
 
     try {
@@ -171,10 +171,10 @@ const CadastroOrdemServico: React.FC = () => {
         setOpen(true);
         setTimeout(() => {
           setOpen(false);
-          if(comOC === true) {
+          if (comOC === true) {
             localStorage.setItem("statusOCiniciada", 'PRODUZINDO');
-            rederionarCadastroOrdemCorte();            
-          }else{
+            rederionarCadastroOrdemCorte();
+          } else {
             rederionarCadastroListagemDeOS();
           }
 
@@ -200,12 +200,12 @@ const CadastroOrdemServico: React.FC = () => {
       qtdeMaterialRestante: quantidadeSobras,
       valorPorPeca: valorPecas,
       valorTotal: valorTotal,
-      codReferenciaOs: codReferenciaOs ,
+      codReferenciaOs: codReferenciaOs,
       modelo: modelo,
       numeorNotaFiscal: notaFiscal,
       campoObservacao: observacao,
       status: statusOsAtual,
-      clienteId: clienteId, 
+      clienteId: clienteId,
     };
 
     try {
@@ -216,7 +216,7 @@ const CadastroOrdemServico: React.FC = () => {
         setOpen(true);
         setTimeout(() => {
           setOpen(false);
-           rederionarCadastroListagemDeOS();
+          rederionarCadastroListagemDeOS();
         }, 5000);
       }
     } catch (error) {
@@ -224,6 +224,18 @@ const CadastroOrdemServico: React.FC = () => {
     }
   };
 
+  const formatarValor = (valor: number): string => {
+    return valor.toFixed(2).replace('.', ',');
+  };
+
+  const handleChangeValorPecas = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const valor = event.target.value.replace(',', '.'); // Substitui vírgula por ponto
+    const valorNumerico = parseFloat(valor);
+    setValorPecas(valorNumerico);
+  };
+
+
+  const valorPecasExibido = formatarValor(valorPecas || 0);  // Formatar o valor para exibição com vírgula
 
   const calcularValorTotal = () => {
     if (quantidadePecas && valorPecas) {
@@ -231,6 +243,9 @@ const CadastroOrdemServico: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    calcularValorTotal();  // Atualiza o valor total ao alterar a quantidade ou valor por peça
+  }, [quantidadePecas, valorPecas]);
 
   const carregarClientes = async () => {
     try {
@@ -258,10 +273,8 @@ const CadastroOrdemServico: React.FC = () => {
 
 
   useEffect(() => {
-    carregarClientes();    
-  }, []); 
-
-
+    carregarClientes();
+  }, []);
 
   return (
     <div className="cadastro-ordem-container"> <Sidebar></Sidebar>
@@ -276,23 +289,23 @@ const CadastroOrdemServico: React.FC = () => {
         <h2 className="page-title">Cadastro de Ordem de Serviço - Pré corte</h2>
         <hr className="full-line" />
         <div className="action-bar">
-          <button 
-              className="service-list-button"
-              onClick={rederionarCadastroListagemDeOS}
-              >Lista de OS's
-          </button>          
+          <button
+            className="service-list-button"
+            onClick={rederionarCadastroListagemDeOS}
+          >Lista de OS's
+          </button>
         </div>
 
         {/*  FORMULARIO */}
         <div className="form-container">
           <div className="cadastro-ordem-form">
             <div className="form-section">
-            <div className="section-title">
+              <div className="section-title">
                 <h3 style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }}>
                   Informações da Ordem de Serviço
                 </h3>
                 <ContactEmergencyIcon sx={{ verticalAlign: 'middle' }} />
-            </div>
+              </div>
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="cliente">Cliente*</label>
@@ -308,32 +321,39 @@ const CadastroOrdemServico: React.FC = () => {
                       }}
                       required
                       sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                      fullWidth
+                      displayEmpty
                     >
-                      {clientes.map((endereco) => (
-                      <MenuItem key={endereco.client.id} value={endereco.client.id}>
-                        {endereco.client.nomeFantasia}
+                      <MenuItem value="">
+                        <em>Selecione o Cliente</em>
                       </MenuItem>
-                    ))}
+                      {clientes.map((endereco) => (
+                        <MenuItem key={endereco.client.id} value={endereco.client.id}>
+                          {endereco.client.nomeFantasia}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                   <Tooltip title="Clique para cadastrar um novo cliente" arrow>
-                      <GroupAddIcon 
-                        onClick={(rederionarCadastroCliente)} 
-                        sx={{ color: 'blue', 
-                              fontSize: '2.22rem', 
-                              marginLeft: '8px',
-                              cursor: 'pointer',
-                                '&:hover': {
-                                  opacity: 0.7, 
-                              }
-                            }} 
-                      />
+                    <GroupAddIcon
+                      onClick={(rederionarCadastroCliente)}
+                      sx={{
+                        color: 'blue',
+                        fontSize: '2.22rem',
+                        marginLeft: '8px',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          opacity: 0.7,
+                        }
+                      }}
+                    />
                   </Tooltip>
                 </div>
                 <div className="form-group">
                   <label htmlFor="referencia">Referência*</label>
                   <TextField
                     id="referencia"
+                    placeholder="Ex: DB0100"
                     value={codReferenciaOs}
                     onChange={(event) => setCodReferenciaOs(event.target.value)}
                     fullWidth
@@ -345,6 +365,7 @@ const CadastroOrdemServico: React.FC = () => {
                   <label htmlFor="modelo">Modelo*</label>
                   <TextField
                     id="modelo"
+                    placeholder="Ex: Bermuda"
                     value={modelo}
                     onChange={(event) => setModelo(event.target.value)}
                     fullWidth
@@ -385,36 +406,36 @@ const CadastroOrdemServico: React.FC = () => {
                   />
                 </div>
                 <div className="form-group">
-                <label htmlFor="quantidadeRolo">Quantidade de Rolo*</label>
+                  <label htmlFor="quantidadeRolo">Quantidade de Rolo*</label>
                   <TextField
                     id="quantidadeRolo"
                     type="number"
                     value={quantidadeRolo}
                     onChange={(event) => {
                       const valor = (Number(event.target.value));
-                      if (valor >= 0){
+                      if (valor >= 0) {
                         setQuantidadeRolo(valor);
                       }
-                      }
-                    }                    
+                    }
+                    }
                     fullWidth
                     required
                     sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
                   />
                 </div>
-                
+
               </div>
-              
+
               <hr className="full-line" />
-             <div className="form-section"> 
-             <div className="section-title">
-                <h3 style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle', paddingTop: '5px' }}>
-                Detalhes do Corte
-                </h3>
-                <DisplaySettingsIcon sx={{ verticalAlign: 'middle' }} />
-            </div>
+              <div className="form-section">
+                <div className="section-title">
+                  <h3 style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle', paddingTop: '5px' }}>
+                    Detalhes do Corte
+                  </h3>
+                  <DisplaySettingsIcon sx={{ verticalAlign: 'middle' }} />
+                </div>
                 <div className="form-row">
-                <div className="form-group">
+                  <div className="form-group">
                     <label htmlFor="notaFiscal">Nota Fiscal*</label>
                     <TextField
                       id="notaFiscal"
@@ -422,7 +443,7 @@ const CadastroOrdemServico: React.FC = () => {
                       onChange={(event) => {
                         const valor = (Number(event.target.value));
                         if (valor >= 0) {
-                          setNotaFiscal(valor)  
+                          setNotaFiscal(valor)
                         }
                       }}
                       fullWidth
@@ -430,28 +451,27 @@ const CadastroOrdemServico: React.FC = () => {
                       sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
                     />
                   </div>
-                {/* teste */}
+                  {/* teste */}
 
                   <div className="form-group">
                     <label htmlFor="valorPecas">Valor das Peças*</label>
+
                     <TextField
                       id="valorPecas"
-                      type="number"
-                      value={valorPecas}
-                      onChange={(event) => {
-                        const valor = Number(event.target.value);
-                        if (valor >= 0) {
-                          setValorPecas(valor)  
-                        }
-                      }} 
+                      value={valorPecasExibido}
+                      onChange={handleChangeValorPecas}
                       fullWidth
                       required
                       sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                      }}
                     />
+
                   </div>
                 </div>
                 <div className="form-row">
-                <div className="form-group">
+                  <div className="form-group">
                     <label htmlFor="quantidadePecas">Quantidade de Peças*</label>
                     <TextField
                       id="quantidadePecas"
@@ -459,7 +479,7 @@ const CadastroOrdemServico: React.FC = () => {
                       value={quantidadePecas}
                       onChange={(event) => {
                         const valor = (Number(event.target.value));
-                        if (valor >= 0){
+                        if (valor >= 0) {
                           setQuantidadePecas(valor)
                         }
                       }}
@@ -479,17 +499,22 @@ const CadastroOrdemServico: React.FC = () => {
                       fullWidth
                       required
                       sx={{ backgroundColor: 'white', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}
-                    /> </div>
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                      }}
+                    />
+
+                  </div>
                 </div>
               </div>
               <hr className="full-line" />
               <div className="form-section">
-              <div className="section-title">
-                <h3 style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle', paddingTop: '5px' }}>
-                Observações e Notas
-                </h3>
-                <DescriptionIcon sx={{ verticalAlign: 'middle' }} />
-              </div>
+                <div className="section-title">
+                  <h3 style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle', paddingTop: '5px' }}>
+                    Observações e Notas
+                  </h3>
+                  <DescriptionIcon sx={{ verticalAlign: 'middle' }} />
+                </div>
 
                 <div className="form-row">
                   <div className="form-group">
@@ -503,6 +528,7 @@ const CadastroOrdemServico: React.FC = () => {
                     <label htmlFor="observacao">Observação</label>
                     <TextField
                       id="observacao"
+                      placeholder="Ex: Tivemos peças com defeito que nao foi possivel aproveitar..."
                       multiline
                       rows={4}
                       value={observacao}
@@ -514,49 +540,49 @@ const CadastroOrdemServico: React.FC = () => {
                 </div>
               </div>
               <div className="form-footer">
-              {alertaErro && (
-                <Alert 
-                   variant="filled" 
-                   severity="error"
-                  sx={{
-                    position: 'fixed',
-                    top: '20px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    zIndex: 9999,
-                    width: '33%',
-                    borderRadius: 2,
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    fontSize: '1.0rem'
-                  }}
-                >
-                  Todos os campos são obrigatórios! Certifique-se de que nenhum está vazio.
-                </Alert>
-              )}
+                {alertaErro && (
+                  <Alert
+                    variant="filled"
+                    severity="error"
+                    sx={{
+                      position: 'fixed',
+                      top: '20px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      zIndex: 9999,
+                      width: '33%',
+                      borderRadius: 2,
+                      textAlign: 'center',
+                      fontWeight: 'bold',
+                      fontSize: '1.0rem'
+                    }}
+                  >
+                    Todos os campos são obrigatórios! Certifique-se de que nenhum está vazio.
+                  </Alert>
+                )}
 
                 <Button
                   variant="contained"
                   onClick={validarCamposObrigatorios}
-                  sx={{ backgroundColor: '#1976d2', color: 'white', marginTop: 2 }}
+                  sx={{ backgroundColor: '#ff6600', color: 'white', marginTop: 2 }}
                 >
                   Salvar Ordem de Serviço
                 </Button>
                 <ConfirmarOC open={openConfirmarOC} onClose={handleCloseConfirmarOC} />
               </div>
-              
+
             </div>
           </div>
           <Modal
-                open={open}
-                onClose={() => setOpen(false)}
-              >
-                <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
-                    <Alert variant="filled" sx={{ mb: 2 }}>Ordem de serviço salva com sucesso!</Alert>
-                </Box>
-            </Modal>
+            open={open}
+            onClose={() => setOpen(false)}
+          >
+            <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
+              <Alert variant="filled" sx={{ mb: 2 }}>Ordem de serviço salva com sucesso!</Alert>
+            </Box>
+          </Modal>
         </div>
-      {/* FIMMM */}
+        {/* FIMMM */}
       </div>
     </div>
   );

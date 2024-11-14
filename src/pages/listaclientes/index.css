@@ -6,7 +6,7 @@
     /* background-color: #ffffff; */
 }
 
-.sidebar {
+/* .sidebar {
     width: 20%;
     background: linear-gradient(to bottom, #ffffff 0%, #c4c4c4 100%);
     display: flex;
@@ -14,8 +14,8 @@
     align-items: center;
     padding: 20px;
     color: #000000;
-    height: 100vh; /* Estende o menu lateral até o fim da tela */
-}
+    height: 100vh;  Estende o menu lateral até o fim da tela  
+} */
 
 .titulo-container {
     display: flex;
@@ -141,6 +141,7 @@
 .search-filter-container {
   display: flex;
   align-items: center;
+  margin-left: -15px;
 }
 
 .search-input-wrapper {
@@ -188,10 +189,10 @@
 }
 
 .filter-button:hover {
-  background-color: #0056b3;
+  background-color: #e65100;
 }
 
-
+    
 .search-bar {
     padding: 8px;
     border: 1px solid #ccc;

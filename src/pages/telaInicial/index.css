@@ -18,12 +18,12 @@ body {
   padding-bottom: 40px;
 }
 
-.sidebar {
+/* .sidebar {
   width: 250px;
   background-color: #333;
   padding: 20px;
   color: #030101;
-}
+} */
 
 .titulo-container {
   display: flex;
