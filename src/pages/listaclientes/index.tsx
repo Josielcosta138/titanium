@@ -26,8 +26,9 @@ const Clientes: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<any>(null);
   const [page, setPage] = useState(1); // Estado para controle da página
-const [totalPages, setTotalPages] = useState(1);   // Estado para controle do total de páginas
+  const [totalPages, setTotalPages] = useState(1);   // Estado para controle do total de páginas
   const navigate = useNavigate(); 
+  const [nomePesquisar, setNomePesquisar] = useState<string>('');
 
   const carregarClientes = async () => {
     try {
@@ -95,6 +96,30 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
   }
 
 
+
+
+  const carregarClientesPorNome =  async () => {
+
+    try {
+      if (!nomePesquisar) {
+        carregarClientes();
+      }else{
+        const response = await apiGet(`endereco/carregarNome/${nomePesquisar}`);
+        if (response.status === STATUS_CODE.OK) {
+          setClientes(response.data);
+        setTotalPages(response.data.totalPages);
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao carregar ordens de serviço:", error);
+    }
+
+  }
+
+
+
+
+
   return (  
     <div className="clientes-container">
             <Sidebar></Sidebar>
@@ -121,10 +146,18 @@ const [totalPages, setTotalPages] = useState(1);   // Estado para controle do to
 <div className="action-bar">
       <div className="search-filter-container">
         <div className="search-input-wrapper">
-          <input type="text" placeholder="Digite seu Cliente" className="search-bar-listacliente" />
+          <input 
+            type="text" 
+            placeholder="Digite seu Cliente" 
+            className="search-bar-listacliente" 
+            value={nomePesquisar}
+            onChange={(event) => setNomePesquisar(event.target.value)}
+            />
           <FontAwesomeIcon icon={faSearch} className="search-icon" />
         </div>
-        <button className="filter-button">
+        <button 
+          onClick={carregarClientesPorNome}
+          className="filter-button">
           Pesquisar 
         </button>
       </div>
