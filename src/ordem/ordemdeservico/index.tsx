@@ -89,6 +89,8 @@ const CadastroOrdemServico: React.FC = () => {
     if (
       !clienteId ||
       !codReferenciaOs ||
+      !dataEntrada ||
+      !dataEntrada ||
       !modelo ||
       !quantidadeRolo ||
       !dataEntrada ||
@@ -268,6 +270,7 @@ const CadastroOrdemServico: React.FC = () => {
   }
 
   const rederionarCadastroListagemDeOS = async () => {
+    localStorage.clear();
     navigate('/listaServico')
   }
 
