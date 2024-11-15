@@ -117,6 +117,10 @@ const Clientes: React.FC = () => {
   }
 
 
+  const redirecionarInicio = () =>{
+    navigate('/telaInicial')
+  }
+
 
 
 
@@ -127,7 +131,9 @@ const Clientes: React.FC = () => {
         {/* Barra Superior */}
         <div className="top-bar">
           <div className="top-left">
-            <button className="back-button">
+            <button 
+            onClick={redirecionarInicio}
+            className="back-button">
             <FaArrowLeft />Voltar
             </button>
             <h2>Lista de Clientes</h2>
@@ -238,10 +244,15 @@ const Clientes: React.FC = () => {
         <Typography><strong>Telefone:</strong> {selectedCliente.client?.telefone}</Typography>
         <Typography><strong>Cidade:</strong> {selectedCliente.cidades?.name}</Typography>
         <Typography><strong>Endereço:</strong> {selectedCliente.rua}, {selectedCliente.bairro}</Typography>
-        {/* <Typography><strong>Ordens de serviço:</strong> {selectedCliente.client?.ordensServico.length > 0 
-          ? selectedCliente.client.ordensServico.join(', ') 
-          : 'Nenhuma ordem de serviço no momento.'}</Typography> */}
-        <Button onClick={handleClose}>Fechar</Button>
+        <Button onClick={handleClose}
+        sx={{
+          backgroundColor: '#0288d1',
+          color: '#ffffff',
+          '&:hover': {
+            backgroundColor: '#0288d1',
+          },
+        }}
+        >Fechar</Button>
       </div>
     )}
   </Box>

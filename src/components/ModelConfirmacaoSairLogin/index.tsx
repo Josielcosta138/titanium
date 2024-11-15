@@ -7,6 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { styled } from '@mui/material/styles';
 
+
 interface ConfirmarOCProps {
   open: boolean;
   onClose: (confirmed: boolean) => void;
@@ -28,7 +29,7 @@ const CustomDialogContentText = styled(DialogContentText)({
 });
 
 
-export default function ConfirmarFinalizarOS({ open, onClose }: ConfirmarOCProps) {
+export default function ConfirmarOC({ open, onClose }: ConfirmarOCProps) {
     const handleConfirm = () => {
       onClose(true); 
     };
@@ -45,23 +46,26 @@ export default function ConfirmarFinalizarOS({ open, onClose }: ConfirmarOCProps
         aria-describedby="alert-dialog-description"
       >
         <CustomDialogTitle id="alert-dialog-title">
-        {"Atenção!"}
-      </CustomDialogTitle>
+          {"Atenção!"}
+        </CustomDialogTitle>
         <DialogContent>
           <CustomDialogContentText id="alert-dialog-description">
-            Deseja realmente finalizar a Ordem de serviço?
+            Deseja realmente sair do sistema?
           </CustomDialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleConfirm}
-          sx={{
-            backgroundColor: '#2e7d32',
-            color: '#ffffff',
-            '&:hover': {
-              backgroundColor: '#1b5e20',
-            },
-          }}
-          >Sim</Button>
+        <Button 
+            onClick={handleConfirm} 
+            sx={{
+              backgroundColor: '#2e7d32',
+              color: '#ffffff',
+              '&:hover': {
+                backgroundColor: '#1b5e20',
+              },
+            }}
+          >
+            Sim
+        </Button>
           <Button onClick={handleCancel} autoFocus>
             Não
           </Button>

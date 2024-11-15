@@ -1,8 +1,10 @@
 import { faChartBar, faCog, faHome, faList, faSignOutAlt, faTools, faUserPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './index.css';
+import ConfirmarOC from '../../components/ModelConfirmacaoSairLogin';
+
 
 const Sidebar: React.FC = () => {
   const user = {
@@ -11,11 +13,28 @@ const Sidebar: React.FC = () => {
     profilePic: process.env.PUBLIC_URL + '/Logo.png',
   };
   const navigate = useNavigate();
+  const [openConfirmarOC, setOpenConfirmarOC] = useState(false);
+
+
 
   const redirecionarLogin = () => {
-    sessionStorage.clear();
-    navigate('/login');
+    setOpenConfirmarOC(true);
   };
+
+
+  const handleCloseConfirmarOC = (confirmed: boolean) => {
+    setOpenConfirmarOC(false)
+
+    if (confirmed) {
+      sessionStorage.clear();
+      navigate('/login');
+    }
+    else {
+      navigate('/telaInicial');
+    }
+  };
+
+
 
   return (
     <div className="sidebar">
@@ -29,9 +48,11 @@ const Sidebar: React.FC = () => {
       <div className="user-info">
         <div className="user-name">{user.name}</div>
         <div className="user-role">{user.role}</div>
+
         <button onClick={redirecionarLogin} className="logout-button">
           <FontAwesomeIcon icon={faSignOutAlt} className="icon" /> Sair
-        </button>
+        </button> 
+        <ConfirmarOC open={openConfirmarOC} onClose={handleCloseConfirmarOC} />
       </div>
       <nav className="sidebar-nav">
         <ul>
