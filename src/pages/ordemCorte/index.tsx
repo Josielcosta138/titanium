@@ -355,7 +355,15 @@ const OrdemCorte: FC = () => {
                                     </Typography>
                                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                                         <Box sx={{ flex: '1 1 auto' }} />
-                                        <Button onClick={handleReset}>Reiniciar</Button>
+                                        <Button onClick={handleReset}
+                                         sx={{
+                                            backgroundColor: '#0288d1',
+                                            color: '#ffffff',
+                                            '&:hover': {
+                                              backgroundColor: '#0288d1',
+                                            },
+                                          }}
+                                        >Listar Ordens</Button>
                                     </Box>
                                 </React.Fragment>
                             ) : (
@@ -390,7 +398,15 @@ const OrdemCorte: FC = () => {
                                         )}
 
 
-                                        <Button onClick={handleNext}>
+                                        <Button onClick={handleNext}
+                                            sx={{
+                                                backgroundColor: '#2e7d32',
+                                                color: '#ffffff',
+                                                '&:hover': {
+                                                  backgroundColor: '#1b5e20',
+                                                },
+                                              }}
+                                        >
                                             {activeStep === steps.length - 1 ? 'Salvar corte' : 'Próximo'}
                                         </Button>
                                     </Box>

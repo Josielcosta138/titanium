@@ -54,7 +54,15 @@ export default function ConfirmarOC({ open, onClose }: ConfirmarOCProps) {
           </CustomDialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleConfirm}>Sim</Button>
+          <Button onClick={handleConfirm}
+          sx={{
+            backgroundColor: '#2e7d32',
+            color: '#ffffff',
+            '&:hover': {
+              backgroundColor: '#1b5e20',
+            },
+          }}
+          >Sim</Button>
           <Button onClick={handleCancel} autoFocus>
             Não
           </Button>

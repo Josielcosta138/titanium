@@ -289,7 +289,15 @@ const Relatorios: React.FC = () => {
               <p>Valor Total: {selectedOrdem.valorTotal}</p>
               <Box className="modal-buttons">
                 <Button variant="contained" color="info" onClick={() => imprimirDadosOrdem(selectedOrdem)}>Imprimir</Button>
-                <Button variant="contained" color="error" onClick={handleClose}>Fechar</Button>
+                <Button variant="contained" color="error" onClick={handleClose}
+                 sx={{
+                  backgroundColor: '#0288d1',
+                  color: '#ffffff',
+                  '&:hover': {
+                    backgroundColor: '#0288d1',
+                  },
+                }}
+                >Fechar</Button>
               </Box>
             </>
           )}
