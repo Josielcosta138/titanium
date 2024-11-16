@@ -1,5 +1,5 @@
 import { Axios } from "axios";
-// const api = new Axios({ baseURL: "http://localhost:8085/titanium/" }); // local
+// const api = new Axios({ baseURL: "http://localhost:8085/titanium/" }); // local server
 const api = new Axios({baseURL: process.env.REACT_APP_API_BASE_URL}); // endPoint NUVEM
 
 api.interceptors.response.use(response => {
