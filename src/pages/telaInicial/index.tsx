@@ -419,12 +419,18 @@ const TelaInicial: React.FC = () => {
         </div>
         <hr style={{ marginTop: '100px' }} className="full-line" />
         <div className="table-container">
-        <div className="header">
+        <Alert severity="warning" className="custom-alert">
+            Atenção! Fique atento a Data de entrega da ordem de serviço.
+          </Alert>
+          <div className="header">
+            <h3>Ordens de Serviço - Prioridade por Data de Entrega</h3> 
+          </div>
+        {/* <div className="header">
         <h3>Ordens de Serviço - Prioridade por Data de Entrega</h3> 
         <div className="top-right">
           <Alert severity="warning">Atenção! Fique atento a Data de entrega da ordem de serviço.</Alert>
-        </div>
-        </div>
+        </div> */}
+        {/* </div> */}
 
           <TableContainer>
             <Table className='header-table'>
@@ -479,14 +485,23 @@ const TelaInicial: React.FC = () => {
             </Table>
           </TableContainer>
 
-          <hr style={{ marginTop: '100px' }} className="full-line" />          
+          {/* <hr style={{ marginTop: '100px' }} className="full-line" />          
           <div className="top-right" style={{ right: '20px', zIndex: 1000 }}>
           <h3>Faturamento e Economia Mensal</h3> 
             <Alert severity="info">Atenção! Passe o mouse sobre o gráfico para visualizar os valores!.</Alert>
           </div>
-        < App />  
+        < App />   */}
         
-
+        <hr style={{ marginTop: '100px' }} className="full-line" />          
+          <div className="table-container">
+            <Alert severity="info" className="custom-alert">
+              Atenção! Passe o mouse sobre o gráfico para visualizar os valores!
+            </Alert>
+            <div className="header">
+              <h3>Faturamento e Economia Mensal</h3> 
+            </div>
+            <App />  
+          </div>
       
 
           <div className="pagination">
