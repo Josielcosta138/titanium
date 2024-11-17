@@ -396,7 +396,7 @@ const TelaInicial: React.FC = () => {
           </div>
           <div className="card orange-light">
             <span><strong>ECONOMIA DE MATERIAIS (+)</strong></span>
-            <h1>{economiaMaterialTotal != null ? economiaMaterialTotal : 'Carregando...'} MT</h1>
+            <h1>{economiaMaterialTotal != null ? economiaMaterialTotal : 'Carregando...'} Metros</h1>
           </div>
         </div>
         <div className="button-container">
