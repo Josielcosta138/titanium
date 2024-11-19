@@ -226,7 +226,7 @@ const MateriaPrima: FC = () => {
                                 />
                             </div>
 
-                            <div className="form-group">
+                            {/* <div className="form-group">
                                 <label htmlFor="qtdeRestante">Quantidade restante</label>
                                 <input
                                     type="number"
@@ -244,7 +244,7 @@ const MateriaPrima: FC = () => {
                                     value={qtdeMaterialFalhas}
                                     onChange={(e) => setQtdeMaterialFalhas(Number(e.target.value))}
                                 />
-                            </div>
+                            </div> */}
                         </div>
                         {alertaErro && (
                             <Alert 
