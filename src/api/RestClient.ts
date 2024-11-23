@@ -4,11 +4,21 @@ const api = new Axios({baseURL: process.env.REACT_APP_API_BASE_URL}); // endPoin
 
 api.interceptors.response.use(response => {
     if (response.status === STATUS_CODE.UNAUTHORIZED) {
+
+        setTimeout(() => {
+            window.location.href = "/login";
+        }, 5000);
+
         window.location.href = "/login";
     }
     return response;
 }, error => {
     if (error.response.status === STATUS_CODE.UNAUTHORIZED) {
+
+        setTimeout(() => {
+            window.location.href = "/login";
+        }, 5000);
+
         window.location.href = "/login";
     }
     return error;
