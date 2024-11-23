@@ -74,7 +74,7 @@ const RecoverPassword: FC = () => {
         <p className="bem-vindo">Recuperar Senha</p>
 
         <div className="login-input-group">
-          <label htmlFor="email" className="input-label">Login antigo</label>
+          <label htmlFor="email" className="input-label">Login atual</label>
           <input
             type="email"
             id="email"
@@ -83,7 +83,7 @@ const RecoverPassword: FC = () => {
             onChange={(e) => setEmailAntigo(e.target.value)}
             required
           />
-          <label htmlFor="password" className="input-label">Senha antiga</label>
+          <label htmlFor="password" className="input-label">Senha atual</label>
           <input
             type="password"
             id="password"

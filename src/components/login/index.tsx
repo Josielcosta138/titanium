@@ -8,6 +8,7 @@ const Login: FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const [openSenhaInvalida, setOpenSenhaInvalida] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -29,8 +30,15 @@ const Login: FC = () => {
           redirecionarTelaInicial(); 
         },1000);    
       }
-    } catch (error) {
-      
+      else if (response.status === STATUS_CODE.UNAUTHORIZED) {
+        setOpenSenhaInvalida(true);
+
+        setTimeout(() => {          
+          setOpenSenhaInvalida(false);
+        },1000);    
+      }
+
+    } catch (error) {    
       console.error("Erro! Login ou Senha inválidos", error);
     }
   };
@@ -80,6 +88,20 @@ const Login: FC = () => {
         <Modal open={open} onClose={() => setOpen(false)}>
               <Box className="alert-box" sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 9999 }}>
                   <Alert variant="filled" sx={{ mb: 2 }}>Login realizado com sucesso!</Alert>
+              </Box>
+        </Modal>
+
+        <Modal open={openSenhaInvalida} onClose={() => setOpenSenhaInvalida(false)}>
+              <Box className="alert-box" sx={{ 
+                    position: 'fixed', 
+                    top: 16, 
+                    left: '50%',
+                    transform: 'translateX(-50%)', 
+                    zIndex: 9999,
+                    maxWidth: 250,
+                    width: '100%', 
+                  }}>
+                  <Alert variant="filled" severity="error" sx={{ mb: 2 }}>Login ou senha inválidos!</Alert>
               </Box>
         </Modal>
       </div>
