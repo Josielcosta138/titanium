@@ -370,7 +370,16 @@ const OrdemCorte: FC = () => {
                                 <React.Fragment>
                                     <Typography sx={{ mt: 2, mb: 1, fontSize: '1.20rem' }}>Etapa {activeStep + 1}</Typography>
                                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                                        <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
+                                        <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} 
+                                        sx={{ 
+                                            mr: 1,
+                                            ...(activeStep !== 0 && {
+                                                backgroundColor: '#ff6600',
+                                                color: 'white', // Mudar a cor do texto para branco para melhor contraste
+                                                    }),
+                                        }}
+                                    >
+                                       
                                             Voltar
                                         </Button>
                                         <Box sx={{ flex: '1 1 auto' }} />

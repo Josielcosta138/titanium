@@ -311,7 +311,7 @@ const CadastroOrdemServico: React.FC = () => {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="cliente">Cliente*</label>
+                  <label htmlFor="cliente">Cliente<span className="required">*</span></label>
                   <FormControl fullWidth>
                     <Select
                       labelId="cliente-label"
@@ -353,7 +353,7 @@ const CadastroOrdemServico: React.FC = () => {
                   </Tooltip>
                 </div>
                 <div className="form-group">
-                  <label htmlFor="referencia">Referência*</label>
+                  <label htmlFor="referencia">Referência<span className="required">*</span></label>
                   <TextField
                     id="referencia"
                     placeholder="Ex: DB0100"
@@ -365,7 +365,7 @@ const CadastroOrdemServico: React.FC = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="modelo">Modelo*</label>
+                  <label htmlFor="modelo">Modelo<span className="required">*</span></label>
                   <TextField
                     id="modelo"
                     placeholder="Ex: Bermuda"
@@ -385,7 +385,7 @@ const CadastroOrdemServico: React.FC = () => {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="dataChegada">Data de Chegada*</label>
+                  <label htmlFor="dataChegada">Data de Chegada<span className="required">*</span></label>
                   <TextField
                     id="dataChegada"
                     type="date"
@@ -397,7 +397,7 @@ const CadastroOrdemServico: React.FC = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="dataEntrega">Data de Entrega*</label>
+                  <label htmlFor="dataEntrega">Data de Entrega<span className="required">*</span></label>
                   <TextField
                     id="dataEntrega"
                     type="date"
@@ -409,7 +409,7 @@ const CadastroOrdemServico: React.FC = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="quantidadeRolo">Quantidade de Rolo*</label>
+                  <label htmlFor="quantidadeRolo">Quantidade de Rolo<span className="required">*</span></label>
                   <TextField
                     id="quantidadeRolo"
                     type="number"
@@ -439,7 +439,7 @@ const CadastroOrdemServico: React.FC = () => {
                 </div>
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="notaFiscal">Nota Fiscal*</label>
+                    <label htmlFor="notaFiscal">Nota Fiscal</label>
                     <TextField
                       id="notaFiscal"
                       value={notaFiscal}
@@ -457,7 +457,7 @@ const CadastroOrdemServico: React.FC = () => {
                   {/* teste */}
 
                   <div className="form-group">
-                    <label htmlFor="valorPecas">Valor das Peças*</label>
+                    <label htmlFor="valorPecas">Valor das Peças<span className="required">*</span></label>
 
                     <TextField
                       id="valorPecas"
@@ -475,7 +475,7 @@ const CadastroOrdemServico: React.FC = () => {
                 </div>
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="quantidadePecas">Quantidade de Peças*</label>
+                    <label htmlFor="quantidadePecas">Quantidade de Peças<span className="required">*</span></label>
                     <TextField
                       id="quantidadePecas"
                       type="number"
@@ -493,7 +493,7 @@ const CadastroOrdemServico: React.FC = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="valorTotal">Valor Total*</label>
+                    <label htmlFor="valorTotal">Valor Total<span className="required">*</span></label>
                     <TextField
                       id="valorTotal"
                       type="number"
