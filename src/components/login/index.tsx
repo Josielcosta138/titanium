@@ -1,8 +1,11 @@
 import React, { FC, useState } from "react";
 import "./index.css";
 import { apiPost, STATUS_CODE } from "../../api/RestClient";
-import { Alert, Box, Modal } from "@mui/material";
+import { Alert, Box, IconButton, Modal, Typography } from "@mui/material";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import EmailIcon from "@mui/icons-material/Email";
+import CloseIcon from "@mui/icons-material/Close";
 
 const Login: FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -10,6 +13,23 @@ const Login: FC = () => {
   const [open, setOpen] = useState(false);
   const [openSenhaInvalida, setOpenSenhaInvalida] = useState(false);
   const navigate = useNavigate();
+  const [openModalMsg, setOpenModalMsg] = useState(false);
+  const handleClose = () => setOpenModalMsg(false);
+  const handleOpenModalMsg = () => setOpenModalMsg(true); 
+ 
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  };
+
 
   const handleLogin = async () => {
     
@@ -81,7 +101,54 @@ const Login: FC = () => {
             required
           />
         </div>
-        <p className="esqueceu-senha">Esqueceu sua senha?</p>
+        <p 
+          className="esqueceu-senha"  
+          style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}
+          onClick={handleOpenModalMsg}>Esqueceu sua senha?
+        </p> 
+        <br />
+        <Modal
+          open={openModalMsg}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                bgcolor: "#FF6600",
+                color: "white",
+                p: 1,
+                mb: 2,
+              }}
+            >
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Recuperação de Senha
+              </Typography>
+              <IconButton
+                onClick={handleClose}
+                sx={{ color: "white" }}
+                aria-label="close"
+              >
+                <CloseIcon />
+              </IconButton>
+            </Box>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              Para recuperar sua senha, entre em contato com nossa equipe de suporte
+              através dos seguintes canais:
+              <br />
+              <br />
+              <WhatsAppIcon sx={{ verticalAlign: "middle", mr: 1 }} />
+              WhatsApp: <strong>(99) 9 9999-9999</strong>
+              <br />
+              <EmailIcon sx={{ verticalAlign: "middle", mr: 1 }} />
+              E-mail: <strong>titaniumSoftware@gmail.com.br</strong>
+            </Typography>
+          </Box>
+        </Modal>
         <button className="login-button" onClick={handleLogin}>
           Login
         </button>
