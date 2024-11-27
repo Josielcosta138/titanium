@@ -241,7 +241,7 @@ const Relatorios: React.FC = () => {
                       <TableCell>{ordem.codReferenciaOs}</TableCell>
                       <TableCell>{ordem.modelo}</TableCell>
                       <TableCell>{formatarDataCorreta(ordem.dataEntrada)}</TableCell>
-                      <TableCell>{ordem.valorTotal}</TableCell>
+                      <TableCell>{"R$ " + ordem.valorTotal}</TableCell>
                       <TableCell>
                         <Box className="action-buttons">
                           <Button variant="contained" color="info" onClick={() => handleVerMais(ordem)}>Visualizar</Button>
