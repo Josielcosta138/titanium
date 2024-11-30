@@ -108,7 +108,6 @@ const CadastroCliente: React.FC = () => {
 
 
 
-
  // ----------------------- PUT -------------------------------------//
 
   const edidarCliente = async () => {
@@ -355,7 +354,7 @@ const redirecionarListaDeClientes = () => {
                   <input
                     type="text"
                     id="nome"
-                    value={nomeFantasia}
+                    value={nomeFantasia}                    
                     onChange={(event) => setNomeFantasia(event.target.value)}
                     placeholder="Nome do Cliente" required />
                 </div>
@@ -429,22 +428,13 @@ const redirecionarListaDeClientes = () => {
                   <label htmlFor="rua">Rua<span className="required">*</span></label>
                   <input
                     type="text"
-                    id="rua"
-                    value={rua}
-                    onChange={(event) => setRua(event.target.value)}
+                    id="logradouro"
+                    value={logradouro}
+                    onChange={(event) => setLogradouro(event.target.value)}
                     placeholder="Rua" required />
                 </div>
               </div>
-              {/* <div className="form-group">
-                  <label htmlFor="rua">Rua<span className="required">*</span></label>
-                  <input 
-                        type="text" 
-                        id="rua" 
-                        value={rua}
-                        onChange={(event) => setRua(event.target.value)}
-                        placeholder="Rua" required />
-                </div> */}
-
+            
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="bairro">Bairro<span className="required">*</span></label>
