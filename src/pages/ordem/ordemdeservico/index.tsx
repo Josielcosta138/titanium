@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
-import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../api/RestClient';
+import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../../api/RestClient';
 import { Alert, Box, Modal, TextField, Button, Select, MenuItem, FormControl, Checkbox, FormControlLabel, Tooltip, AlertTitle, InputAdornment } from '@mui/material';
-import { IClientes } from '../../Interface/Cliente/type';
+import { IClientes } from '../../../Interface/Cliente/type';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { Navigate, useNavigate } from 'react-router-dom';
-import ConfirmarOC from '../../components/ModelConfirmacaoOC';
+import ConfirmarOC from '../../../components/ModelConfirmacaoOC';
 import { format, formatDate, parse, parseISO } from "date-fns";
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
 import DescriptionIcon from '@mui/icons-material/Description';
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../../components/Sidebar';
 import { FaArrowLeft } from 'react-icons/fa';
 
 
