@@ -1,6 +1,7 @@
 import { Axios } from "axios";
-// const api = new Axios({ baseURL: "http://localhost:8085/titanium/" }); // local server
-const api = new Axios({baseURL: process.env.REACT_APP_API_BASE_URL}); // endPoint NUVEM
+//const api = new Axios({ baseURL: "http://localhost:8085/titanium/" }); // local server
+// const api = new Axios({baseURL: process.env.REACT_APP_API_BASE_URL}); // endPoint NUVEM
+const api = new Axios({baseURL: "https://localhost:7159/"}) //teste.Net
 
 api.interceptors.response.use(response => {
     if (response.status === STATUS_CODE.UNAUTHORIZED) {

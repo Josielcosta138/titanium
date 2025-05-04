@@ -38,8 +38,14 @@ const Login: FC = () => {
       senha: password
     }
 
+    const dataNet = {
+      email: email,
+      senha: password
+    }
+
     try {
-      const response = await apiPost(`/usuarios/autenticar`, data);
+      //const response = await apiPost(`/usuarios/autenticar`, data);
+      const response = await apiPost(`api/conta/logar-usuario`, dataNet); //teste .Net
 
       if (response.status === STATUS_CODE.OK) {
         const token = response.data.token;

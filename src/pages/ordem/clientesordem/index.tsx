@@ -7,9 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import { Alert, Box, Modal } from '@mui/material';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../api/RestClient';
-import Sidebar from '../../components/Sidebar';
-import { IClientes } from '../../Interface/Cliente/type';
+import { apiGet, apiPost, apiPut, STATUS_CODE } from '../../../api/RestClient';
+import Sidebar from '../../../components/Sidebar';
+import { IClientes } from '../../../Interface/Cliente/type';
 
 const CadastroCliente: React.FC = () => {
   const [clientes, setClientes] = useState<IClientes[]>([]);
